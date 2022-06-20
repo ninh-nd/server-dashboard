@@ -35,6 +35,29 @@ const accountController = {
       return res.status(500).json(error);
     }
   },
+  login: async (req, res) => {
+    const { username, password } = req.body;
+    const account = await Account.findOne({ username });
+    if (!account) {
+      res.status(400).json({
+        message: 'Username not found',
+      });
+    }
+    try {
+      const result = await bcrypt.compare(password, account.password);
+      if (result) {
+        res.status(200).json({
+          message: 'Login success',
+        });
+      } else {
+        res.status(401).json({
+          message: 'Incorrect password',
+        });
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  },
   deleteAccount: async (req, res) => {
     Account.findByIdAndDelete(req.params.id, (err, doc) => {
       if (err) {
