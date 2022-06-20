@@ -1,0 +1,16 @@
+import express from 'express';
+import projectController from '../controller/projectController.js';
+
+const router = express.Router();
+
+// Get a project
+router.get('/:id', projectController.getProject);
+// Create a project
+router.post('/', projectController.createProject);
+// Change project status
+router.patch('/:id', projectController.updateProjectStatus);
+// Add a phase to the project
+router.patch('/:id/phase', projectController.addPhase);
+// Delete a project
+router.delete('/:id', projectController.deleteProject);
+export default router;
