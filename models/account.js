@@ -16,7 +16,7 @@ const accountSchema = new mongoose.Schema({
     lowercase: true,
   },
   thirdParty: [{
-    type: [thirdPartySchema],
+    type: thirdPartySchema,
     default: [],
   }],
 });

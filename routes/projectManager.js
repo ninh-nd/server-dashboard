@@ -12,4 +12,6 @@ router.patch('/:id', projectController.updateProjectManager);
 router.delete('/:id', projectController.deleteProjectManager);
 // Add project own
 router.patch('/:id/project', projectController.addProjectOwn);
+// Get the first project own
+router.get('/:id/project', projectController.getProjectOwn);
 export default router;

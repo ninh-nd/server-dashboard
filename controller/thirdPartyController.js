@@ -4,26 +4,26 @@ const thirdPartyController = {
   getAllThirdParty: async (req, res) => {
     try {
       const thirdParties = await ThirdParty.find();
-      res.status(200).json(thirdParties);
+      return res.status(200).json(thirdParties);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   getThirdParty: async (req, res) => {
     try {
       const thirdParty = await ThirdParty.findById(req.params.id);
-      res.status(200).json(thirdParty);
+      return res.status(200).json(thirdParty);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   createThirdParty: async (req, res) => {
     try {
       const newThirdParty = new ThirdParty(req.body);
       await newThirdParty.save();
-      res.status(201).json(newThirdParty);
+      return res.status(201).json(newThirdParty);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   updateThirdParty: async (req, res) => {
@@ -34,25 +34,24 @@ const thirdPartyController = {
 
         { new: true },
       );
-      res.status(200).json(updatedThirdParty);
+      return res.status(200).json(updatedThirdParty);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   deleteThirdParty: (req, res) => {
     ThirdParty.findByIdAndDelete(req.params.id, (err, doc) => {
       if (err) {
-        res.status(500).json(err);
+        return res.status(500).json(err);
       }
       if (!doc) {
-        res.status(404).json({
+        return res.status(404).json({
           message: 'ThirdParty not found',
         });
-      } else {
-        res.status(200).json({
-          message: 'ThirdParty deleted',
-        });
       }
+      return res.status(200).json({
+        message: 'ThirdParty deleted',
+      });
     });
   },
 };

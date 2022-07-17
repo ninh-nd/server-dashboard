@@ -6,8 +6,14 @@ const phaseSchema = new mongoose.Schema({
     required: true,
   },
   description: String,
-  // previousId: Number,
-  // nextId: Number,
+  previousId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Phase',
+  },
+  nextId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Phase',
+  },
   tasks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Task',

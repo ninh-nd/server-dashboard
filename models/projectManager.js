@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { accountSchema } from './account.js';
 
 const projectManagerSchema = mongoose.Schema({
   name: {
@@ -7,8 +6,8 @@ const projectManagerSchema = mongoose.Schema({
     required: true,
   },
   account: {
-    type: accountSchema,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account',
   },
   company: String,
   projectOwn: [{

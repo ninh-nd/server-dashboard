@@ -1,4 +1,5 @@
 import { Octokit } from 'octokit';
+import { Account } from '../models/account.js';
 import { ActivityHistory } from '../models/activityHistory.js';
 
 const activityController = {
@@ -23,9 +24,9 @@ const activityController = {
       await ActivityHistory.insertMany(prs, {
         ordered: false,
       }); // Set ordered to false to insert any document that is not duplicated
-      res.status(200).send(prs);
+      return res.status(200).send(prs);
     } catch (error) {
-      res.json({ error });
+      return res.json({ error });
     }
   },
   addCommits: async (req, res) => {
@@ -49,27 +50,52 @@ const activityController = {
       await ActivityHistory.insertMany(commits, {
         ordered: false,
       }); // Set ordered to false to insert any document that is not duplicated
-      res.status(200).send(commits);
+      return res.status(200).send(commits);
     } catch (error) {
-      res.json({ error });
+      return res.json({ error });
     }
   },
   getPRs: async (req, res) => {
     const { projectId } = req.query;
     try {
       const prs = await ActivityHistory.find({ projectId, action: 'pr' });
-      res.status(200).send(prs);
+      return res.status(200).send(prs);
     } catch (error) {
-      res.json({ error });
+      return res.json({ error });
     }
   },
   getCommits: async (req, res) => {
     const { projectId } = req.query;
     try {
       const commits = await ActivityHistory.find({ projectId, action: 'commit' });
-      res.status(200).send(commits);
+      return res.status(200).send(commits);
     } catch (error) {
-      res.json({ error });
+      return res.json({ error });
+    }
+  },
+  getCommitsByAccount: async (req, res) => {
+    const { id } = req.params;
+    try {
+      // Get the internal account from id
+      const user = await Account.findById(id);
+      // Get the account linked to the internal account
+      const commits = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'commit' });
+      console.log(user.thirdParty[0].username);
+      return res.status(200).send(commits);
+    } catch (error) {
+      return res.json({ error });
+    }
+  },
+  getPRsByAccount: async (req, res) => {
+    const { id } = req.params;
+    try {
+      // Get the internal account from id
+      const user = await Account.findById(id);
+      // Get the account linked to the internal account
+      const prs = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'pr' });
+      return res.status(200).send(prs);
+    } catch (error) {
+      return res.json({ error });
     }
   },
 };

@@ -1,14 +1,41 @@
+import 'dotenv/config';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { Account } from '../models/account.js';
 import { ThirdParty } from '../models/thirdParty.js';
+import { Member } from '../models/member.js';
+import { ProjectManager } from '../models/projectManager.js';
+
+function generateAccessToken(username) {
+  return jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '1h',
+  });
+}
+async function getRole(accountId) {
+  const member = await Member.findOne({ account: accountId });
+  const projectManager = await ProjectManager.findOne({ account: accountId });
+  if (member) {
+    return {
+      role: 'member',
+      id: member._id,
+    };
+  }
+  if (projectManager) {
+    return {
+      role: 'projectManager',
+      id: projectManager._id,
+    };
+  }
+  return null;
+}
 
 const accountController = {
   getAccount: async (req, res) => {
     try {
       const account = await Account.findById(req.params.id);
-      res.status(200).json(account);
+      return res.status(200).json(account);
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   createAccount: async (req, res) => {
@@ -39,39 +66,46 @@ const accountController = {
     const { username, password } = req.body;
     const account = await Account.findOne({ username });
     if (!account) {
-      res.status(400).json({
+      return res.status(400).json({
         message: 'Username not found',
       });
     }
     try {
+      const { _id: accountId } = account;
       const result = await bcrypt.compare(password, account.password);
       if (result) {
-        res.status(200).json({
-          message: 'Login success',
-        });
-      } else {
-        res.status(401).json({
-          message: 'Incorrect password',
+        const accessToken = generateAccessToken(accountId);
+        const refreshToken = jwt.sign({ accountId }, process.env.REFRESH_TOKEN_SECRET);
+        const roleObject = await getRole(accountId);
+        const { role, id } = roleObject;
+        return res.status(200).json({
+          role,
+          id,
+          username,
+          accessToken,
+          refreshToken,
         });
       }
+      return res.status(401).json({
+        message: 'Incorrect password',
+      });
     } catch (error) {
-      res.status(500).json(error);
+      return res.status(500).json(error);
     }
   },
   deleteAccount: async (req, res) => {
     Account.findByIdAndDelete(req.params.id, (err, doc) => {
       if (err) {
-        res.status(500).json(err);
+        return res.status(500).json(err);
       }
       if (!doc) {
-        res.status(404).json({
+        return res.status(404).json({
           message: 'Account not found',
         });
-      } else {
-        res.status(200).json({
-          message: 'Account deleted',
-        });
       }
+      return res.status(200).json({
+        message: 'Account deleted',
+      });
     });
   },
   addThirdParty: async (req, res) => {

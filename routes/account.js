@@ -9,11 +9,12 @@ router.get('/:id', accountController.getAccount);
 router.post('/reg', accountController.createAccount);
 // Login
 router.post('/login', accountController.login);
+// Get refresh token
+// router.post('/token', accountController.getRefreshToken);
 // Add a third party to an account
 router.patch('/:id/thirdParty', accountController.addThirdParty);
 // Change password
 router.patch('/:id/password', accountController.changePassword);
 // Delete an account
 router.delete('/:id', accountController.deleteAccount);
-
 export default router;
