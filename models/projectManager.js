@@ -8,6 +8,7 @@ const projectManagerSchema = mongoose.Schema({
   account: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Account',
+    required: true,
   },
   company: String,
   projectOwn: [{

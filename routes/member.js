@@ -13,4 +13,6 @@ router.patch('/:id', memberController.updateMember);
 router.delete('/:id', memberController.deleteMember);
 // Assign a task to a member
 router.patch('/:id/task', memberController.assignTask);
+// Add a project that the member participates in
+router.patch('/:id/project', memberController.addProject);
 export default router;

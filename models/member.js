@@ -20,6 +20,11 @@ const memberSchema = new mongoose.Schema({
     ref: 'ActivityHistory',
     default: [],
   }],
+  projectIn: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
+    default: [],
+  }],
 });
 const Member = mongoose.model('Member', memberSchema);
 

@@ -1,6 +1,7 @@
 import { Octokit } from 'octokit';
 import { Account } from '../models/account.js';
 import { ActivityHistory } from '../models/activityHistory.js';
+import { Member } from '../models/member.js';
 
 const activityController = {
   addPRs: async (req, res) => {
@@ -94,6 +95,30 @@ const activityController = {
       // Get the account linked to the internal account
       const prs = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'pr' });
       return res.status(200).send(prs);
+    } catch (error) {
+      return res.json({ error });
+    }
+  },
+  addHistory: async (req, res) => {
+    const { projectId } = req.body;
+    try {
+      const history = await ActivityHistory.find({ projectId });
+      const members = await Member.find({ projectIn: projectId });
+      members.forEach(async (member) => {
+        // Temporary solution as Github is the only third party
+        const account = await Account.findById(member.account);
+        const thirdPartyUsername = account.thirdParty[0].username;
+        const memberHistory = history.filter(
+          ({ createdBy }) => createdBy === thirdPartyUsername,
+        );
+        await Member.findByIdAndUpdate(
+          member._id,
+          { $addToSet: { activityHistory: memberHistory } },
+
+          { new: true },
+        );
+      });
+      return res.status(200).send("Update member's activity history successfully");
     } catch (error) {
       return res.json({ error });
     }

@@ -54,9 +54,9 @@ const pmController = {
   },
   getProjectOwn: async (req, res) => {
     try {
-      const pm = await ProjectManager.findById(req.params.id);
+      const pm = await ProjectManager.findById(req.params.id).populate('projectOwn');
       return res.status(200).json({
-        projectId: pm.projectOwn,
+        projects: pm.projectOwn,
       });
     } catch (err) {
       return res.status(500).json(err);

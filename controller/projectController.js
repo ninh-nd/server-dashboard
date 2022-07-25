@@ -1,4 +1,5 @@
 import { Project } from '../models/project.js';
+import { Member } from '../models/member.js';
 
 const projectController = {
   getProject: async (req, res) => {
@@ -60,6 +61,14 @@ const projectController = {
 
       await Project.findByIdAndDelete(req.params.id);
       return res.status(200).json({ message: 'Project deleted' });
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
+  getProjectMember: async (req, res) => {
+    try {
+      const members = await Member.find({ projectIn: req.params.id }).populate('activityHistory').populate('account').populate('taskAssigned');
+      return res.status(200).json(members);
     } catch (error) {
       return res.status(500).json(error);
     }

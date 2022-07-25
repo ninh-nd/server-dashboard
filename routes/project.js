@@ -13,4 +13,6 @@ router.patch('/:id', projectController.updateProjectStatus);
 router.patch('/:id/phase', projectController.addPhase);
 // Delete a project
 router.delete('/:id', projectController.deleteProject);
+// Get project's member
+router.get('/:id/member', projectController.getProjectMember);
 export default router;

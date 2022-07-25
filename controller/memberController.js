@@ -54,6 +54,19 @@ const memberController = {
       return res.status(500).json(error);
     }
   },
+  addProject: async (req, res) => {
+    try {
+      // Check if project has already been added
+      const member = await Member.findByIdAndUpdate(
+        req.params.id,
+        { $addToSet: { projectParticipated: req.body.projectId } },
+        { new: true },
+      );
+      return res.status(200).json(member);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
 };
 
 export default memberController;
