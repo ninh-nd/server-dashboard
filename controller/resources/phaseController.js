@@ -1,4 +1,4 @@
-import { Phase } from '../models/phase.js';
+import { Phase } from '../../models/phase.js';
 
 const phaseController = {
   getPhase: async (req, res) => {

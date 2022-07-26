@@ -1,5 +1,5 @@
 import express from 'express';
-import projectController from '../controller/pmController.js';
+import projectController from '../../controller/resources/pmController.js';
 
 const router = express.Router();
 // Get a project manager

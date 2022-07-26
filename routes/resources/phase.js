@@ -1,5 +1,5 @@
 import express from 'express';
-import phaseController from '../controller/phaseController.js';
+import phaseController from '../../controller/resources/phaseController.js';
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import { Member } from '../models/member.js';
+import { Member } from '../../models/member.js';
 
 const memberController = {
   getMember: async (req, res) => {

@@ -1,4 +1,4 @@
-import { ProjectManager } from '../models/projectManager.js';
+import { ProjectManager } from '../../models/projectManager.js';
 
 const pmController = {
   getProjectManager: async (req, res) => {

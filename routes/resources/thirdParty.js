@@ -1,5 +1,5 @@
 import express from 'express';
-import thirdPartyController from '../controller/thirdPartyController.js';
+import thirdPartyController from '../../controller/resources/thirdPartyController.js';
 
 const router = express.Router();
 

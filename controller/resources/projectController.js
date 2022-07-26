@@ -1,5 +1,5 @@
-import { Project } from '../models/project.js';
-import { Member } from '../models/member.js';
+import { Project } from '../../models/project.js';
+import { Member } from '../../models/member.js';
 
 const projectController = {
   getProject: async (req, res) => {

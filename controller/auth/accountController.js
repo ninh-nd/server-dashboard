@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Account } from '../models/account.js';
-import { ThirdParty } from '../models/thirdParty.js';
-import { Member } from '../models/member.js';
-import { ProjectManager } from '../models/projectManager.js';
+import { Account } from '../../models/account.js';
+import { ThirdParty } from '../../models/thirdParty.js';
+import { Member } from '../../models/member.js';
+import { ProjectManager } from '../../models/projectManager.js';
 
 function generateAccessToken(username) {
   return jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
@@ -43,7 +43,7 @@ const accountController = {
     // Check if account exists
     const accountExists = await Account.findOne({ username });
     if (accountExists) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: 'Account already exists',
       });
     }
@@ -66,7 +66,7 @@ const accountController = {
     const { username, password } = req.body;
     const account = await Account.findOne({ username });
     if (!account) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: 'Username not found',
       });
     }
@@ -78,7 +78,7 @@ const accountController = {
         const refreshToken = jwt.sign({ accountId }, process.env.REFRESH_TOKEN_SECRET);
         const roleObject = await getRole(accountId);
         const { role, id } = roleObject;
-        return res.status(200).json({
+        return res.status(201).json({
           role,
           id,
           username,

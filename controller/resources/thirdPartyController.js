@@ -1,4 +1,4 @@
-import { ThirdParty } from '../models/thirdParty.js';
+import { ThirdParty } from '../../models/thirdParty.js';
 
 const thirdPartyController = {
   getAllThirdParty: async (req, res) => {

@@ -6,7 +6,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import accountRoute from './routes/account.js';
+import accountRoute from './routes/auth/account.js';
 
 const app = express();
 const port = 5000;

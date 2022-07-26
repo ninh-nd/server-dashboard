@@ -1,57 +1,41 @@
 import { Octokit } from 'octokit';
-import { Account } from '../models/account.js';
-import { ActivityHistory } from '../models/activityHistory.js';
-import { Member } from '../models/member.js';
+import { Account } from '../../models/account.js';
+import { ActivityHistory } from '../../models/activityHistory.js';
+import { Member } from '../../models/member.js';
 
 const activityController = {
-  addPRs: async (req, res) => {
+  populatePRsAndCommits: async (req, res) => {
     const {
       owner, repo, accessToken, projectId,
     } = req.body;
     const octokit = new Octokit({
       auth: accessToken,
     });
-    const data = await octokit.rest.pulls.list({
+    const prData = await octokit.rest.pulls.list({
       owner,
       repo,
       state: 'all',
     });
-    const prs = data.data.map(({
+    const prs = prData.data.map(({
       id, title: content, created_at: createdAt, user: { login: createdBy },
     }) => ({
       id, action: 'pr', content, createdAt, createdBy, projectId,
     }));
-    try {
-      await ActivityHistory.insertMany(prs, {
-        ordered: false,
-      }); // Set ordered to false to insert any document that is not duplicated
-      return res.status(200).send(prs);
-    } catch (error) {
-      return res.json({ error });
-    }
-  },
-  addCommits: async (req, res) => {
-    const {
-      owner, repo, accessToken, projectId,
-    } = req.body;
-    const octokit = new Octokit({
-      auth: accessToken,
-    });
-    const data = await octokit.rest.repos.listCommits({
+    const commitData = await octokit.rest.repos.listCommits({
       owner,
-      repo,
+      repo
     });
-    const commits = data.data.map(({
+    const commits = commitData.data.map(({
       sha: id, commit:
       { message: content, author: { name: createdBy, date: createdAt } },
     }) => ({
       id, action: 'commit', content, createdAt, createdBy, projectId,
     }));
     try {
-      await ActivityHistory.insertMany(commits, {
+      await ActivityHistory.insertMany([...prs, ...commits], {
         ordered: false,
       }); // Set ordered to false to insert any document that is not duplicated
-      return res.status(200).send(commits);
+      return res.status(201).send({ message: 'Successfully populated PRs and commits' });
     } catch (error) {
       return res.json({ error });
     }
@@ -118,7 +102,7 @@ const activityController = {
           { new: true },
         );
       });
-      return res.status(200).send("Update member's activity history successfully");
+      return res.status(201).send({ message: 'Successfully added history' });
     } catch (error) {
       return res.json({ error });
     }
