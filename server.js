@@ -15,9 +15,9 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(express.json());
-app.use(cors());
-// morgan.token('body', (req) => JSON.stringify(req.body));
-// app.use(morgan(':method :url :body'));
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
 app.use(morgan('dev'));
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

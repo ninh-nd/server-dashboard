@@ -1,5 +1,5 @@
 import express from 'express';
-import activityController from '../../controller/resources/activityController.js';
+import activityController from '../../controllers/resources/activityController.js';
 
 const router = express.Router();
 // Get all pull requests of a repo from the database
