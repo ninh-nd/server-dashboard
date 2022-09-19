@@ -1,20 +1,20 @@
 import express from 'express';
-import accountController from '../../controller/auth/accountController.js';
+import {
+  get, create, login, changePassword, addThirdPartyToAccount,
+} from '../../controllers/auth/account.controller.js';
 
 const router = express.Router();
 
 // Get an account
-router.get('/:id', accountController.getAccount);
+router.get('/:id', get);
 // Create an account
-router.post('/reg', accountController.createAccount);
+router.post('/reg', create);
 // Login
-router.post('/login', accountController.login);
+router.post('/login', login);
 // Get refresh token
 // router.post('/token', accountController.getRefreshToken);
 // Add a third party to an account
-router.patch('/:id/thirdParty', accountController.addThirdParty);
+router.patch('/:id/thirdParty', addThirdPartyToAccount);
 // Change password
-router.patch('/:id/password', accountController.changePassword);
-// Delete an account
-router.delete('/:id', accountController.deleteAccount);
+router.patch('/:id/password', changePassword);
 export default router;

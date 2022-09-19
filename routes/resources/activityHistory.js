@@ -1,13 +1,15 @@
 import express from 'express';
-import activityController from '../../controllers/resources/activityController.js';
+import {
+  getPRs, getCommits, getCommitsByAccount, getPRsByAccount,
+} from '../../controllers/resources/activityHistory.controller.js';
 
 const router = express.Router();
-// Get all pull requests of a repo from the database
-router.get('/pr', activityController.getPRs);
-// Get all commits of a repo from the database
-router.get('/commit', activityController.getCommits);
-// Get all commits of an account from the database
-router.get('/commit/:id', activityController.getCommitsByAccount);
-// Get all pull requests of an account from the database
-router.get('/pr/:id', activityController.getPRsByAccount);
+/* GET pull requests */
+router.get('/pr', getPRs);
+/* GET commits */
+router.get('/commit', getCommits);
+/* GET commits by account */
+router.get('/commit/:id', getCommitsByAccount);
+/* GET pull requests by account */
+router.get('/pr/:id', getPRsByAccount);
 export default router;

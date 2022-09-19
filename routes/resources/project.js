@@ -1,18 +1,20 @@
 import express from 'express';
-import projectController from '../../controller/resources/projectController.js';
+import {
+  get, create, updateStatus, addPhaseToProject, remove, getProjectMembers,
+} from '../../controllers/resources/project.controller.js';
 
 const router = express.Router();
 
-// Get a project
-router.get('/:id', projectController.getProject);
-// Create a project
-router.post('/', projectController.createProject);
-// Change project status
-router.patch('/:id', projectController.updateProjectStatus);
-// Add a phase to the project
-router.patch('/:id/phase', projectController.addPhase);
-// Delete a project
-router.delete('/:id', projectController.deleteProject);
-// Get project's member
-router.get('/:id/member', projectController.getProjectMember);
+/* GET project */
+router.get('/:id', get);
+/* POST project */
+router.post('/', create);
+/* PATCH project: Update status */
+router.patch('/:id', updateStatus);
+/* PATCH project: Add phase to project */
+router.patch('/:id/phase', addPhaseToProject);
+/* DELETE project */
+router.delete('/:id', remove);
+/* GET project members */
+router.get('/:id/member', getProjectMembers);
 export default router;

@@ -1,18 +1,20 @@
 import express from 'express';
-import memberController from '../../controller/resources/memberController.js';
+import {
+  get, create, update, remove, assignTask, joinProject,
+} from '../../controllers/resources/member.controller.js';
 
 const router = express.Router();
 
-// Get a member
-router.get('/:id', memberController.getMember);
-// Create a member
-router.post('/', memberController.createMember);
-// Update a member
-router.patch('/:id', memberController.updateMember);
-// Delete a member
-router.delete('/:id', memberController.deleteMember);
-// Assign a task to a member
-router.patch('/:id/task', memberController.assignTask);
-// Add a project that the member participates in
-router.patch('/:id/project', memberController.addProject);
+/* GET member */
+router.get('/:id', get);
+/* POST member */
+router.post('/', create);
+/* PUT member */
+router.put('/:id', update);
+/* DELETE member */
+router.delete('/:id', remove);
+/* PATCH member: Assign task */
+router.patch('/:id/assignTask', assignTask);
+/* PATCH member: Join project */
+router.patch('/:id/joinProject', joinProject);
 export default router;

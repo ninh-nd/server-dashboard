@@ -1,16 +1,18 @@
 import express from 'express';
-import phaseController from '../../controller/resources/phaseController.js';
+import {
+  get, create, update, remove, addTaskToPhase,
+} from '../../controllers/resources/phase.controller.js';
 
 const router = express.Router();
 
-// Get a phase
-router.get('/:id', phaseController.getPhase);
-// Create a phase
-router.post('/', phaseController.createPhase);
-// Update a phase
-router.patch('/:id', phaseController.updatePhase);
-// Delete a phase
-router.delete('/:id', phaseController.deletePhase);
-// Add task to phase
-router.patch('/:id/task', phaseController.addTask);
+/* GET phase */
+router.get('/:id', get);
+/* POST phase */
+router.post('/', create);
+/* PUT phase */
+router.put('/:id', update);
+/* DELETE phase */
+router.delete('/:id', remove);
+/* PATCH phase: Add task to a phase */
+router.patch('/:id/task', addTaskToPhase);
 export default router;

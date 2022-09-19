@@ -1,17 +1,19 @@
 import express from 'express';
-import projectController from '../../controller/resources/pmController.js';
+import {
+  get, create, update, remove, addProjectOwn, getProjectOwn,
+} from '../../controllers/resources/projectManager.controller.js';
 
 const router = express.Router();
-// Get a project manager
-router.get('/:id', projectController.getProjectManager);
-// Create a project manager
-router.post('/', projectController.createProjectManager);
-// Update a project manager's information
-router.patch('/:id', projectController.updateProjectManager);
-// Delete a project manager
-router.delete('/:id', projectController.deleteProjectManager);
-// Add project own
-router.patch('/:id/project', projectController.addProjectOwn);
-// Get the first project own
-router.get('/:id/project', projectController.getProjectOwn);
+/* GET project manager */
+router.get('/:id', get);
+/* POST project manager */
+router.post('/', create);
+/* PUT project manager */
+router.put('/:id', update);
+/* DELETE project manager */
+router.delete('/:id', remove);
+/* PATCH project manager: Add project to project manager */
+router.patch('/:id/project', addProjectOwn);
+/* GET project manager projects */
+router.get('/:id/project', getProjectOwn);
 export default router;
