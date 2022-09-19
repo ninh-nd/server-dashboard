@@ -9,7 +9,7 @@ router.get('/pr', getPRs);
 /* GET commits */
 router.get('/commit', getCommits);
 /* GET commits by account */
-router.get('/commit/:id', getCommitsByAccount);
+router.get('/commit/:username', getCommitsByAccount);
 /* GET pull requests by account */
-router.get('/pr/:id', getPRsByAccount);
+router.get('/pr/:username', getPRsByAccount);
 export default router;

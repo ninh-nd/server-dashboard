@@ -65,7 +65,16 @@ async function getPRs(req, res) {
   await getLatestGithubActivity(owner, repo, accessToken, projectId);
   try {
     const prs = await ActivityHistory.find({ projectId, action: 'pr' });
-    return res.status(200).send(prs);
+    const total = prs.length;
+    const authorArray = prs.map((pr) => pr.createdBy);
+    const uniqueAuthors = [...new Set(authorArray)];
+    const individualContribution = [];
+    uniqueAuthors.forEach((author) => {
+      const prOfAnAuthor = prs.filter((pr) => pr.createdBy === author);
+      const totalOfAnAuthor = prOfAnAuthor.length;
+      individualContribution.push({ author, total: totalOfAnAuthor });
+    });
+    return res.status(200).send({ total, contribution: individualContribution });
   } catch (error) {
     return res.json({ error });
   }
@@ -81,33 +90,52 @@ async function getCommits(req, res) {
   await getLatestGithubActivity(owner, repo, accessToken, projectId);
   try {
     const commits = await ActivityHistory.find({ projectId, action: 'commit' });
-    return res.status(200).send(commits);
+    const total = commits.length;
+    const authorArray = commits.map((cm) => cm.createdBy);
+    const uniqueAuthors = [...new Set(authorArray)];
+    const individualContribution = [];
+    uniqueAuthors.forEach((author) => {
+      const prOfAnAuthor = commits.filter((cm) => cm.createdBy === author);
+      const totalOfAnAuthor = prOfAnAuthor.length;
+      individualContribution.push({ author, total: totalOfAnAuthor });
+    });
+    return res.status(200).send({ total, contribution: individualContribution });
   } catch (error) {
     return res.json({ error });
   }
 }
 
 async function getCommitsByAccount(req, res) {
-  const { id } = req.params;
+  const { projectId } = req.query;
+  const { username } = req.params;
   try {
     // Get the internal account from id
-    const user = await Account.findById(id);
+    const user = await Account.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'No user found' });
+    }
     // Get the account linked to the internal account
-    const commits = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'commit' });
-    return res.status(200).send(commits);
+    const commits = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'commit', projectId });
+    const result = { total: commits.length, commits };
+    return res.status(200).send(result);
   } catch (error) {
     return res.json({ error });
   }
 }
 
 async function getPRsByAccount(req, res) {
-  const { id } = req.params;
+  const { projectId } = req.query;
+  const { username } = req.params;
   try {
     // Get the internal account from id
-    const user = await Account.findById(id);
+    const user = await Account.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'No user found' });
+    }
     // Get the account linked to the internal account
-    const prs = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'pr' });
-    return res.status(200).send(prs);
+    const prs = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'pr', projectId });
+    const result = { total: prs.length, prs };
+    return res.status(200).send(result);
   } catch (error) {
     return res.json({ error });
   }
