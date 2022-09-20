@@ -3,6 +3,7 @@ import { Account } from '../../models/account.js';
 import { ActivityHistory } from '../../models/activityHistory.js';
 import { Member } from '../../models/member.js';
 import { GithubConfig } from '../../models/githubConfig.js';
+import { Project } from '../../models/project.js';
 
 async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
   const octokit = new Octokit({
@@ -56,12 +57,14 @@ async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
 }
 
 async function getPRs(req, res) {
-  const { projectId } = req.query;
-  const githubConfig = await GithubConfig.findOne({ projectId });
+  const { projectName } = req.params;
+  const githubConfig = await GithubConfig.findOne({ name: projectName }).populate('projectId');
   if (!githubConfig) {
     return res.status(404).json({ message: 'No github config found' });
   }
-  const { accessToken, owner, repo } = githubConfig;
+  const {
+    accessToken, owner, repo, projectId,
+  } = githubConfig;
   await getLatestGithubActivity(owner, repo, accessToken, projectId);
   try {
     const prs = await ActivityHistory.find({ projectId, action: 'pr' });
@@ -81,12 +84,14 @@ async function getPRs(req, res) {
 }
 
 async function getCommits(req, res) {
-  const { projectId } = req.query;
-  const githubConfig = await GithubConfig.findOne({ projectId });
+  const { projectName } = req.params;
+  const githubConfig = await GithubConfig.findOne({ name: projectName }).populate('projectId');
   if (!githubConfig) {
     return res.status(404).json({ message: 'No github config found' });
   }
-  const { accessToken, owner, repo } = githubConfig;
+  const {
+    accessToken, owner, repo, projectId,
+  } = githubConfig;
   await getLatestGithubActivity(owner, repo, accessToken, projectId);
   try {
     const commits = await ActivityHistory.find({ projectId, action: 'commit' });
@@ -106,10 +111,12 @@ async function getCommits(req, res) {
 }
 
 async function getCommitsByAccount(req, res) {
-  const { projectId } = req.query;
-  const { username } = req.params;
+  const { username, projectName } = req.params;
   try {
-    // Get the internal account from id
+    const projectId = await Project.findOne({ name: projectName });
+    if (!projectId) {
+      return res.status(404).json({ message: 'No project found' });
+    }
     const user = await Account.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: 'No user found' });
@@ -124,10 +131,12 @@ async function getCommitsByAccount(req, res) {
 }
 
 async function getPRsByAccount(req, res) {
-  const { projectId } = req.query;
-  const { username } = req.params;
+  const { username, projectName } = req.params;
   try {
-    // Get the internal account from id
+    const projectId = await Project.findOne({ name: projectName });
+    if (!projectId) {
+      return res.status(404).json({ message: 'No project found' });
+    }
     const user = await Account.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: 'No user found' });

@@ -5,11 +5,11 @@ import {
 
 const router = express.Router();
 /* GET pull requests */
-router.get('/pr', getPRs);
+router.get('/:projectName/commit', getPRs);
 /* GET commits */
-router.get('/commit', getCommits);
+router.get('/:projectName/pullrequest', getCommits);
 /* GET commits by account */
-router.get('/commit/:username', getCommitsByAccount);
+router.get('/:projectName/commit/:username', getCommitsByAccount);
 /* GET pull requests by account */
-router.get('/pr/:username', getPRsByAccount);
+router.get('/:projectName/pullrequest/:username', getPRsByAccount);
 export default router;
