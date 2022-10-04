@@ -6,15 +6,15 @@ import {
 const router = express.Router();
 
 /* GET project */
-router.get('/:id', get);
+router.get('/:projectName', get);
 /* POST project */
 router.post('/', create);
 /* PATCH project: Update status */
-router.patch('/:id', updateStatus);
+router.patch('/:projectName', updateStatus);
 /* PATCH project: Add phase to project */
-router.patch('/:id/phase', addPhaseToProject);
+router.patch('/:projectName/phase', addPhaseToProject);
 /* DELETE project */
-router.delete('/:id', remove);
+router.delete('/:projectName', remove);
 /* GET project members */
-router.get('/:id/member', getProjectMembers);
+router.get('/:projectName/member', getProjectMembers);
 export default router;
