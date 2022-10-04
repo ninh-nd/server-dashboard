@@ -4,6 +4,7 @@ import { ActivityHistory } from '../../models/activityHistory.js';
 import { Member } from '../../models/member.js';
 import { GithubConfig } from '../../models/githubConfig.js';
 import { Project } from '../../models/project.js';
+import { errorResponse, successResponse } from '../../utils/responseFormat.js';
 
 async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
   const octokit = new Octokit({
@@ -60,7 +61,7 @@ async function getPRs(req, res) {
   const { projectName } = req.params;
   const githubConfig = await GithubConfig.findOne({ name: projectName }).populate('projectId');
   if (!githubConfig) {
-    return res.status(404).json({ message: 'No github config found' });
+    return res.status(404).json(errorResponse('No github config found'));
   }
   const {
     accessToken, owner, repo, projectId,
@@ -77,9 +78,10 @@ async function getPRs(req, res) {
       const totalOfAnAuthor = prOfAnAuthor.length;
       individualContribution.push({ author, total: totalOfAnAuthor });
     });
-    return res.status(200).send({ total, contribution: individualContribution });
+    const data = { total, contribution: individualContribution };
+    return res.status(200).json(successResponse(data, 'Successfully retrieved PRs'));
   } catch (error) {
-    return res.json({ error });
+    return res.json(errorResponse('Error retrieving PRs'));
   }
 }
 
@@ -87,7 +89,7 @@ async function getCommits(req, res) {
   const { projectName } = req.params;
   const githubConfig = await GithubConfig.findOne({ name: projectName }).populate('projectId');
   if (!githubConfig) {
-    return res.status(404).json({ message: 'No github config found' });
+    return res.status(404).json(errorResponse('No github config found'));
   }
   const {
     accessToken, owner, repo, projectId,
@@ -104,9 +106,10 @@ async function getCommits(req, res) {
       const totalOfAnAuthor = prOfAnAuthor.length;
       individualContribution.push({ author, total: totalOfAnAuthor });
     });
-    return res.status(200).send({ total, contribution: individualContribution });
+    const data = { total, contribution: individualContribution };
+    return res.status(200).json(successResponse(data, 'Successfully retrieved commits'));
   } catch (error) {
-    return res.json({ error });
+    return res.json(errorResponse('Error retrieving commits'));
   }
 }
 
@@ -115,18 +118,18 @@ async function getCommitsByAccount(req, res) {
   try {
     const projectId = await Project.findOne({ name: projectName });
     if (!projectId) {
-      return res.status(404).json({ message: 'No project found' });
+      return res.status(404).json(errorResponse('No project found'));
     }
     const user = await Account.findOne({ username });
     if (!user) {
-      return res.status(404).json({ message: 'No user found' });
+      return res.status(404).json(errorResponse('No user found'));
     }
     // Get the account linked to the internal account
     const commits = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'commit', projectId });
     const result = { total: commits.length, commits };
-    return res.status(200).send(result);
+    return res.status(200).json(successResponse(result, 'Successfully retrieved commits'));
   } catch (error) {
-    return res.json({ error });
+    return res.json(errorResponse('Error retrieving commits'));
   }
 }
 
@@ -135,18 +138,18 @@ async function getPRsByAccount(req, res) {
   try {
     const projectId = await Project.findOne({ name: projectName });
     if (!projectId) {
-      return res.status(404).json({ message: 'No project found' });
+      return res.status(404).json(errorResponse('No project found'));
     }
     const user = await Account.findOne({ username });
     if (!user) {
-      return res.status(404).json({ message: 'No user found' });
+      return res.status(404).json(errorResponse('No user found'));
     }
     // Get the account linked to the internal account
     const prs = await ActivityHistory.find({ createdBy: user.thirdParty[0].username, action: 'pr', projectId });
     const result = { total: prs.length, prs };
-    return res.status(200).send(result);
+    return res.status(200).json(successResponse(result, 'Successfully retrieved PRs'));
   } catch (error) {
-    return res.json({ error });
+    return res.json(errorResponse('Error retrieving PRs'));
   }
 }
 
