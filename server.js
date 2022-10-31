@@ -10,6 +10,7 @@ import phaseRoute from './routes/resources/phase.js';
 import memberRoute from './routes/resources/member.js';
 import activityRoute from './routes/resources/activityHistory.js';
 import pmRoute from './routes/resources/projectManager.js';
+import accountRoute from './routes/auth/account.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('Connected to MongoDB'));
 
+app.use('/v1/account', accountRoute);
 app.use('/v1/task', taskRoute);
 app.use('/v1/thirdParty', thirdPartyRoute);
 app.use('/v1/member', memberRoute);
