@@ -16,7 +16,7 @@ const port = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000'
+  origin: 'http://localhost:5173',
 }));
 app.use(morgan('dev'));
 mongoose.connect(process.env.MONGO_URI, {
