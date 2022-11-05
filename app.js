@@ -13,7 +13,7 @@ import accountRoute from './routes/auth/account.js';
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://client-dashboard.up.railway.app'],
 }));
 app.use(morgan('dev'));
 app.get('/', (req, res) => {
