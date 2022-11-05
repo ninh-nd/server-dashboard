@@ -23,9 +23,6 @@ jobs:
       - name: Install packages
         run: pnpm install --frozen-lockfile
 
-      - name: Testing
-        run: npm test
-
       - name: Install Railway
         run: npm install -g @railway/cli
 
