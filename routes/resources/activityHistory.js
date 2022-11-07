@@ -5,9 +5,9 @@ import {
 
 const router = express.Router();
 /* GET pull requests */
-router.get('/:projectName/commit', getPRs);
+router.get('/:projectName/commit', getCommits);
 /* GET commits */
-router.get('/:projectName/pullrequest', getCommits);
+router.get('/:projectName/pullrequest', getPRs);
 /* GET commits by account */
 router.get('/:projectName/commit/:username', getCommitsByAccount);
 /* GET pull requests by account */

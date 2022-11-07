@@ -10,20 +10,30 @@ async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
   const octokit = new Octokit({
     auth: accessToken,
   });
-  const prData = await octokit.rest.pulls.list({
-    owner,
-    repo,
-    state: 'all',
-  });
+  let prData = [];
+  let commitData = [];
+  try {
+    prData = await octokit.rest.pulls.list({
+      owner,
+      repo,
+      state: 'all',
+    });
+  } catch (error) {
+    return new Error(error);
+  }
   const processedPrData = prData.data.map(({
     id, title: content, created_at: createdAt, user: { login: createdBy },
   }) => ({
     id, action: 'pr', content, createdAt, createdBy, projectId,
   }));
-  const commitData = await octokit.rest.repos.listCommits({
-    owner,
-    repo,
-  });
+  try {
+    commitData = await octokit.rest.repos.listCommits({
+      owner,
+      repo,
+    });
+  } catch (error) {
+    return new Error(error);
+  }
   const processedCommitData = commitData.data.map(({
     sha: id, commit:
     { message: content, author: { name: createdBy, date: createdAt } },
@@ -66,7 +76,10 @@ async function getPRs(req, res) {
   const {
     accessToken, owner, repo, projectId,
   } = githubConfig;
-  await getLatestGithubActivity(owner, repo, accessToken, projectId);
+  const result = await getLatestGithubActivity(owner, repo, accessToken, projectId);
+  if (result instanceof Error) {
+    return res.json(errorResponse(`Error retrieving PRs: ${result.message}`));
+  }
   try {
     const prs = await ActivityHistory.find({ projectId, action: 'pr' });
     const total = prs.length;
@@ -94,7 +107,10 @@ async function getCommits(req, res) {
   const {
     accessToken, owner, repo, projectId,
   } = githubConfig;
-  await getLatestGithubActivity(owner, repo, accessToken, projectId);
+  const result = await getLatestGithubActivity(owner, repo, accessToken, projectId);
+  if (result instanceof Error) {
+    return res.json(errorResponse(`Error retrieving commits: ${result.message}`));
+  }
   try {
     const commits = await ActivityHistory.find({ projectId, action: 'commit' });
     const total = commits.length;
