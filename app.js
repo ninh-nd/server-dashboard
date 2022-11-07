@@ -19,7 +19,7 @@ app.use(cors({
 app.use(morgan('dev'));
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 5, // limit each IP to 5 requests per windowMs
+  max: 150, // limit each IP to 150 requests per windowMs
 });
 app.use(limiter);
 app.get('/', (req, res) => {
