@@ -6,7 +6,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import accountRoute from './routes/auth/account.js';
+import accountRoute from './src/routes/auth/account.js';
 
 const app = express();
 const port = 5000;
@@ -14,7 +14,7 @@ const port = 5000;
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000'
+  origin: 'http://localhost:3000',
 }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 

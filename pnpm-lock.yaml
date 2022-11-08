@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@babel/preset-env': ^7.20.2
+  '@types/jest': ^29.2.2
   bcrypt: ^5.0.1
   connect-mongo: ^4.6.0
   cookie-parser: ^1.4.6
@@ -37,6 +38,7 @@ dependencies:
 
 devDependencies:
   '@babel/preset-env': 7.20.2_@babel+core@7.20.2
+  '@types/jest': 29.2.2
   eslint: 8.23.1
   eslint-config-airbnb-base: 15.0.0_hdzsmr7kawaomymueo2tso6fjq
   eslint-plugin-import: 2.26.0_eslint@8.23.1
@@ -1942,6 +1944,13 @@ packages:
     resolution: {integrity: sha512-c3mAZEuK0lvBp8tmuL74XRKn1+y2dcwOUpH7x4WrF6gk1GIgiluDRgMYQtw2OFcBvAJWlt6ASU3tSqxp0Uu0Aw==}
     dependencies:
       '@types/istanbul-lib-report': 3.0.0
+    dev: true
+
+  /@types/jest/29.2.2:
+    resolution: {integrity: sha512-og1wAmdxKoS71K2ZwSVqWPX6OVn3ihZ6ZT2qvZvZQm90lJVDyXIjYcu4Khx2CNIeaFv12rOU/YObOsI3VOkzog==}
+    dependencies:
+      expect: 29.2.2
+      pretty-format: 29.2.1
     dev: true
 
   /@types/json5/0.0.29:
