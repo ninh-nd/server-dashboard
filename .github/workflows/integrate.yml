@@ -26,6 +26,9 @@ jobs:
         
       - name: Run tests
         run: npm test
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          
   codeql_analysis:
     runs-on: ubuntu-latest
     permissions:
