@@ -5,13 +5,17 @@ import { Member } from '../../models/member.js';
 import { GithubConfig } from '../../models/githubConfig.js';
 import { Project } from '../../models/project.js';
 import { errorResponse, successResponse } from '../../utils/responseFormat.js';
+import { DEFAULT_TTL, redisClient } from '../../../redis.js';
 
-async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
+async function getGithubPull(owner, repo, accessToken, projectId) {
+  const cache = await redisClient.get(`github-pr-${repo}`);
+  if (cache) {
+    return true;
+  }
   const octokit = new Octokit({
     auth: accessToken,
   });
   let prData = [];
-  let commitData = [];
   try {
     prData = await octokit.rest.pulls.list({
       owner,
@@ -21,28 +25,15 @@ async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
   } catch (error) {
     return new Error(error);
   }
+  await redisClient.setEx(`github-pr-${repo}`, DEFAULT_TTL, JSON.stringify(prData));
   const processedPrData = prData.data.map(({
     id, title: content, created_at: createdAt, user: { login: createdBy },
   }) => ({
     id, action: 'pr', content, createdAt, createdBy, projectId,
   }));
   try {
-    commitData = await octokit.rest.repos.listCommits({
-      owner,
-      repo,
-    });
-  } catch (error) {
-    return new Error(error);
-  }
-  const processedCommitData = commitData.data.map(({
-    sha: id, commit:
-    { message: content, author: { name: createdBy, date: createdAt } },
-  }) => ({
-    id, action: 'commit', content, createdAt, createdBy, projectId,
-  }));
-  try {
     await ActivityHistory.insertMany(
-      [...processedPrData, ...processedCommitData],
+      [...processedPrData],
       { ordered: false },
     );
     // Add history to each member in the project
@@ -62,8 +53,59 @@ async function getLatestGithubActivity(owner, repo, accessToken, projectId) {
       );
     });
     return true;
-  } catch (err) {
-    return false;
+  } catch (error) {
+    return new Error(error);
+  }
+}
+
+async function getGithubCommits(owner, repo, accessToken, projectId) {
+  const cache = await redisClient.get(`github-commit-${repo}`);
+  if (cache) {
+    return true;
+  }
+  const octokit = new Octokit({
+    auth: accessToken,
+  });
+  let commitData = [];
+  try {
+    commitData = await octokit.rest.repos.listCommits({
+      owner,
+      repo,
+    });
+  } catch (error) {
+    return new Error(error);
+  }
+  await redisClient.setEx(`github-commit-${repo}`, DEFAULT_TTL, JSON.stringify(commitData));
+  const processedCommitData = commitData.data.map(({
+    sha: id, commit:
+    { message: content, author: { name: createdBy, date: createdAt } },
+  }) => ({
+    id, action: 'commit', content, createdAt, createdBy, projectId,
+  }));
+  try {
+    await ActivityHistory.insertMany(
+      [...processedCommitData],
+      { ordered: false },
+    );
+    // Add history to each member in the project
+    const history = await ActivityHistory.find({ projectId });
+    const members = await Member.find({ projectIn: projectId });
+    members.forEach(async (member) => {
+      // Temporary solution as Github is the only third party
+      const account = await Account.findById(member.account);
+      const thirdPartyUsername = account.thirdParty[0].username;
+      const memberHistory = history.filter(
+        ({ createdBy }) => createdBy === thirdPartyUsername,
+      );
+      await Member.findByIdAndUpdate(
+        member._id,
+        { $addToSet: { activityHistory: memberHistory } },
+        { new: true },
+      );
+    });
+    return true;
+  } catch (error) {
+    return new Error(error);
   }
 }
 
@@ -76,7 +118,7 @@ async function getPRs(req, res) {
   const {
     accessToken, owner, repo, projectId,
   } = githubConfig;
-  const result = await getLatestGithubActivity(owner, repo, accessToken, projectId);
+  const result = await getGithubPull(owner, repo, accessToken, projectId);
   if (result instanceof Error) {
     return res.json(errorResponse(`Error retrieving PRs: ${result.message}`));
   }
@@ -107,7 +149,7 @@ async function getCommits(req, res) {
   const {
     accessToken, owner, repo, projectId,
   } = githubConfig;
-  const result = await getLatestGithubActivity(owner, repo, accessToken, projectId);
+  const result = await getGithubCommits(owner, repo, accessToken, projectId);
   if (result instanceof Error) {
     return res.json(errorResponse(`Error retrieving commits: ${result.message}`));
   }
