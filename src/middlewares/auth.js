@@ -1,7 +1,10 @@
-import jwt from 'jsonwebtoken';
+import { errorResponse } from '../utils/responseFormat';
 
-const auth = async (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  const data = jwt.verify(token, process.env.JWT_SECRET);
-  // TODO...
-};
+function checkAuth(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.status(401).send(errorResponse('Unauthorized'));
+}
+
+export default checkAuth;
