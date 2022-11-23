@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/middlewares/auth.ts"],
+  "sourcesContent": ["import { NextFunction, Response, Request } from 'express'\nimport { errorResponse } from '../utils/responseFormat'\n\nfunction checkAuth (req: Request, res: Response, next: NextFunction) {\n  if (req.isAuthenticated()) {\n    return next()\n  }\n  return res.status(401).send(errorResponse('Unauthorized'))\n}\n\nexport default checkAuth\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,4BAA8B;AAE9B,SAAS,UAAW,KAAc,KAAe,MAAoB;AACnE,MAAI,IAAI,gBAAgB,GAAG;AACzB,WAAO,KAAK;AAAA,EACd;AACA,SAAO,IAAI,OAAO,GAAG,EAAE,SAAK,qCAAc,cAAc,CAAC;AAC3D;AAEA,IAAO,eAAQ;",
+  "names": []
+}

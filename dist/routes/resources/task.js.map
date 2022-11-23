@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/routes/resources/task.ts"],
+  "sourcesContent": ["import express from 'express'\nimport {\n  get, getAll, create, update, remove\n} from '../../controllers/resources/task.controller'\n\nconst router = express.Router()\n\n/* GET all tasks */\nrouter.get('/', getAll)\n/* GET task */\nrouter.get('/:id', get)\n/* POST task */\nrouter.post('/', create)\n/* PUT task */\nrouter.put('/:id', update)\n/* DELETE task */\nrouter.delete('/:id', remove)\n\nexport default router\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,kBAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAG9B,OAAO,IAAI,KAAK,kBAAM;AAEtB,OAAO,IAAI,QAAQ,eAAG;AAEtB,OAAO,KAAK,KAAK,kBAAM;AAEvB,OAAO,IAAI,QAAQ,kBAAM;AAEzB,OAAO,OAAO,QAAQ,kBAAM;AAE5B,IAAO,eAAQ;",
+  "names": ["express"]
+}

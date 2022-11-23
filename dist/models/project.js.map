@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/models/project.ts"],
+  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { IProject } from './interfaces'\n\nconst projectSchema = new Schema<IProject>({\n  name: {\n    type: String,\n    required: true\n  },\n  url: String,\n  status: {\n    type: String,\n    enum: ['active', 'inactive'],\n    default: 'active'\n  },\n  description: String,\n  startDate: Date,\n  endDate: Date,\n  createdBy: String,\n  updatedBy: String,\n  phaseList: [{\n    type: Schema.Types.ObjectId,\n    ref: 'Phase',\n    default: []\n  }]\n}, { timestamps: true })\nconst Project: Model<IProject> = model('Project', projectSchema)\n\nexport {\n  Project,\n  projectSchema\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,gBAAgB,IAAI,uBAAiB;AAAA,EACzC,MAAM;AAAA,IACJ,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,KAAK;AAAA,EACL,QAAQ;AAAA,IACN,MAAM;AAAA,IACN,MAAM,CAAC,UAAU,UAAU;AAAA,IAC3B,SAAS;AAAA,EACX;AAAA,EACA,aAAa;AAAA,EACb,WAAW;AAAA,EACX,SAAS;AAAA,EACT,WAAW;AAAA,EACX,WAAW;AAAA,EACX,WAAW,CAAC;AAAA,IACV,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,SAAS,CAAC;AAAA,EACZ,CAAC;AACH,GAAG,EAAE,YAAY,KAAK,CAAC;AACvB,MAAM,cAA2B,uBAAM,WAAW,aAAa;",
+  "names": []
+}

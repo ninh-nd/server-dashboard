@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/models/activityHistory.ts"],
+  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { IActivityHistory } from './interfaces'\n\nconst activityHistorySchema = new Schema<IActivityHistory>({\n  id: {\n    type: String,\n    required: true\n  },\n  action: {\n    type: String,\n    required: true\n  },\n  content: {\n    type: String,\n    required: true\n  },\n  createdBy: String,\n  updatedBy: String,\n  projectId: {\n    type: Schema.Types.ObjectId,\n    ref: 'Project'\n  }\n}, { timestamps: true })\nconst ActivityHistory: Model<IActivityHistory> = model('ActivityHistory', activityHistorySchema)\n\nexport {\n  ActivityHistory,\n  activityHistorySchema\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,wBAAwB,IAAI,uBAAyB;AAAA,EACzD,IAAI;AAAA,IACF,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,QAAQ;AAAA,IACN,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,SAAS;AAAA,IACP,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,WAAW;AAAA,EACX,WAAW;AAAA,EACX,WAAW;AAAA,IACT,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,EACP;AACF,GAAG,EAAE,YAAY,KAAK,CAAC;AACvB,MAAM,sBAA2C,uBAAM,mBAAmB,qBAAqB;",
+  "names": []
+}

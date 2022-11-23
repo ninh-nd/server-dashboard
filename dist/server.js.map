@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/server.ts"],
+  "sourcesContent": ["import 'dotenv/config'\nimport mongoose from 'mongoose'\nimport app from './app'\nimport { redisClient } from './redis.js'\n\nconst port = process.env.PORT || 3001\nif (!process.env.MONGO_URI) {\n  throw new Error('MONGO_URI must be defined')\n}\nmongoose.connect(process.env.MONGO_URI)\nconst connect = async () => { await redisClient.connect() }\nconnect()\napp.listen(port)\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA,oBAAO;AACP,sBAAqB;AACrB,iBAAgB;AAChB,mBAA4B;AAE5B,MAAM,OAAO,QAAQ,IAAI,QAAQ;AACjC,IAAI,CAAC,QAAQ,IAAI,WAAW;AAC1B,QAAM,IAAI,MAAM,2BAA2B;AAC7C;AACA,gBAAAA,QAAS,QAAQ,QAAQ,IAAI,SAAS;AACtC,MAAM,UAAU,YAAY;AAAE,QAAM,yBAAY,QAAQ;AAAE;AAC1D,QAAQ;AACR,WAAAC,QAAI,OAAO,IAAI;",
+  "names": ["mongoose", "app"]
+}

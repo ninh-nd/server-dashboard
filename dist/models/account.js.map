@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/models/account.ts"],
+  "sourcesContent": ["import { model, Schema, Model } from 'mongoose'\nimport { IAccount } from './interfaces'\nimport { thirdPartySchema } from './thirdParty.js'\n\nconst accountSchema = new Schema<IAccount>({\n  username: {\n    type: String,\n    required: true\n  },\n  password: {\n    type: String,\n    required: true\n  },\n  email: {\n    type: String,\n    required: true,\n    lowercase: true\n  },\n  thirdParty: [{\n    type: thirdPartySchema,\n    default: []\n  }]\n})\nconst Account: Model<IAccount> = model('Account', accountSchema)\n\nexport {\n  Account,\n  accountSchema\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAErC,wBAAiC;AAEjC,MAAM,gBAAgB,IAAI,uBAAiB;AAAA,EACzC,UAAU;AAAA,IACR,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,UAAU;AAAA,IACR,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,OAAO;AAAA,IACL,MAAM;AAAA,IACN,UAAU;AAAA,IACV,WAAW;AAAA,EACb;AAAA,EACA,YAAY,CAAC;AAAA,IACX,MAAM;AAAA,IACN,SAAS,CAAC;AAAA,EACZ,CAAC;AACH,CAAC;AACD,MAAM,cAA2B,uBAAM,WAAW,aAAa;",
+  "names": []
+}

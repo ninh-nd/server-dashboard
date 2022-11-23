@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/routes/resources/project.ts"],
+  "sourcesContent": ["import express from 'express'\nimport {\n  get, create, updateStatus, addPhaseToProject, remove, getProjectMembers\n} from '../../controllers/resources/project.controller'\n\nconst router = express.Router()\n\n/* GET project */\nrouter.get('/:projectName', get)\n/* POST project */\nrouter.post('/', create)\n/* PATCH project: Update status */\nrouter.patch('/:projectName', updateStatus)\n/* PATCH project: Add phase to project */\nrouter.patch('/:projectName/phase', addPhaseToProject)\n/* DELETE project */\nrouter.delete('/:projectName', remove)\n/* GET project members */\nrouter.get('/:projectName/member', getProjectMembers)\nexport default router\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,qBAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAG9B,OAAO,IAAI,iBAAiB,kBAAG;AAE/B,OAAO,KAAK,KAAK,qBAAM;AAEvB,OAAO,MAAM,iBAAiB,2BAAY;AAE1C,OAAO,MAAM,uBAAuB,gCAAiB;AAErD,OAAO,OAAO,iBAAiB,qBAAM;AAErC,OAAO,IAAI,wBAAwB,gCAAiB;AACpD,IAAO,kBAAQ;",
+  "names": ["express"]
+}

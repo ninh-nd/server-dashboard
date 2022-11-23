@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/utils/responseFormat.ts"],
+  "sourcesContent": ["export const errorResponse = (message: string) => ({\n  status: 'error',\n  data: null,\n  message\n})\n\nexport const successResponse = (data: any, message: string) => ({\n  status: 'success',\n  data,\n  message\n})\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,MAAM,gBAAgB,CAAC,aAAqB;AAAA,EACjD,QAAQ;AAAA,EACR,MAAM;AAAA,EACN;AACF;AAEO,MAAM,kBAAkB,CAAC,MAAW,aAAqB;AAAA,EAC9D,QAAQ;AAAA,EACR;AAAA,EACA;AACF;",
+  "names": []
+}

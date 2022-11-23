@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/routes/resources/activityHistory.ts"],
+  "sourcesContent": ["import express from 'express'\nimport {\n  getPRs, getCommits, getCommitsByAccount, getPRsByAccount\n} from '../../controllers/resources/activityHistory.controller'\n\nconst router = express.Router()\n/* GET pull requests */\nrouter.get('/:projectName/commit', getCommits)\n/* GET commits */\nrouter.get('/:projectName/pullrequest', getPRs)\n/* GET commits by account */\nrouter.get('/:projectName/commit/:username', getCommitsByAccount)\n/* GET pull requests by account */\nrouter.get('/:projectName/pullrequest/:username', getPRsByAccount)\nexport default router\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,6BAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAE9B,OAAO,IAAI,wBAAwB,iCAAU;AAE7C,OAAO,IAAI,6BAA6B,6BAAM;AAE9C,OAAO,IAAI,kCAAkC,0CAAmB;AAEhE,OAAO,IAAI,uCAAuC,sCAAe;AACjE,IAAO,0BAAQ;",
+  "names": ["express"]
+}

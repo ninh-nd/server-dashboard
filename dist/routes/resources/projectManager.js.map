@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/routes/resources/projectManager.ts"],
+  "sourcesContent": ["import express from 'express'\nimport {\n  get, create, update, remove, addProjectOwn, getProjectOwn\n} from '../../controllers/resources/projectManager.controller'\n\nconst router = express.Router()\n/* GET project manager */\nrouter.get('/:id', get)\n/* POST project manager */\nrouter.post('/', create)\n/* PUT project manager */\nrouter.put('/:id', update)\n/* DELETE project manager */\nrouter.delete('/:id', remove)\n/* PATCH project manager: Add project to project manager */\nrouter.patch('/:id/project', addProjectOwn)\n/* GET project manager projects */\nrouter.get('/:id/project', getProjectOwn)\nexport default router\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,4BAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAE9B,OAAO,IAAI,QAAQ,yBAAG;AAEtB,OAAO,KAAK,KAAK,4BAAM;AAEvB,OAAO,IAAI,QAAQ,4BAAM;AAEzB,OAAO,OAAO,QAAQ,4BAAM;AAE5B,OAAO,MAAM,gBAAgB,mCAAa;AAE1C,OAAO,IAAI,gBAAgB,mCAAa;AACxC,IAAO,yBAAQ;",
+  "names": ["express"]
+}

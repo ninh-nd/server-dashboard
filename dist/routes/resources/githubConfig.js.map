@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/routes/resources/githubConfig.ts"],
+  "sourcesContent": ["import express from 'express'\nimport { get, create, update } from '../../controllers/resources/githubConfig.controller'\n\nconst router = express.Router()\n/* GET github config */\nrouter.get('/:id', get)\n/* POST github config */\nrouter.post('/', create)\n/* PUT github config */\nrouter.put('/:id', update)\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA,qBAAoB;AACpB,0BAAoC;AAEpC,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAE9B,OAAO,IAAI,QAAQ,uBAAG;AAEtB,OAAO,KAAK,KAAK,0BAAM;AAEvB,OAAO,IAAI,QAAQ,0BAAM;",
+  "names": ["express"]
+}

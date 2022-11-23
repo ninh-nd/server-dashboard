@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/routes/resources/member.ts"],
+  "sourcesContent": ["import express from 'express'\nimport {\n  get, create, update, remove, assignTask, joinProject\n} from '../../controllers/resources/member.controller'\n\nconst router = express.Router()\n\n/* GET member */\nrouter.get('/:id', get)\n/* POST member */\nrouter.post('/', create)\n/* PUT member */\nrouter.put('/:id', update)\n/* DELETE member */\nrouter.delete('/:id', remove)\n/* PATCH member: Assign task */\nrouter.patch('/:id/assignTask', assignTask)\n/* PATCH member: Join project */\nrouter.patch('/:id/joinProject', joinProject)\nexport default router\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,oBAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAG9B,OAAO,IAAI,QAAQ,iBAAG;AAEtB,OAAO,KAAK,KAAK,oBAAM;AAEvB,OAAO,IAAI,QAAQ,oBAAM;AAEzB,OAAO,OAAO,QAAQ,oBAAM;AAE5B,OAAO,MAAM,mBAAmB,wBAAU;AAE1C,OAAO,MAAM,oBAAoB,yBAAW;AAC5C,IAAO,iBAAQ;",
+  "names": ["express"]
+}
