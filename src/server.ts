@@ -1,4 +1,4 @@
-import 'dotenv/config'
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 import mongoose from 'mongoose'
 import app from './app'
 import { redisClient } from './redis'
