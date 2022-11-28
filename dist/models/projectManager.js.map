@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/models/projectManager.ts"],
-  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { IProjectManager } from './interfaces'\n\nconst projectManagerSchema = new Schema<IProjectManager>({\n  name: {\n    type: String,\n    required: true\n  },\n  account: {\n    type: Schema.Types.ObjectId,\n    ref: 'Account',\n    required: true\n  },\n  company: String,\n  projectOwn: [{\n    type: Schema.Types.ObjectId,\n    ref: 'Project',\n    required: true\n  }]\n})\nconst ProjectManager: Model<IProjectManager> = model('ProjectManager', projectManagerSchema)\n\nexport {\n  ProjectManager,\n  projectManagerSchema\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,uBAAuB,IAAI,uBAAwB;AAAA,EACvD,MAAM;AAAA,IACJ,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,SAAS;AAAA,IACP,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,UAAU;AAAA,EACZ;AAAA,EACA,SAAS;AAAA,EACT,YAAY,CAAC;AAAA,IACX,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,UAAU;AAAA,EACZ,CAAC;AACH,CAAC;AACD,MAAM,qBAAyC,uBAAM,kBAAkB,oBAAoB;",
-  "names": []
-}

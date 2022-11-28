@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/routes/auth/account.ts"],
-  "sourcesContent": ["import express from 'express'\nimport {\n  get, create, login, changePassword, addThirdPartyToAccount\n} from '../../controllers/auth/account.controller'\n\nconst router = express.Router()\n\n// Get an account\nrouter.get('/:id', get)\n// Create an account\nrouter.post('/reg', create)\n// Login\nrouter.post('/login', login)\n// Get refresh token\n// router.post('/token', accountController.getRefreshToken);\n// Add a third party to an account\nrouter.patch('/:id/thirdParty', addThirdPartyToAccount)\n// Change password\nrouter.patch('/:id/password', changePassword)\nexport default router\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,qBAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAG9B,OAAO,IAAI,QAAQ,kBAAG;AAEtB,OAAO,KAAK,QAAQ,qBAAM;AAE1B,OAAO,KAAK,UAAU,oBAAK;AAI3B,OAAO,MAAM,mBAAmB,qCAAsB;AAEtD,OAAO,MAAM,iBAAiB,6BAAc;AAC5C,IAAO,kBAAQ;",
-  "names": ["express"]
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/routes/resources/thirdParty.ts"],
-  "sourcesContent": ["import express from 'express'\nimport {\n  getAll, get, create, update, remove\n} from '../../controllers/resources/thirdParty.controller'\n\nconst router = express.Router()\n\n/* GET all third parties */\nrouter.get('/', getAll)\n/* GET third party */\nrouter.get('/:id', get)\n/* POST third party */\nrouter.post('/', create)\n/* PUT third party */\nrouter.put('/:id', update)\n/* DELETE third party */\nrouter.delete('/:id', remove)\n\nexport default router\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,wBAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAG9B,OAAO,IAAI,KAAK,wBAAM;AAEtB,OAAO,IAAI,QAAQ,qBAAG;AAEtB,OAAO,KAAK,KAAK,wBAAM;AAEvB,OAAO,IAAI,QAAQ,wBAAM;AAEzB,OAAO,OAAO,QAAQ,wBAAM;AAE5B,IAAO,qBAAQ;",
-  "names": ["express"]
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/models/phase.ts"],
-  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { IPhase } from './interfaces'\n\nconst phaseSchema = new Schema<IPhase>({\n  name: {\n    type: String,\n    required: true\n  },\n  description: String,\n  previousId: {\n    type: Schema.Types.ObjectId,\n    ref: 'Phase'\n  },\n  nextId: {\n    type: Schema.Types.ObjectId,\n    ref: 'Phase'\n  },\n  tasks: [{\n    type: Schema.Types.ObjectId,\n    ref: 'Task',\n    default: []\n  }],\n  createdBy: String,\n  updatedBy: String\n}, { timestamps: true })\nconst Phase: Model<IPhase> = model('Phase', phaseSchema)\n\nexport {\n  Phase,\n  phaseSchema\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,cAAc,IAAI,uBAAe;AAAA,EACrC,MAAM;AAAA,IACJ,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,aAAa;AAAA,EACb,YAAY;AAAA,IACV,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,EACP;AAAA,EACA,QAAQ;AAAA,IACN,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,EACP;AAAA,EACA,OAAO,CAAC;AAAA,IACN,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,SAAS,CAAC;AAAA,EACZ,CAAC;AAAA,EACD,WAAW;AAAA,EACX,WAAW;AACb,GAAG,EAAE,YAAY,KAAK,CAAC;AACvB,MAAM,YAAuB,uBAAM,SAAS,WAAW;",
-  "names": []
-}

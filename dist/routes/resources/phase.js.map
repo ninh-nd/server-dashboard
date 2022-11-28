@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/routes/resources/phase.ts"],
-  "sourcesContent": ["import express from 'express'\nimport {\n  get, create, update, remove, addTaskToPhase\n} from '../../controllers/resources/phase.controller'\n\nconst router = express.Router()\n\n/* GET phase */\nrouter.get('/:id', get)\n/* POST phase */\nrouter.post('/', create)\n/* PUT phase */\nrouter.put('/:id', update)\n/* DELETE phase */\nrouter.delete('/:id', remove)\n/* PATCH phase: Add task to a phase */\nrouter.patch('/:id/task', addTaskToPhase)\nexport default router\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,mBAEO;AAEP,MAAM,SAAS,eAAAA,QAAQ,OAAO;AAG9B,OAAO,IAAI,QAAQ,gBAAG;AAEtB,OAAO,KAAK,KAAK,mBAAM;AAEvB,OAAO,IAAI,QAAQ,mBAAM;AAEzB,OAAO,OAAO,QAAQ,mBAAM;AAE5B,OAAO,MAAM,aAAa,2BAAc;AACxC,IAAO,gBAAQ;",
-  "names": ["express"]
-}

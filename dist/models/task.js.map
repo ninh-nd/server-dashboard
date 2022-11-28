@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/models/task.ts"],
-  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { ITask } from './interfaces'\n\nconst taskSchema = new Schema<ITask>({\n  name: {\n    type: String,\n    required: true\n  },\n  status: {\n    type: String,\n    default: 'active'\n  },\n  description: {\n    type: String,\n    required: true\n  },\n  createdBy: String,\n  updatedBy: String\n}, { timestamps: true })\nconst Task: Model<ITask> = model('Task', taskSchema)\n\nexport {\n  Task,\n  taskSchema\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,aAAa,IAAI,uBAAc;AAAA,EACnC,MAAM;AAAA,IACJ,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,QAAQ;AAAA,IACN,MAAM;AAAA,IACN,SAAS;AAAA,EACX;AAAA,EACA,aAAa;AAAA,IACX,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,WAAW;AAAA,EACX,WAAW;AACb,GAAG,EAAE,YAAY,KAAK,CAAC;AACvB,MAAM,WAAqB,uBAAM,QAAQ,UAAU;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/redis.ts"],
-  "sourcesContent": ["import { createClient } from 'redis'\nimport 'dotenv/config'\nconst redisClient = createClient({ url: process.env.REDIS_URI })\nconst DEFAULT_TTL = 60 * 60 * 24 // 1 day\n\nexport {\n  redisClient,\n  DEFAULT_TTL\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAA6B;AAC7B,oBAAO;AACP,MAAM,kBAAc,2BAAa,EAAE,KAAK,QAAQ,IAAI,UAAU,CAAC;AAC/D,MAAM,cAAc,KAAK,KAAK;",
-  "names": []
-}

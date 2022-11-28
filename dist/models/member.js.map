@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/models/member.ts"],
-  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { IMember } from './interfaces'\n\nconst memberSchema = new Schema<IMember>({\n  name: {\n    type: String,\n    required: true\n  },\n  account: {\n    type: Schema.Types.ObjectId,\n    ref: 'Account'\n  },\n  company: String,\n  taskAssigned: [{\n    type: Schema.Types.ObjectId,\n    ref: 'Task',\n    default: []\n  }],\n  activityHistory: [{\n    type: Schema.Types.ObjectId,\n    ref: 'ActivityHistory',\n    default: []\n  }],\n  projectIn: [{\n    type: Schema.Types.ObjectId,\n    ref: 'Project',\n    default: []\n  }]\n})\nconst Member: Model<IMember> = model('Member', memberSchema)\n\nexport {\n  Member,\n  memberSchema\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,eAAe,IAAI,uBAAgB;AAAA,EACvC,MAAM;AAAA,IACJ,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,SAAS;AAAA,IACP,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,EACP;AAAA,EACA,SAAS;AAAA,EACT,cAAc,CAAC;AAAA,IACb,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,SAAS,CAAC;AAAA,EACZ,CAAC;AAAA,EACD,iBAAiB,CAAC;AAAA,IAChB,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,SAAS,CAAC;AAAA,EACZ,CAAC;AAAA,EACD,WAAW,CAAC;AAAA,IACV,MAAM,uBAAO,MAAM;AAAA,IACnB,KAAK;AAAA,IACL,SAAS,CAAC;AAAA,EACZ,CAAC;AACH,CAAC;AACD,MAAM,aAAyB,uBAAM,UAAU,YAAY;",
-  "names": []
-}

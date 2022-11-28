@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/models/thirdParty.ts"],
-  "sourcesContent": ["import { Schema, Model, model } from 'mongoose'\nimport { IThirdParty } from './interfaces'\n\nconst thirdPartySchema = new Schema<IThirdParty>({\n  name: {\n    type: String,\n    required: true\n  },\n  username: {\n    type: String,\n    required: true\n  },\n  url: {\n    type: String,\n    required: true\n  }\n})\nconst ThirdParty: Model<IThirdParty> = model('ThirdParty', thirdPartySchema)\nexport {\n  ThirdParty,\n  thirdPartySchema\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqC;AAGrC,MAAM,mBAAmB,IAAI,uBAAoB;AAAA,EAC/C,MAAM;AAAA,IACJ,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,UAAU;AAAA,IACR,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AAAA,EACA,KAAK;AAAA,IACH,MAAM;AAAA,IACN,UAAU;AAAA,EACZ;AACF,CAAC;AACD,MAAM,iBAAiC,uBAAM,cAAc,gBAAgB;",
-  "names": []
-}
