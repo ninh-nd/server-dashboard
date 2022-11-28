@@ -48,6 +48,7 @@ export interface ITask {
   updatedBy?: string
   createdAt: Date
   updatedAt: Date
+  projectName: string
 }
 
 export interface IProject {

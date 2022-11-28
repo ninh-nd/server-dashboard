@@ -8,14 +8,19 @@ const taskSchema = new Schema<ITask>({
   },
   status: {
     type: String,
-    default: 'active'
+    default: 'active',
+    enum: ['active', 'completed']
   },
   description: {
     type: String,
     required: true
   },
   createdBy: String,
-  updatedBy: String
+  updatedBy: String,
+  projectName: {
+    type: String,
+    required: true
+  }
 }, { timestamps: true })
 const Task: Model<ITask> = model('Task', taskSchema)
 

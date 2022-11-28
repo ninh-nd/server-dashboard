@@ -2,7 +2,7 @@ import { Member } from '../../models/member'
 import { errorResponse, successResponse } from '../../utils/responseFormat'
 import { Request, Response } from 'express'
 import { CallbackError, Document } from 'mongoose'
-async function get (req: Request, res: Response) {
+async function get(req: Request, res: Response) {
   try {
     const member = await Member.findById(req.params.id).populate('activityHistory')
     return res.status(200).json(successResponse(member, 'Member found'))
@@ -11,7 +11,7 @@ async function get (req: Request, res: Response) {
   }
 }
 
-async function create (req: Request, res: Response) {
+async function create(req: Request, res: Response) {
   try {
     const member = await Member.create(req.body)
     return res.status(200).json(successResponse(member, 'Member created'))
@@ -20,7 +20,7 @@ async function create (req: Request, res: Response) {
   }
 }
 
-async function update (req: Request, res: Response) {
+async function update(req: Request, res: Response) {
   try {
     const member = await Member.findByIdAndUpdate(req.params.id, req.body, { new: true })
     return res.status(200).json(successResponse(member, 'Member updated'))
@@ -29,7 +29,7 @@ async function update (req: Request, res: Response) {
   }
 }
 
-async function remove (req: Request, res: Response) {
+async function remove(req: Request, res: Response) {
   Member.findByIdAndDelete(req.params.id, (err: CallbackError, doc: Document) => {
     if (err != null) {
       return res.status(500).json(errorResponse('Internal server error'))
@@ -41,7 +41,7 @@ async function remove (req: Request, res: Response) {
   })
 }
 
-async function assignTask (req: Request, res: Response) {
+async function assignTask(req: Request, res: Response) {
   try {
     // Check if task has already been assigned
     const member = await Member.findByIdAndUpdate(
@@ -56,7 +56,7 @@ async function assignTask (req: Request, res: Response) {
   }
 }
 
-async function joinProject (req: Request, res: Response) {
+async function joinProject(req: Request, res: Response) {
   try {
     // Check if project has already been added
     const member = await Member.findByIdAndUpdate(

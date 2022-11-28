@@ -8,7 +8,8 @@ const activityHistorySchema = new Schema<IActivityHistory>({
   },
   action: {
     type: String,
-    required: true
+    required: true,
+    enum: ['commit', 'pr']
   },
   content: {
     type: String,
