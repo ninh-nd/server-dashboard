@@ -1,5 +1,5 @@
 import request from 'supertest';
-import 'dotenv/config';
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 import mongoose from 'mongoose';
 import app from '../src/app';
 import { Task } from '../src/models/task';
@@ -16,7 +16,7 @@ afterAll(async () => {
 
 describe('GET /v1/task', () => {
   it('should return 200 OK', async () => {
-    const res = await request(app).get('/v1/task');
+    const res = await request(app).get('/v1/task?projectName=WP.20212.Group01');
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBeGreaterThan(0);
   });
@@ -24,7 +24,7 @@ describe('GET /v1/task', () => {
 
 describe('GET /v1/task/:id', () => {
   it('should return 200 OK', async () => {
-    const res = await request(app).get('/v1/task/62d25c4bffe67e5f6c05e02f');
+    const res = await request(app).get('/v1/task/63849861b78d4204f3f3ed26');
     expect(res.status).toBe(200);
     expect(res.body.data.name).toBe('Finish login');
   });
@@ -35,6 +35,7 @@ describe('POST /v1/task', () => {
     const newTask = {
       name: 'Test task',
       description: 'Test description',
+      projectName: 'WP.20212.Group01'
     };
     const res = await request(app).post('/v1/task').send(newTask);
     expect(res.status).toBe(201);
