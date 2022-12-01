@@ -26,7 +26,7 @@ describe('GET /v1/task/:id', () => {
   it('should return 200 OK', async () => {
     const res = await request(app).get('/v1/task/63849861b78d4204f3f3ed26');
     expect(res.status).toBe(200);
-    expect(res.body.data.name).toBe('Finish login');
+    expect(res.body.data.status).toBe('active');
   });
 });
 
