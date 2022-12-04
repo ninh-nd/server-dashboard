@@ -13,8 +13,8 @@ import activityRoute from './routes/resources/activityHistory'
 import pmRoute from './routes/resources/projectManager'
 import accountRoute from './routes/auth/account'
 import initialize from './passport-config'
-import { Account } from './models/account'
 import { Request, Response } from 'express'
+import crypto from 'crypto'
 const app = express()
 app.use(express.json())
 app.use(cors({
@@ -29,18 +29,14 @@ app.use(limiter)
 app.get('/', (req: Request, res: Response) => {
   res.send('server-dashboard API. Start using with /v1/{resource}')
 })
-// initialize(
-//   passport,
-//   (username: string) => Account.find({ username }),
-//   (id: string) => Account.findById(id)
-// )
-// app.use(session({
-//   secret: process.env.SESSION_SECRET || 'secret',
-//   resave: false,
-//   saveUninitialized: false
-// }))
-// app.use(passport.initialize())
-// app.use(passport.session())
+app.use(session({
+  secret: process.env.SESSION_SECRET || crypto.randomBytes(20).toString('hex'),
+  resave: false,
+  saveUninitialized: false
+}))
+initialize(passport)
+app.use(passport.initialize())
+app.use(passport.session())
 app.use('/v1/account', accountRoute)
 app.use('/v1/task', taskRoute)
 app.use('/v1/thirdParty', thirdPartyRoute)
