@@ -15,6 +15,8 @@ import accountRoute from './routes/auth/account'
 import initialize from './passport-config'
 import { Request, Response } from 'express'
 import crypto from 'crypto'
+import { redisClient } from './redis'
+let RedisStore = require('connect-redis')(session)
 const app = express()
 app.use(express.json())
 app.use(cors({
@@ -30,6 +32,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('server-dashboard API. Start using with /v1/{resource}')
 })
 app.use(session({
+  store: new RedisStore({ client: redisClient }),
   secret: process.env.SESSION_SECRET || crypto.randomBytes(20).toString('hex'),
   resave: false,
   saveUninitialized: false

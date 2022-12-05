@@ -122,6 +122,11 @@ async function changePassword(req: Request, res: Response) {
   return res.status(200).json(successResponse(account, 'Password changed'))
 }
 
+async function returnSession(req: Request, res: Response) {
+  const sid = req.session.id
+  return res.status(200).json(successResponse({ sid }, 'New session created'))
+}
+
 export {
-  get, getAccountRole, create, addThirdPartyToAccount, changePassword
+  get, getAccountRole, create, addThirdPartyToAccount, changePassword, returnSession
 }

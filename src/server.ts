@@ -8,6 +8,8 @@ if (!process.env.MONGO_URI) {
   throw new Error('MONGO_URI must be defined')
 }
 mongoose.connect(process.env.MONGO_URI)
-const connect = async () => { await redisClient.connect() }
-connect()
+redisClient.connect().catch((err) => {
+  console.error(err)
+})
+
 app.listen(port)
