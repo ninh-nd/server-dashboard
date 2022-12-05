@@ -9,7 +9,7 @@ import { DEFAULT_TTL, redisClient } from '../../redis'
 import { Request, Response } from 'express'
 import { Types } from 'mongoose'
 async function getGithubPull(owner: string, repo: string, accessToken: string, projectId: Types.ObjectId) {
-  const cache = await redisClient.get(`github-pr-${repo}`)
+  const cache = await redisClient.v4.get(`github-pr-${repo}`)
   if (cache) {
     return true
   }
@@ -21,7 +21,7 @@ async function getGithubPull(owner: string, repo: string, accessToken: string, p
     repo,
     state: 'all'
   })
-  await redisClient.setEx(`github-pr-${repo}`, DEFAULT_TTL, JSON.stringify(prData))
+  await redisClient.v4.setEx(`github-pr-${repo}`, DEFAULT_TTL, JSON.stringify(prData))
   const processedPrData = prData.data.map(({
     id, title: content, created_at: createdAt, user
   }) => {
@@ -61,7 +61,7 @@ async function getGithubPull(owner: string, repo: string, accessToken: string, p
 }
 
 async function getGithubCommits(owner: string, repo: string, accessToken: string, projectId: Types.ObjectId) {
-  const cache = await redisClient.get(`github-commit-${repo}`)
+  const cache = await redisClient.v4.get(`github-commit-${repo}`)
   if (cache) {
     return true
   }
@@ -72,7 +72,7 @@ async function getGithubCommits(owner: string, repo: string, accessToken: string
     owner,
     repo
   })
-  await redisClient.setEx(`github-commit-${repo}`, DEFAULT_TTL, JSON.stringify(commitData))
+  await redisClient.v4.setEx(`github-commit-${repo}`, DEFAULT_TTL, JSON.stringify(commitData))
   const processedCommitData = commitData.data.map(({ sha: id, commit }) => {
     const content = commit.message
     const createdBy = commit.author?.name
@@ -111,7 +111,7 @@ async function getGithubCommits(owner: string, repo: string, accessToken: string
 
 async function getPRs(req: Request, res: Response) {
   const { projectName } = req.params
-  const githubConfig = await GithubConfig.findOne({ name: projectName }).populate('projectId')
+  const githubConfig = await GithubConfig.findOne({ repo: projectName })
   if (githubConfig == null) {
     return res.status(404).json(errorResponse('No github config found'))
   }
@@ -144,7 +144,7 @@ async function getPRs(req: Request, res: Response) {
 
 async function getCommits(req: Request, res: Response) {
   const { projectName } = req.params
-  const githubConfig = await GithubConfig.findOne({ name: projectName }).populate('projectId')
+  const githubConfig = await GithubConfig.findOne({ repo: projectName })
   if (githubConfig == null) {
     return res.status(404).json(errorResponse('No github config found'))
   }
