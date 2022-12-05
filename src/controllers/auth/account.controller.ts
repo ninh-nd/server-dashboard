@@ -18,11 +18,31 @@ async function getRole(accountId: Types.ObjectId) {
   }
   if (projectManager != null) {
     return {
-      role: 'projectManager',
+      role: 'manager',
       id: projectManager._id
     }
   }
   return null
+}
+
+async function getAccountRole(req: Request, res: Response) {
+  const username = req.query.username
+  if (username == null) {
+    return res.status(400).json(errorResponse('Missing username'))
+  }
+  try {
+    const account = await Account.findOne({ username })
+    if (account == null) {
+      return res.status(404).json(errorResponse('Account not found'))
+    }
+    const roleObject = await getRole(account._id)
+    if (roleObject == null) {
+      return res.status(404).json(errorResponse('Role not found on this account'))
+    }
+    return res.status(200).json(successResponse(roleObject, 'Role found'))
+  } catch (error) {
+    return res.status(500).json(errorResponse('Internal server error'))
+  }
 }
 
 async function get(req: Request, res: Response) {
@@ -103,5 +123,5 @@ async function changePassword(req: Request, res: Response) {
 }
 
 export {
-  get, create, addThirdPartyToAccount, changePassword
+  get, getAccountRole, create, addThirdPartyToAccount, changePassword
 }
