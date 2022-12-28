@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2017",
     "module": "esnext",
     "allowJs": true,
     "removeComments": true,
@@ -12,7 +12,8 @@
     "outDir": "dist",
     "strict": true,
     "lib": [
-      "esnext"
+      "esnext",
+      "DOM"
     ],
     "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
