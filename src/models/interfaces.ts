@@ -71,6 +71,7 @@ export interface IPhase {
   previousId?: string
   nextId?: string
   tasks?: ITask[]
+  artifacts?: IArtifact[]
   createdBy?: string
   updatedBy?: string
   createdAt: Date
@@ -82,4 +83,59 @@ export interface IProjectManager {
   account: Types.ObjectId
   company?: string
   projectOwn: IProject[]
+}
+
+export interface ICVE {
+  cveId: string
+  description: string
+  score: number
+  severity?: string
+  cweId: string
+}
+
+export interface ICWE {
+  cweId: string
+  name: string
+  description: string
+  modesOfIntroduction: String[]
+  likelihood?: 'Low' | 'Medium' | 'High' | 'Unknown'
+  mitigation: String[]
+  consequences: String[]
+  detectionMethods: String[]
+}
+
+export interface IVulnerability {
+  cveId: string
+  vendor?: string
+  product?: string
+  version?: string
+}
+
+export interface IArtifact {
+  name: string
+  type: 'image' | 'log' | 'source code' | 'executable' | 'library'
+  content?: string
+  url?: string
+  version?: string
+  createdAt: Date
+  updatedAt: Date
+  threatList?: IThreat[]
+  vulnerabilityList?: IVulnerability[]
+}
+
+export interface IThreat {
+  name: string
+  description: string
+}
+
+export interface ITicket {
+  title: string
+  status?: 'open' | 'closed'
+  description?: string
+  priority?: 'low' | 'medium' | 'high'
+  assigner: IMember
+  assignee: IMember
+  createdAt: Date
+  updatedAt: Date
+  targetedVulnerability?: IVulnerability[]
 }
