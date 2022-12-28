@@ -127,6 +127,15 @@ async function returnSession(req: Request, res: Response) {
   return res.status(200).json(successResponse({ sid }, 'New session created'))
 }
 
+async function logout(req: Request, res: Response) {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json(errorResponse('Internal server error'))
+    }
+  })
+  return res.status(200).json(successResponse(null, 'Logged out'))
+}
+
 export {
-  get, getAccountRole, create, addThirdPartyToAccount, changePassword, returnSession
+  get, getAccountRole, create, addThirdPartyToAccount, changePassword, returnSession, logout
 }

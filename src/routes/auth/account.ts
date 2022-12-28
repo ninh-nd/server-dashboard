@@ -1,7 +1,7 @@
 import express from 'express'
 import passport from 'passport'
 import {
-  get, create, changePassword, addThirdPartyToAccount, getAccountRole, returnSession
+  get, create, changePassword, addThirdPartyToAccount, getAccountRole, returnSession, logout
 } from '../../controllers/auth/account.controller'
 
 const router = express.Router()
@@ -14,6 +14,8 @@ router.get('/:id', get)
 router.post('/reg', create)
 // Login
 router.post('/login', passport.authenticate('local'), returnSession)
+// Logout
+router.get('/logout', logout)
 // Add a third party to an account
 router.patch('/:id/thirdParty', addThirdPartyToAccount)
 // Change password
