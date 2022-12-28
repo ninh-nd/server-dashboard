@@ -33,6 +33,7 @@ specifiers:
   supertest: ^6.3.1
   ts-jest: ^29.0.3
   typescript: '*'
+  xml-js: ^1.6.11
 
 dependencies:
   bcrypt: 5.0.1
@@ -69,6 +70,7 @@ devDependencies:
   supertest: 6.3.1
   ts-jest: 29.0.3_fqa2i5xu7pniwyqvsh3zpg5zfe
   typescript: 4.9.3
+  xml-js: 1.6.11
 
 packages:
 
@@ -4705,6 +4707,10 @@ packages:
     dev: false
     optional: true
 
+  /sax/1.2.4:
+    resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
+    dev: true
+
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
     hasBin: true
@@ -5218,6 +5224,13 @@ packages:
     dependencies:
       imurmurhash: 0.1.4
       signal-exit: 3.0.7
+    dev: true
+
+  /xml-js/1.6.11:
+    resolution: {integrity: sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==}
+    hasBin: true
+    dependencies:
+      sax: 1.2.4
     dev: true
 
   /y18n/5.0.8:
