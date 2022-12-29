@@ -15,12 +15,13 @@ import accountRoute from './routes/auth/account'
 import initialize from './passport-config'
 import { Request, Response } from 'express'
 import crypto from 'crypto'
-import { redisClient } from './redis'
+import { redisClient } from './redisServer'
 let RedisStore = require('connect-redis')(session)
 const app = express()
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://client-dashboard.up.railway.app']
+  origin: ['http://localhost:5173', 'https://client-dashboard.up.railway.app'],
+  credentials: true
 }))
 app.use(morgan('dev'))
 const limiter = rateLimit({
