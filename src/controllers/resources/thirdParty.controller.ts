@@ -1,5 +1,5 @@
-import { ThirdParty } from '../../models/thirdParty'
-import { errorResponse, successResponse } from '../../utils/responseFormat'
+import { ThirdParty } from 'models/thirdParty'
+import { errorResponse, successResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
 import { CallbackError, Document } from 'mongoose'
 async function getAll(req: Request, res: Response) {

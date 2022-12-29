@@ -1,7 +1,7 @@
 import express from 'express'
 import {
   getAll, get, create, update, remove
-} from '../../controllers/resources/thirdParty.controller'
+} from 'controllers/resources/thirdParty.controller'
 
 const router = express.Router()
 

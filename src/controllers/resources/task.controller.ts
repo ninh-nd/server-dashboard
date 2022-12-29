@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { Task } from '../../models/task'
-import { errorResponse, successResponse } from '../../utils/responseFormat'
+import { Task } from 'models/task'
+import { errorResponse, successResponse } from 'utils/responseFormat'
 import { CallbackError, Document } from 'mongoose'
 async function getAll(req: Request, res: Response) {
   try {

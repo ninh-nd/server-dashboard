@@ -1,8 +1,8 @@
-import { Project } from '../../models/project'
-import { Member } from '../../models/member'
-import { errorResponse, successResponse } from '../../utils/responseFormat'
+import { Project } from 'models/project'
+import { Member } from 'models/member'
+import { errorResponse, successResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
-async function get (req: Request, res: Response) {
+async function get(req: Request, res: Response) {
   try {
     const { projectName } = req.params
     const project = await Project.findOne({ name: projectName }).populate({
@@ -17,7 +17,7 @@ async function get (req: Request, res: Response) {
   }
 }
 
-async function create (req: Request, res: Response) {
+async function create(req: Request, res: Response) {
   try {
     const project = await Project.create(req.body)
     return res.status(201).json(successResponse(project, 'Project created'))
@@ -26,7 +26,7 @@ async function create (req: Request, res: Response) {
   }
 }
 
-async function updateStatus (req: Request, res: Response) {
+async function updateStatus(req: Request, res: Response) {
   try {
     const { projectName } = req.params
     const { status } = req.body
@@ -42,7 +42,7 @@ async function updateStatus (req: Request, res: Response) {
   }
 }
 
-async function addPhaseToProject (req: Request, res: Response) {
+async function addPhaseToProject(req: Request, res: Response) {
   try {
     const { projectName } = req.params
     const { phaseId } = req.body
@@ -61,7 +61,7 @@ async function addPhaseToProject (req: Request, res: Response) {
   }
 }
 
-async function remove (req: Request, res: Response) {
+async function remove(req: Request, res: Response) {
   try {
     const { projectName } = req.params
     const project = await Project.findOne({ name: projectName })
@@ -80,7 +80,7 @@ async function remove (req: Request, res: Response) {
   }
 }
 
-async function getProjectMembers (req: Request, res: Response) {
+async function getProjectMembers(req: Request, res: Response) {
   try {
     const { projectName } = req.params
     const project = await Project.findOne({ name: projectName })

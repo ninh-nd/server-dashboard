@@ -1,13 +1,11 @@
 import express from 'express'
 import passport from 'passport'
 import {
-  get, create, changePassword, addThirdPartyToAccount, getAccountRole, returnSession, logout
-} from '../../controllers/auth/account.controller'
+  get, create, changePassword, addThirdPartyToAccount, returnSession, logout
+} from 'controllers/auth/account.controller'
 
 const router = express.Router()
 
-// Get account's role
-router.get('/role', getAccountRole)
 // Get an account
 router.get('/:id', get)
 // Create an account

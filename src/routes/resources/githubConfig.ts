@@ -1,5 +1,5 @@
 import express from 'express'
-import { get, create, update } from '../../controllers/resources/githubConfig.controller'
+import { get, create, update } from 'controllers/resources/githubConfig.controller'
 
 const router = express.Router()
 /* GET github config */

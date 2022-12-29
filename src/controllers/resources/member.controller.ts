@@ -1,5 +1,5 @@
-import { Member } from '../../models/member'
-import { errorResponse, successResponse } from '../../utils/responseFormat'
+import { Member } from 'models/member'
+import { errorResponse, successResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
 import { CallbackError, Document } from 'mongoose'
 async function get(req: Request, res: Response) {

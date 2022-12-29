@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
 import { Types } from 'mongoose'
 import { PassportStatic } from 'passport'
-import { IAccount } from '../src/models/interfaces'
-import { Account } from './models/account'
+import { IAccount } from 'models/interfaces'
+import { Account } from 'models/account'
 const LocalStrategy = require('passport-local').Strategy
 interface IAccountPassport extends Express.User {
   _id?: Types.ObjectId;

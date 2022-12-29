@@ -1,7 +1,7 @@
 import express from 'express'
 import {
   get, create, update, remove, assignTask, joinProject
-} from '../../controllers/resources/member.controller'
+} from 'controllers/resources/member.controller'
 
 const router = express.Router()
 

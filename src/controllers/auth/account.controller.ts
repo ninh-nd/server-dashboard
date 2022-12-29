@@ -1,49 +1,9 @@
 import 'dotenv/config'
 import bcrypt from 'bcrypt'
-import { Member } from '../../models/member'
-import { ProjectManager } from '../../models/projectManager'
-import { Account } from '../../models/account'
-import { successResponse, errorResponse } from '../../utils/responseFormat'
+import { Account } from 'models/account'
+import { successResponse, errorResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
-import { ThirdParty } from '../../models/thirdParty'
-import { Types } from 'mongoose'
-async function getRole(accountId: Types.ObjectId) {
-  const member = await Member.findOne({ account: accountId })
-  const projectManager = await ProjectManager.findOne({ account: accountId })
-  if (member != null) {
-    return {
-      role: 'member',
-      id: member._id
-    }
-  }
-  if (projectManager != null) {
-    return {
-      role: 'manager',
-      id: projectManager._id
-    }
-  }
-  return null
-}
-
-async function getAccountRole(req: Request, res: Response) {
-  const username = req.query.username
-  if (username == null) {
-    return res.status(400).json(errorResponse('Missing username'))
-  }
-  try {
-    const account = await Account.findOne({ username })
-    if (account == null) {
-      return res.status(404).json(errorResponse('Account not found'))
-    }
-    const roleObject = await getRole(account._id)
-    if (roleObject == null) {
-      return res.status(404).json(errorResponse('Role not found on this account'))
-    }
-    return res.status(200).json(successResponse(roleObject, 'Role found'))
-  } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
-  }
-}
+import { ThirdParty } from 'models/thirdParty'
 
 async function get(req: Request, res: Response) {
   try {
@@ -137,5 +97,5 @@ async function logout(req: Request, res: Response) {
 }
 
 export {
-  get, getAccountRole, create, addThirdPartyToAccount, changePassword, returnSession, logout
+  get, create, addThirdPartyToAccount, changePassword, returnSession, logout
 }

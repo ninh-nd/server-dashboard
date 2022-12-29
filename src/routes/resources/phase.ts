@@ -1,7 +1,7 @@
 import express from 'express'
 import {
   get, create, update, remove, addTaskToPhase
-} from '../../controllers/resources/phase.controller'
+} from 'controllers/resources/phase.controller'
 
 const router = express.Router()
 

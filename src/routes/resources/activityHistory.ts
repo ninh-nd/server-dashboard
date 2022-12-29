@@ -1,7 +1,7 @@
 import express from 'express'
 import {
   getPRs, getCommits, getCommitsByAccount, getPRsByAccount
-} from '../../controllers/resources/activityHistory.controller'
+} from 'controllers/resources/activityHistory.controller'
 
 const router = express.Router()
 /* GET pull requests */
