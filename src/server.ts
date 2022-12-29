@@ -9,7 +9,7 @@ if (!process.env.MONGO_URI) {
   throw new Error('MONGO_URI must be defined')
 }
 mongoose.connect(process.env.MONGO_URI)
-redisClient.connect().catch((err) => {
+redisClient.connect().catch((err: any) => {
   console.error(err)
 })
 
