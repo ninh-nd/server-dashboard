@@ -7,6 +7,6 @@
     "node_modules"
   ],
   "ext": "ts,mjs,js,json,graphql",
-  "exec": "etsc && node ./dist/server.js",
+  "exec": "NODE_PATH=./src ts-node ./src/server.ts",
   "legacyWatch": true
 }
