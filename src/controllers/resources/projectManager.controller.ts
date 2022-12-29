@@ -66,7 +66,7 @@ async function getProjectOwn(req: Request, res: Response) {
     if (pm == null) {
       return res.status(404).json(errorResponse('Project Manager not found'))
     }
-    const data = { projects: pm.projectOwn }
+    const data = pm.projectOwn
     return res.status(200).json(successResponse(data, ''))
   } catch (err) {
     return res.status(500).json(errorResponse('Internal server error'))

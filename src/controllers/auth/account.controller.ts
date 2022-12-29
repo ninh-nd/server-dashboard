@@ -4,11 +4,13 @@ import { Account } from 'models/account'
 import { successResponse, errorResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
 import { ThirdParty } from 'models/thirdParty'
+import { IAccount } from 'models/interfaces'
 
 async function get(req: Request, res: Response) {
   try {
-    const account = await Account.findById(req.params.id)
-    return res.status(200).json(successResponse(account, 'Account found'))
+    const account = req.user as IAccount
+    const findedAccount = await Account.findById(account._id)
+    return res.status(200).json(successResponse(findedAccount, 'Account found'))
   } catch (error) {
     return res.status(500).json(errorResponse('Internal server error'))
   }
@@ -90,7 +92,7 @@ async function returnSession(req: Request, res: Response) {
 async function logout(req: Request, res: Response) {
   req.logout((err) => {
     if (err) {
-      return res.status(500).json(errorResponse('Internal server error'))
+      return res.status(500).json(errorResponse(err))
     }
   })
   return res.status(200).json(successResponse(null, 'Logged out'))

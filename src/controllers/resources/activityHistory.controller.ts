@@ -5,7 +5,7 @@ import { Member } from 'models/member'
 import { GithubConfig } from 'models/githubConfig'
 import { Project } from 'models/project'
 import { errorResponse, successResponse } from 'utils/responseFormat'
-import { DEFAULT_TTL, redisClient } from 'redis'
+import { DEFAULT_TTL, redisClient } from 'redisServer'
 import { Request, Response } from 'express'
 import { Types } from 'mongoose'
 async function getGithubPull(owner: string, repo: string, accessToken: string, projectId: Types.ObjectId) {
