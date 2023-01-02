@@ -1,10 +1,12 @@
 import express from 'express'
 import {
-  get, create, update, remove, addTaskToPhase
+  get, create, update, remove, addTaskToPhase, getPresets
 } from 'controllers/resources/phase.controller'
 
 const router = express.Router()
 
+/* GET phase presets */
+router.get('/presets', getPresets)
 /* GET phase */
 router.get('/:id', get)
 /* POST phase */

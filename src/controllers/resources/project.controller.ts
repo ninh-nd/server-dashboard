@@ -87,7 +87,13 @@ async function getProjectMembers(req: Request, res: Response) {
     if (project == null) {
       return res.status(404).json(errorResponse('Project not found'))
     }
-    const members = await Member.find({ projectId: project._id }).populate('activityHistory').populate('taskAssigned')
+    const members = await Member.find({ projectId: project._id }).populate({
+      path: 'activityHistory',
+      match: { projectId: project._id }
+    }).populate({
+      path: 'taskAssigned',
+      match: { projectName }
+    })
     return res.status(200).json(successResponse(members, 'Members found'))
   } catch (error) {
     return res.status(500).json(errorResponse('Internal server error'))

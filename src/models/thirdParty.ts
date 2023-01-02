@@ -13,7 +13,8 @@ const thirdPartySchema = new Schema<IThirdParty>({
   url: {
     type: String,
     required: true
-  }
+  },
+  accessToken: String
 })
 const ThirdParty: Model<IThirdParty> = model('ThirdParty', thirdPartySchema)
 export {

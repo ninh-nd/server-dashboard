@@ -3,12 +3,12 @@ import { GithubConfig } from 'models/githubConfig'
 import { errorResponse, successResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
 async function get(req: Request, res: Response) {
-  const { id } = req.params
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  const { projectId } = req.params
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
     return res.status(400).json(errorResponse('Invalid project id'))
   }
   try {
-    const githubConfig = await GithubConfig.findOne({ projectId: id })
+    const githubConfig = await GithubConfig.findOne({ projectId })
     if (githubConfig != null) {
       return res.status(200).json(successResponse(githubConfig, 'Github config found'))
     }
@@ -29,10 +29,10 @@ async function create(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
-  const { id } = req.params
+  const { projectId } = req.params
   try {
     const githubConfig = await GithubConfig.findOneAndUpdate(
-      { projectId: id },
+      { projectId },
       req.body,
 
       { new: true }

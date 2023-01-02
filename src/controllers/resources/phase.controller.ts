@@ -2,6 +2,7 @@ import { Phase } from 'models/phase'
 import { errorResponse, successResponse } from 'utils/responseFormat'
 import { Request, Response } from 'express'
 import { CallbackError, Document } from 'mongoose'
+import { PhasePreset } from 'models/phasePreset'
 async function get(req: Request, res: Response) {
   try {
     const phase = await Phase.findById(req.params.id)
@@ -56,10 +57,21 @@ async function addTaskToPhase(req: Request, res: Response) {
   }
 }
 
+async function getPresets(req: Request, res: Response) {
+  try {
+    const presets = await PhasePreset.find()
+    return res.status(200).json(successResponse(presets, 'Phase presets found'))
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json(errorResponse('Internal server error'))
+  }
+}
+
 export {
   get,
   create,
   update,
   remove,
-  addTaskToPhase
+  addTaskToPhase,
+  getPresets
 }

@@ -7,13 +7,9 @@ const phaseSchema = new Schema<IPhase>({
     required: true
   },
   description: String,
-  previousId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Phase'
-  },
-  nextId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Phase'
+  order: {
+    type: Number,
+    required: true
   },
   tasks: [{
     type: Schema.Types.ObjectId,

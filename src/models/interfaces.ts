@@ -12,6 +12,7 @@ export interface IThirdParty {
   name: string
   username: string
   url: string
+  accessToken?: string
 }
 
 export interface IActivityHistory {
@@ -69,14 +70,19 @@ export interface IProject {
 export interface IPhase {
   name: string
   description?: string
-  previousId?: string
-  nextId?: string
+  order: number
   tasks?: ITask[]
   artifacts?: IArtifact[]
   createdBy?: string
   updatedBy?: string
   createdAt: Date
   updatedAt: Date
+}
+
+export interface IPhasePreset {
+  name: string
+  description?: string
+  phases: IPhase[]
 }
 
 export interface IProjectManager {
