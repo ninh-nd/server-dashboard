@@ -7,7 +7,7 @@ async function getAll(req: Request, res: Response) {
     const thirdParties = await ThirdParty.find()
     return res.status(200).json(successResponse(thirdParties, 'Third parties found'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -16,7 +16,7 @@ async function get(req: Request, res: Response) {
     const thirdParty = await ThirdParty.findById(req.params.id)
     return res.status(200).json(successResponse(thirdParty, 'Third party found'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -26,7 +26,7 @@ async function create(req: Request, res: Response) {
     await newThirdParty.save()
     return res.status(201).json(successResponse(newThirdParty, 'Third party created'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -40,14 +40,14 @@ async function update(req: Request, res: Response) {
     )
     return res.status(200).json(successResponse(updatedThirdParty, 'Third party updated'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
 async function remove(req: Request, res: Response) {
-  ThirdParty.findByIdAndDelete(req.params.id, (err: CallbackError, doc: Document) => {
-    if (err != null) {
-      return res.status(500).json(errorResponse('Internal server error'))
+  ThirdParty.findByIdAndDelete(req.params.id, (error: CallbackError, doc: Document) => {
+    if (error != null) {
+      return res.status(500).json(errorResponse(`Internal server error: ${error}`))
     }
     if (!doc) {
       return res.status(404).json(errorResponse('Third party not found'))

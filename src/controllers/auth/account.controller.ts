@@ -12,7 +12,7 @@ async function get(req: Request, res: Response) {
     const findedAccount = await Account.findById(account._id)
     return res.status(200).json(successResponse(findedAccount, 'Account found'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -35,7 +35,7 @@ async function create(req: Request, res: Response) {
     await newAccount.save()
     return res.status(201).json(successResponse(newAccount, 'Account created'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -57,7 +57,7 @@ async function addThirdPartyToAccount(req: Request, res: Response) {
     await account.save()
     return res.status(200).json(successResponse(account, 'Third party account added'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 

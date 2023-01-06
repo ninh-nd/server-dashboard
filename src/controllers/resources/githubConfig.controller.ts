@@ -14,7 +14,7 @@ async function get(req: Request, res: Response) {
     }
     return res.status(404).json(errorResponse('No Github config found'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -24,7 +24,7 @@ async function create(req: Request, res: Response) {
     const newGithubConfig = await githubConfig.save()
     return res.status(201).json(successResponse(newGithubConfig, 'Github config created'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -42,7 +42,7 @@ async function update(req: Request, res: Response) {
     }
     return res.status(404).json(errorResponse('No Github config found'))
   } catch (error) {
-    return res.status(500).json(errorResponse('Internal server error'))
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
