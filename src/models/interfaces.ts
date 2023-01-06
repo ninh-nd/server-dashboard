@@ -40,6 +40,7 @@ export interface IMember {
   taskAssigned?: ITask[]
   activityHistory?: IActivityHistory[]
   projectIn?: IProject[]
+  ticketAssigned?: ITicket[]
 }
 
 export interface ITask {
@@ -145,4 +146,11 @@ export interface ITicket {
   createdAt: Date
   updatedAt: Date
   targetedVulnerability?: IVulnerability[]
+}
+
+export interface ICPE {
+  cpeId: string
+  vendor: string
+  product: string
+  version: string
 }

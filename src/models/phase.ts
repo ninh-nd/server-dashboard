@@ -16,6 +16,11 @@ const phaseSchema = new Schema<IPhase>({
     ref: 'Task',
     default: []
   }],
+  artifacts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Artifact',
+    default: []
+  }],
   createdBy: String,
   updatedBy: String
 }, { timestamps: true })

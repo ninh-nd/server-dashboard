@@ -16,6 +16,11 @@ const memberSchema = new Schema<IMember>({
     ref: 'Task',
     default: []
   }],
+  ticketAssigned: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Ticket',
+    default: []
+  }],
   activityHistory: [{
     type: Schema.Types.ObjectId,
     ref: 'ActivityHistory',
