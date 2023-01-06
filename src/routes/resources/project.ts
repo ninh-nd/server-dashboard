@@ -1,6 +1,6 @@
 import express from 'express'
 import {
-  get, create, updateStatus, addPhaseToProject, remove, getProjectMembers
+  get, create, updateStatus, addPhaseToProject, remove, getProjectMembers, createPhaseModel
 } from 'controllers/resources/project.controller'
 
 const router = express.Router()
@@ -9,6 +9,8 @@ const router = express.Router()
 router.get('/:projectName', get)
 /* POST project */
 router.post('/', create)
+/* POST phase from a given model */
+router.post('/:projectName', createPhaseModel)
 /* PATCH project: Update status */
 router.patch('/:projectName', updateStatus)
 /* PATCH project: Add phase to project */
