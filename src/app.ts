@@ -17,8 +17,27 @@ import initialize from './passport-config'
 import { Request, Response } from 'express'
 import crypto from 'crypto'
 import { redisClient } from './redisServer'
+import { Artifact } from 'models/artifact'
+import { CVE } from 'models/cve'
+import { CWE } from 'models/cwe'
+import { PhasePreset } from 'models/phasePreset'
+import { Threat } from 'models/threat'
+import { Ticket } from 'models/ticket'
+import { Vulnerability } from 'models/vulnerability'
+import { CPE } from 'models/cpe'
 let RedisStore = require('connect-redis')(session)
 const app = express()
+function registerModels() {
+  Artifact.find()
+  CVE.find()
+  CWE.find()
+  CPE.find()
+  PhasePreset.find()
+  Threat.find()
+  Ticket.find()
+  Vulnerability.find()
+}
+registerModels()
 app.use(express.json())
 app.use(cors({
   origin: ['http://localhost:5173', 'https://client-dashboard.up.railway.app'],
