@@ -16,11 +16,16 @@ async function getGithubPull(owner: string, repo: string, accessToken: string, p
   const octokit = new Octokit({
     auth: accessToken
   })
-  const prData = await octokit.rest.pulls.list({
-    owner,
-    repo,
-    state: 'all'
-  })
+  let prData
+  try {
+    prData = await octokit.rest.pulls.list({
+      owner,
+      repo,
+      state: 'all'
+    })
+  } catch (error) {
+    return new Error("Error retrieving PRs from Github API")
+  }
   await redisClient.v4.setEx(`github-pr-${repo}`, DEFAULT_TTL, JSON.stringify(prData))
   const processedPrData = prData.data.map(({
     id, title: content, created_at: createdAt, user
@@ -68,10 +73,15 @@ async function getGithubCommits(owner: string, repo: string, accessToken: string
   const octokit = new Octokit({
     auth: accessToken
   })
-  const commitData = await octokit.rest.repos.listCommits({
-    owner,
-    repo
-  })
+  let commitData
+  try {
+    commitData = await octokit.rest.repos.listCommits({
+      owner,
+      repo
+    })
+  } catch (error) {
+    return new Error("Error retrieving PRs from Github API")
+  }
   await redisClient.v4.setEx(`github-commit-${repo}`, DEFAULT_TTL, JSON.stringify(commitData))
   const processedCommitData = commitData.data.map(({ sha: id, commit }) => {
     const content = commit.message
