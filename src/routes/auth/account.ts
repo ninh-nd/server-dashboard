@@ -1,14 +1,14 @@
 import express from 'express'
 import passport from 'passport'
 import {
-  get, create, changePassword, addThirdPartyToAccount, returnSession, logout
+  get, create, changePassword, addThirdPartyToAccount, logout
 } from 'controllers/auth/account.controller'
 import { checkAuth } from 'middlewares/auth'
 
 const router = express.Router()
 
 // Login
-router.post('/login', passport.authenticate('local'), returnSession)
+router.post('/login', passport.authenticate('local'), (req, res) => res.redirect('/'))
 // Logout
 router.get('/logout', logout)
 // Get an account

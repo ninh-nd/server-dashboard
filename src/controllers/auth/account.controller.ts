@@ -84,11 +84,6 @@ async function changePassword(req: Request, res: Response) {
   return res.status(200).json(successResponse(account, 'Password changed'))
 }
 
-async function returnSession(req: Request, res: Response) {
-  const sid = req.session.id
-  return res.status(200).json(successResponse({ sid }, 'New session created'))
-}
-
 async function logout(req: Request, res: Response) {
   req.logout((err) => {
     if (err) {
@@ -99,5 +94,5 @@ async function logout(req: Request, res: Response) {
 }
 
 export {
-  get, create, addThirdPartyToAccount, changePassword, returnSession, logout
+  get, create, addThirdPartyToAccount, changePassword, logout
 }
