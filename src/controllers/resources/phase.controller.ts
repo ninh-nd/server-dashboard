@@ -57,12 +57,25 @@ async function addTaskToPhase(req: Request, res: Response) {
   }
 }
 
+async function removeTaskFromPhase(req: Request, res: Response) {
+  try {
+    const updatedPhase = await Phase.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { tasks: req.body.taskId } },
+
+      { new: true }
+    )
+    return res.status(200).json(successResponse(updatedPhase, 'Task removed from phase'))
+  } catch (error) {
+    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+  }
+}
+
 async function getPresets(req: Request, res: Response) {
   try {
     const presets = await PhasePreset.find()
     return res.status(200).json(successResponse(presets, 'Phase presets found'))
   } catch (error) {
-    console.log(error)
     return res.status(500).json(errorResponse(`Internal server error: ${error}`))
   }
 }
@@ -73,5 +86,6 @@ export {
   update,
   remove,
   addTaskToPhase,
+  removeTaskFromPhase,
   getPresets
 }
