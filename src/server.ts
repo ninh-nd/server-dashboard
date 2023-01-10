@@ -8,8 +8,8 @@ const port = process.env.PORT || 3001
 if (!process.env.MONGO_URL) {
   throw new Error('MONGO_URL must be defined')
 }
-mongoose.connect(process.env.MONGO_URL)
-redisClient.connect().catch((err: any) => {
+mongoose.connect(process.env.MONGO_URL).then(() => console.log("Connected to MongoDB"))
+redisClient.connect().then(() => console.log("Connected to Redis")).catch((err: any) => {
   console.error(err)
 })
 
