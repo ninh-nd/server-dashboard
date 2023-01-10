@@ -12,16 +12,16 @@ export interface IThirdParty {
   name: string
   username: string
   url: string
-  accessToken?: string
+  accessToken: string
 }
 
 export interface IActivityHistory {
   id: string
   action: 'commit' | 'pr'
   content: string
-  createdBy?: string
-  updatedBy?: string
-  projectId?: Types.ObjectId
+  createdBy: string
+  updatedBy: string
+  projectId: Types.ObjectId
   createdAt: Date
   updatedAt: Date
 }
@@ -35,20 +35,20 @@ export interface IGithubConfig {
 
 export interface IMember {
   name: string
-  account?: Types.ObjectId
-  company?: string
-  taskAssigned?: ITask[]
-  activityHistory?: IActivityHistory[]
-  projectIn?: IProject[]
-  ticketAssigned?: ITicket[]
+  account: Types.ObjectId
+  company: string
+  taskAssigned: ITask[]
+  activityHistory: IActivityHistory[]
+  projectIn: IProject[]
+  ticketAssigned: ITicket[]
 }
 
 export interface ITask {
   name: string
-  status?: 'active' | 'completed'
+  status: 'active' | 'completed'
   description: string
-  createdBy?: string
-  updatedBy?: string
+  createdBy: string
+  updatedBy: string
   createdAt: Date
   updatedAt: Date
   projectName: string
@@ -56,40 +56,40 @@ export interface ITask {
 
 export interface IProject {
   name: string
-  url?: string
-  status?: 'active' | 'inactive'
-  description?: string
-  startDate?: Date
-  endDate?: Date
-  createdBy?: string
-  updatedBy?: string
-  phaseList?: IPhase[]
+  url: string
+  status: 'active' | 'inactive'
+  description: string
+  startDate: Date
+  endDate: Date
+  createdBy: string
+  updatedBy: string
+  phaseList: IPhase[]
   createdAt: Date
   updatedAt: Date
 }
 
 export interface IPhase {
   name: string
-  description?: string
+  description: string
   order: number
-  tasks?: ITask[]
-  artifacts?: IArtifact[]
-  createdBy?: string
-  updatedBy?: string
+  tasks: ITask[]
+  artifacts: IArtifact[]
+  createdBy: string
+  updatedBy: string
   createdAt: Date
   updatedAt: Date
 }
 
 export interface IPhasePreset {
   name: string
-  description?: string
+  description: string
   phases: IPhase[]
 }
 
 export interface IProjectManager {
   name: string
   account: Types.ObjectId
-  company?: string
+  company: string
   projectOwn: IProject[]
 }
 
@@ -97,8 +97,8 @@ export interface ICVE {
   cveId: string
   description: string
   score: number
-  severity?: string
-  cweId: string
+  severity: string
+  cweId: string[]
 }
 
 export interface ICWE {
@@ -106,7 +106,7 @@ export interface ICWE {
   name: string
   description: string
   modesOfIntroduction: String[]
-  likelihood?: 'Low' | 'Medium' | 'High' | 'Unknown'
+  likelihood: 'Low' | 'Medium' | 'High' | 'Unknown'
   mitigation: String[]
   consequences: String[]
   detectionMethods: String[]
@@ -114,20 +114,20 @@ export interface ICWE {
 
 export interface IVulnerability {
   cveId: string
-  vendor?: string
-  product?: string
-  version?: string
+  vendor: string
+  product: string
+  version: string[]
 }
 
 export interface IArtifact {
   name: string
   type: 'image' | 'log' | 'source code' | 'executable' | 'library'
-  content?: string
-  url?: string
-  version?: string
+  content: string
+  url: string
+  version: string
   createdAt: Date
   updatedAt: Date
-  threatList?: IThreat[]
+  threatList: IThreat[]
   vulnerabilityList?: IVulnerability[]
 }
 
@@ -138,14 +138,14 @@ export interface IThreat {
 
 export interface ITicket {
   title: string
-  status?: 'open' | 'closed'
-  description?: string
-  priority?: 'low' | 'medium' | 'high'
+  status: 'open' | 'closed'
+  description: string
+  priority: 'low' | 'medium' | 'high'
   assigner: IMember
   assignee: IMember
   createdAt: Date
   updatedAt: Date
-  targetedVulnerability?: IVulnerability[]
+  targetedVulnerability: IVulnerability[]
 }
 
 export interface ICPE {
