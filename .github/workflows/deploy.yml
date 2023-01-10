@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: pnpm test --if-present
         env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_URL: ${{ secrets.MONGO_URL }}
   
   deploy:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
       - name: Run tests
         run: pnpm test --if-present
         env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_URL: ${{ secrets.MONGO_URL }}
 
       - name: Install Railway
         run: npm install -g @railway/cli
