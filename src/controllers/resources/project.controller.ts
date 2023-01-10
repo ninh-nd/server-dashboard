@@ -13,18 +13,18 @@ async function get(req: Request, res: Response) {
         path: 'tasks artifacts'
       }
     })
-    return res.status(200).json(successResponse(project, 'Project found'))
+    return res.json(successResponse(project, 'Project found'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
 async function create(req: Request, res: Response) {
   try {
     const project = await Project.create(req.body)
-    return res.status(201).json(successResponse(project, 'Project created'))
+    return res.json(successResponse(project, 'Project created'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -38,9 +38,9 @@ async function updateStatus(req: Request, res: Response) {
 
       { new: true }
     )
-    return res.status(200).json(successResponse(project, 'Project status updated'))
+    return res.json(successResponse(project, 'Project status updated'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -57,9 +57,9 @@ async function addPhaseToProject(req: Request, res: Response) {
       },
       { new: true }
     )
-    return res.status(200).json(successResponse(project, 'Phase added to project'))
+    return res.json(successResponse(project, 'Phase added to project'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -68,17 +68,17 @@ async function remove(req: Request, res: Response) {
     const { projectName } = req.params
     const project = await Project.findOne({ name: projectName })
     if (project == null) {
-      return res.status(404).json(errorResponse('Project not found'))
+      return res.json(errorResponse('Project not found'))
     }
     // Check if the project has just been created for 1 day
     if (project.createdAt.getTime() + 86400000 > Date.now()) {
-      return res.status(403).json(errorResponse('Project cannot be deleted'))
+      return res.json(errorResponse('Project cannot be deleted'))
     }
 
     await Project.findByIdAndDelete(req.params.id)
-    return res.status(200).json(successResponse(project, 'Project deleted'))
+    return res.json(successResponse(project, 'Project deleted'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -87,7 +87,7 @@ async function getProjectMembers(req: Request, res: Response) {
     const { projectName } = req.params
     const project = await Project.findOne({ name: projectName })
     if (project == null) {
-      return res.status(404).json(errorResponse('Project not found'))
+      return res.json(errorResponse('Project not found'))
     }
     const members = await Member.find({ projectId: project._id }).populate({
       path: 'activityHistory',
@@ -96,9 +96,9 @@ async function getProjectMembers(req: Request, res: Response) {
       path: 'taskAssigned',
       match: { projectName }
     })
-    return res.status(200).json(successResponse(members, 'Members found'))
+    return res.json(successResponse(members, 'Members found'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -108,7 +108,7 @@ async function createPhaseModel(req: Request, res: Response) {
   try {
     const project = await Project.findOne({ name: projectName })
     if (project == null) {
-      return res.status(404).json(errorResponse('Project not found'))
+      return res.json(errorResponse('Project not found'))
     }
     phases.forEach(async (phase: IPhase) => {
       const newPhase = new Phase(phase)
@@ -125,9 +125,9 @@ async function createPhaseModel(req: Request, res: Response) {
         )
       })
     })
-    return res.status(200).json(successResponse(project, 'Phase added to project'))
+    return res.json(successResponse(project, 'Phase added to project'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 

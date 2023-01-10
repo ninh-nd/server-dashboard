@@ -5,18 +5,18 @@ import { CallbackError, Document } from 'mongoose'
 async function getAll(req: Request, res: Response) {
   try {
     const thirdParties = await ThirdParty.find()
-    return res.status(200).json(successResponse(thirdParties, 'Third parties found'))
+    return res.json(successResponse(thirdParties, 'Third parties found'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
 async function get(req: Request, res: Response) {
   try {
     const thirdParty = await ThirdParty.findById(req.params.id)
-    return res.status(200).json(successResponse(thirdParty, 'Third party found'))
+    return res.json(successResponse(thirdParty, 'Third party found'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -24,9 +24,9 @@ async function create(req: Request, res: Response) {
   try {
     const newThirdParty = new ThirdParty(req.body)
     await newThirdParty.save()
-    return res.status(201).json(successResponse(newThirdParty, 'Third party created'))
+    return res.json(successResponse(newThirdParty, 'Third party created'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -38,21 +38,21 @@ async function update(req: Request, res: Response) {
 
       { new: true }
     )
-    return res.status(200).json(successResponse(updatedThirdParty, 'Third party updated'))
+    return res.json(successResponse(updatedThirdParty, 'Third party updated'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
 async function remove(req: Request, res: Response) {
   ThirdParty.findByIdAndDelete(req.params.id, (error: CallbackError, doc: Document) => {
     if (error != null) {
-      return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+      return res.json(errorResponse(`Internal server error: ${error}`))
     }
     if (!doc) {
-      return res.status(404).json(errorResponse('Third party not found'))
+      return res.json(errorResponse('Third party not found'))
     }
-    return res.status(200).json(successResponse(doc, 'Third party deleted'))
+    return res.json(successResponse(doc, 'Third party deleted'))
   })
 }
 

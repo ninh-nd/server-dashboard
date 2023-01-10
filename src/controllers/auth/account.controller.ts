@@ -10,9 +10,9 @@ async function get(req: Request, res: Response) {
   try {
     const account = req.user as IAccount
     const findedAccount = await Account.findById(account._id)
-    return res.status(200).json(successResponse(findedAccount, 'Account found'))
+    return res.json(successResponse(findedAccount, 'Account found'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -21,7 +21,7 @@ async function create(req: Request, res: Response) {
   // Check if account exists
   const accountExists = await Account.findOne({ username })
   if (accountExists != null) {
-    return res.status(409).json(errorResponse('Username already exists'))
+    return res.json(errorResponse('Username already exists'))
   }
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10)
@@ -33,9 +33,9 @@ async function create(req: Request, res: Response) {
       email
     })
     await newAccount.save()
-    return res.status(201).json(successResponse(newAccount, 'Account created'))
+    return res.json(successResponse(newAccount, 'Account created'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
@@ -43,7 +43,7 @@ async function addThirdPartyToAccount(req: Request, res: Response) {
   // Check if account exists
   const account = await Account.findById(req.params.id)
   if (account == null) {
-    return res.status(404).json(errorResponse('Account not found'))
+    return res.json(errorResponse('Account not found'))
   }
   // Add third party account to account
   try {
@@ -55,42 +55,42 @@ async function addThirdPartyToAccount(req: Request, res: Response) {
     })
     account.thirdParty.push(newThirdParty)
     await account.save()
-    return res.status(200).json(successResponse(account, 'Third party account added'))
+    return res.json(successResponse(account, 'Third party account added'))
   } catch (error) {
-    return res.status(500).json(errorResponse(`Internal server error: ${error}`))
+    return res.json(errorResponse(`Internal server error: ${error}`))
   }
 }
 
 async function changePassword(req: Request, res: Response) {
   const { oldPassword, newPassword } = req.body
   if (!oldPassword || !newPassword) {
-    return res.status(400).json(errorResponse('Missing old or new password'))
+    return res.json(errorResponse('Missing old or new password'))
   }
   // Check if account exists
   const account = await Account.findById(req.params.id)
   if (account == null) {
-    return res.status(404).json(errorResponse('Account not found'))
+    return res.json(errorResponse('Account not found'))
   }
   // Check if old password is correct
   const isMatch = await bcrypt.compare(oldPassword, account.password)
   if (!isMatch) {
-    return res.status(400).json(errorResponse('Incorrect old password'))
+    return res.json(errorResponse('Incorrect old password'))
   }
   // Hash new password
   const hashedPassword = await bcrypt.hash(newPassword, 10)
   // Change password
   account.password = hashedPassword
   await account.save()
-  return res.status(200).json(successResponse(account, 'Password changed'))
+  return res.json(successResponse(account, 'Password changed'))
 }
 
 async function logout(req: Request, res: Response) {
   req.logout((err) => {
     if (err) {
-      return res.status(500).json(errorResponse(err))
+      return res.json(errorResponse(err))
     }
   })
-  return res.status(200).json(successResponse(null, 'Logged out'))
+  return res.json(successResponse(null, 'Logged out'))
 }
 
 export {
