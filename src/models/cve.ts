@@ -17,10 +17,10 @@ const cveSchema = new Schema<ICVE>({
     severity: {
         type: String
     },
-    cweId: {
+    cweId: [{
         type: String,
         required: true
-    }
+    }]
 })
 cveSchema.pre('save', function (next) {
     // Calculate severity based on score
