@@ -14,6 +14,7 @@ import pmRoute from './routes/resources/projectManager'
 import accountRoute from './routes/auth/account'
 import githubConfigRoute from './routes/resources/githubConfig'
 import vulnerabilityRoute from './routes/resources/vulnerability'
+import cveRoute from './routes/resources/cve'
 import initialize from './passport-config'
 import { Request, Response } from 'express'
 import crypto from 'crypto'
@@ -70,4 +71,5 @@ app.use('/v1/project', projectRoute)
 app.use('/v1/activity/github', activityRoute)
 app.use('/v1/pm', pmRoute)
 app.use('/v1/vuln', vulnerabilityRoute)
+app.use('/v1/cve', cveRoute)
 export default app
