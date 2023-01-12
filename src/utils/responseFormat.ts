@@ -1,11 +1,11 @@
 export const errorResponse = (message: string) => ({
-  status: 'error',
+  status: "error",
   data: null,
-  message
-})
+  message,
+});
 
 export const successResponse = (data: any, message: string) => ({
-  status: 'success',
+  status: "success",
   data,
-  message
-})
+  message,
+});

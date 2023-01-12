@@ -1,20 +1,24 @@
-import express from 'express'
+import express from "express";
 import {
-  get, getAll, create, update, remove
-} from 'controllers/resources/task.controller'
-import { checkAuth } from 'middlewares/auth'
+  get,
+  getAll,
+  create,
+  update,
+  remove,
+} from "controllers/resources/task.controller";
+import { checkAuth } from "middlewares/auth";
 
-const router = express.Router()
+const router = express.Router();
 
 /* GET all tasks */
-router.get('/', checkAuth, getAll)
+router.get("/", checkAuth, getAll);
 /* GET task */
-router.get('/:id', checkAuth, get)
+router.get("/:id", checkAuth, get);
 /* POST task */
-router.post('/', checkAuth, create)
+router.post("/", checkAuth, create);
 /* PUT task */
-router.put('/:id', checkAuth, update)
+router.put("/:id", checkAuth, update);
 /* DELETE task */
-router.delete('/:id', checkAuth, remove)
+router.delete("/:id", checkAuth, remove);
 
-export default router
+export default router;

@@ -1,19 +1,23 @@
-import express from 'express'
+import express from "express";
 import {
-  getAll, get, create, update, remove
-} from 'controllers/resources/thirdParty.controller'
+  getAll,
+  get,
+  create,
+  update,
+  remove,
+} from "controllers/resources/thirdParty.controller";
 
-const router = express.Router()
+const router = express.Router();
 
 /* GET all third parties */
-router.get('/', getAll)
+router.get("/", getAll);
 /* GET third party */
-router.get('/:id', get)
+router.get("/:id", get);
 /* POST third party */
-router.post('/', create)
+router.post("/", create);
 /* PUT third party */
-router.put('/:id', update)
+router.put("/:id", update);
 /* DELETE third party */
-router.delete('/:id', remove)
+router.delete("/:id", remove);
 
-export default router
+export default router;

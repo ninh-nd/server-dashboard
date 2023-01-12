@@ -1,42 +1,44 @@
 import { Model, model, Schema } from "mongoose";
 import { ITicket } from "./interfaces";
 
-const ticketSchema = new Schema<ITicket>({
+const ticketSchema = new Schema<ITicket>(
+  {
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     assignee: {
-        type: Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+      type: Schema.Types.ObjectId,
+      ref: "Member",
+      required: true,
     },
     assigner: {
-        type: Schema.Types.ObjectId,
-        ref: 'Member',
-        required: true
+      type: Schema.Types.ObjectId,
+      ref: "Member",
+      required: true,
     },
     status: {
-        type: String,
-        enum: ['open', 'closed'],
-        default: 'open'
+      type: String,
+      enum: ["open", "closed"],
+      default: "open",
     },
     description: String,
     priority: {
-        type: String,
-        enum: ['low', 'medium', 'high'],
-        default: 'low'
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "low",
     },
-    targetedVulnerability: [{
+    targetedVulnerability: [
+      {
         type: Schema.Types.ObjectId,
-        ref: 'Vulnerability',
-        default: []
-    }],
-}, { timestamps: true })
+        ref: "Vulnerability",
+        default: [],
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-const Ticket: Model<ITicket> = model('Ticket', ticketSchema)
+const Ticket: Model<ITicket> = model("Ticket", ticketSchema);
 
-export {
-    Ticket,
-    ticketSchema
-}
+export { Ticket, ticketSchema };

@@ -1,23 +1,20 @@
-import { Schema, Model, model } from 'mongoose'
-import { IThirdParty } from './interfaces'
+import { Schema, Model, model } from "mongoose";
+import { IThirdParty } from "./interfaces";
 
 const thirdPartySchema = new Schema<IThirdParty>({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   username: {
     type: String,
-    required: true
+    required: true,
   },
   url: {
     type: String,
-    required: true
+    required: true,
   },
-  accessToken: String
-})
-const ThirdParty: Model<IThirdParty> = model('ThirdParty', thirdPartySchema)
-export {
-  ThirdParty,
-  thirdPartySchema
-}
+  accessToken: String,
+});
+const ThirdParty: Model<IThirdParty> = model("ThirdParty", thirdPartySchema);
+export { ThirdParty, thirdPartySchema };
