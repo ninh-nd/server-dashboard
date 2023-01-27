@@ -53,7 +53,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 app.get("/", (req: Request, res: Response) => {
-  res.send("server-dashboard API. Start using with /v1/{resource}");
+  res.send("server-dashboard API. Start using with /{resource}");
 });
 app.use(
   session({
