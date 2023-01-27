@@ -92,15 +92,6 @@ export interface IProjectManager {
   company: string;
   projectOwn: IProject[];
 }
-
-export interface ICVE {
-  cveId: string;
-  description: string;
-  score: number;
-  severity: string;
-  cweId: string[];
-}
-
 export interface ICWE {
   cweId: string;
   name: string;
@@ -117,6 +108,10 @@ export interface IVulnerability {
   vendor: string;
   product: string;
   version: string[];
+  description: string;
+  score: number;
+  severity: string;
+  cwes: string[];
 }
 
 export interface IArtifact {
@@ -129,6 +124,7 @@ export interface IArtifact {
   updatedAt: Date;
   threatList: IThreat[];
   vulnerabilityList?: IVulnerability[];
+  projectName: string;
 }
 
 export interface IThreat {

@@ -29,6 +29,10 @@ const artifactSchema = new Schema<IArtifact>(
         default: [],
       },
     ],
+    projectName: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
