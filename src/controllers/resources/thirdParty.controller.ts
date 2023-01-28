@@ -2,7 +2,7 @@ import { ThirdParty } from "models/thirdParty";
 import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
 import { CallbackError, Document } from "mongoose";
-async function getAll(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response) {
   try {
     const thirdParties = await ThirdParty.find();
     return res.json(successResponse(thirdParties, "Third parties found"));
@@ -11,7 +11,7 @@ async function getAll(req: Request, res: Response) {
   }
 }
 
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   try {
     const thirdParty = await ThirdParty.findById(req.params.id);
     return res.json(successResponse(thirdParty, "Third party found"));
@@ -20,7 +20,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   try {
     const newThirdParty = new ThirdParty(req.body);
     await newThirdParty.save();
@@ -30,7 +30,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   try {
     const updatedThirdParty = await ThirdParty.findByIdAndUpdate(
       req.params.id,
@@ -44,7 +44,7 @@ async function update(req: Request, res: Response) {
   }
 }
 
-async function remove(req: Request, res: Response) {
+export async function remove(req: Request, res: Response) {
   ThirdParty.findByIdAndDelete(
     req.params.id,
     (error: CallbackError, doc: Document) => {
@@ -58,5 +58,3 @@ async function remove(req: Request, res: Response) {
     }
   );
 }
-
-export { get, getAll, create, update, remove };

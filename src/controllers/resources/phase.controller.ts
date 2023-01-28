@@ -3,7 +3,7 @@ import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
 import { CallbackError, Document } from "mongoose";
 import { PhasePreset } from "models/phasePreset";
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   try {
     const phase = await Phase.findById(req.params.id);
     return res.json(successResponse(phase, "Phase found"));
@@ -12,7 +12,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   try {
     const newPhase = new Phase(req.body);
     await newPhase.save();
@@ -22,7 +22,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
       req.params.id,
@@ -35,7 +35,7 @@ async function update(req: Request, res: Response) {
   }
 }
 
-async function remove(req: Request, res: Response) {
+export async function remove(req: Request, res: Response) {
   Phase.findByIdAndDelete(
     req.params.id,
     (error: CallbackError, doc: Document) => {
@@ -50,7 +50,7 @@ async function remove(req: Request, res: Response) {
   );
 }
 
-async function addTaskToPhase(req: Request, res: Response) {
+export async function addTaskToPhase(req: Request, res: Response) {
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
       req.params.id,
@@ -64,7 +64,7 @@ async function addTaskToPhase(req: Request, res: Response) {
   }
 }
 
-async function removeTaskFromPhase(req: Request, res: Response) {
+export async function removeTaskFromPhase(req: Request, res: Response) {
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
       req.params.id,
@@ -78,7 +78,7 @@ async function removeTaskFromPhase(req: Request, res: Response) {
   }
 }
 
-async function getPresets(req: Request, res: Response) {
+export async function getPresets(req: Request, res: Response) {
   try {
     const presets = await PhasePreset.find();
     return res.json(successResponse(presets, "Phase presets found"));
@@ -86,13 +86,3 @@ async function getPresets(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
-
-export {
-  get,
-  create,
-  update,
-  remove,
-  addTaskToPhase,
-  removeTaskFromPhase,
-  getPresets,
-};

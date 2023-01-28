@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Task } from "models/task";
 import { errorResponse, successResponse } from "utils/responseFormat";
 import { CallbackError, Document } from "mongoose";
-async function getAll(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response) {
   try {
     const projectName = req.query.projectName;
     const tasks = await Task.find({ projectName });
@@ -12,7 +12,7 @@ async function getAll(req: Request, res: Response) {
   }
 }
 
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   try {
     const task = await Task.findById(req.params.id);
     return res.json(successResponse(task, "Task found"));
@@ -21,7 +21,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   try {
     const { name, description, projectName, status } = req.body;
     const newTask = new Task({ name, description, projectName, status });
@@ -32,7 +32,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   try {
     const { name, status, description } = req.body;
     const updatedTask = await Task.findByIdAndUpdate(
@@ -46,7 +46,7 @@ async function update(req: Request, res: Response) {
   }
 }
 
-async function remove(req: Request, res: Response) {
+export async function remove(req: Request, res: Response) {
   Task.findByIdAndDelete(
     req.params.id,
     (error: CallbackError, doc: Document) => {
@@ -60,5 +60,3 @@ async function remove(req: Request, res: Response) {
     }
   );
 }
-
-export { get, getAll, create, update, remove };

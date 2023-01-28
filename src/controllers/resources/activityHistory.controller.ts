@@ -138,7 +138,7 @@ async function getGithubCommits(
   }
 }
 
-async function getPRs(req: Request, res: Response) {
+export async function getPRs(req: Request, res: Response) {
   const { projectName } = req.params;
   const githubConfig = await GithubConfig.findOne({ repo: projectName });
   if (githubConfig == null) {
@@ -169,7 +169,7 @@ async function getPRs(req: Request, res: Response) {
   }
 }
 
-async function getCommits(req: Request, res: Response) {
+export async function getCommits(req: Request, res: Response) {
   const { projectName } = req.params;
   const githubConfig = await GithubConfig.findOne({ repo: projectName });
   if (githubConfig == null) {
@@ -202,7 +202,7 @@ async function getCommits(req: Request, res: Response) {
   }
 }
 
-async function getCommitsByAccount(req: Request, res: Response) {
+export async function getCommitsByAccount(req: Request, res: Response) {
   const { username, projectName } = req.params;
   try {
     const projectId = await Project.findOne({ name: projectName });
@@ -226,7 +226,7 @@ async function getCommitsByAccount(req: Request, res: Response) {
   }
 }
 
-async function getPRsByAccount(req: Request, res: Response) {
+export async function getPRsByAccount(req: Request, res: Response) {
   const { username, projectName } = req.params;
   try {
     const projectId = await Project.findOne({ name: projectName });
@@ -249,5 +249,3 @@ async function getPRsByAccount(req: Request, res: Response) {
     return res.json(errorResponse("Error retrieving PRs"));
   }
 }
-
-export { getPRs, getCommits, getCommitsByAccount, getPRsByAccount };

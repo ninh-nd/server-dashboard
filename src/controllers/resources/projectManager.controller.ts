@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { CallbackError, Document } from "mongoose";
 import { IAccount } from "models/interfaces";
 import getRole from "utils/account";
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   try {
     const pm = await ProjectManager.findById(req.params.id);
     return res.json(successResponse(pm, "Project Manager found"));
@@ -13,7 +13,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   try {
     const pm = await ProjectManager.create(req.body);
     return res.json(successResponse(pm, "Project Manager created"));
@@ -22,7 +22,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   try {
     const pm = await ProjectManager.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -33,7 +33,7 @@ async function update(req: Request, res: Response) {
   }
 }
 
-async function remove(req: Request, res: Response) {
+export async function remove(req: Request, res: Response) {
   ProjectManager.findByIdAndDelete(
     req.params.id,
     (error: CallbackError, doc: Document) => {
@@ -48,7 +48,7 @@ async function remove(req: Request, res: Response) {
   );
 }
 
-async function addProjectOwn(req: Request, res: Response) {
+export async function addProjectOwn(req: Request, res: Response) {
   try {
     const pm = await ProjectManager.findByIdAndUpdate(
       req.params.id,
@@ -61,7 +61,7 @@ async function addProjectOwn(req: Request, res: Response) {
   }
 }
 
-async function getProjectOwn(req: Request, res: Response) {
+export async function getProjectOwn(req: Request, res: Response) {
   try {
     const account = req.user as IAccount;
     const roleObject = await getRole(account._id);
@@ -77,5 +77,3 @@ async function getProjectOwn(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
-
-export { get, create, update, remove, addProjectOwn, getProjectOwn };

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Artifact } from "models/artifact";
 
-async function getAll(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
   try {
     const artifacts = await Artifact.find({ projectName });
@@ -10,7 +10,3 @@ async function getAll(req: Request, res: Response) {
     return res.json(`Internal server error: ${error}`);
   }
 }
-
-async function create(req: Request, res: Response) {}
-
-export { getAll, create };

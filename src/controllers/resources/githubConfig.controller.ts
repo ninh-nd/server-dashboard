@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { GithubConfig } from "models/githubConfig";
 import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   const { projectId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(projectId)) {
     return res.json(errorResponse("Invalid project id"));
@@ -18,7 +18,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   const githubConfig = new GithubConfig(req.body);
   try {
     const newGithubConfig = await githubConfig.save();
@@ -28,7 +28,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   const { projectId } = req.params;
   try {
     const githubConfig = await GithubConfig.findOneAndUpdate(
@@ -45,5 +45,3 @@ async function update(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
-
-export { get, create, update };

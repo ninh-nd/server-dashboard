@@ -2,7 +2,7 @@ import { Member } from "models/member";
 import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
 import { CallbackError, Document } from "mongoose";
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   try {
     const member = await Member.findById(req.params.id).populate(
       "activityHistory"
@@ -13,7 +13,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   try {
     const member = await Member.create(req.body);
     return res.json(successResponse(member, "Member created"));
@@ -22,7 +22,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   try {
     const member = await Member.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -33,7 +33,7 @@ async function update(req: Request, res: Response) {
   }
 }
 
-async function remove(req: Request, res: Response) {
+export async function remove(req: Request, res: Response) {
   Member.findByIdAndDelete(
     req.params.id,
     (error: CallbackError, doc: Document) => {
@@ -48,7 +48,7 @@ async function remove(req: Request, res: Response) {
   );
 }
 
-async function assignTask(req: Request, res: Response) {
+export async function assignTask(req: Request, res: Response) {
   try {
     // Check if task has already been assigned
     const member = await Member.findByIdAndUpdate(
@@ -63,7 +63,7 @@ async function assignTask(req: Request, res: Response) {
   }
 }
 
-async function joinProject(req: Request, res: Response) {
+export async function joinProject(req: Request, res: Response) {
   try {
     // Check if project has already been added
     const member = await Member.findByIdAndUpdate(
@@ -76,5 +76,3 @@ async function joinProject(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
-
-export { get, create, update, remove, assignTask, joinProject };

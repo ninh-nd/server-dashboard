@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { CWE } from "models/cwe";
 import { errorResponse, successResponse } from "utils/responseFormat";
 
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const cwe = await CWE.findOne({ cweId: id });
@@ -13,5 +13,3 @@ async function get(req: Request, res: Response) {
     return res.json(`Internal server error: ${error}`);
   }
 }
-
-export { get };
