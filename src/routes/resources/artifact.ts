@@ -1,8 +1,10 @@
 import express from "express";
 const router = express.Router();
-import { getAll, create } from "controllers/resources/artifact.controller";
+import { getAll, get } from "controllers/resources/artifact.controller";
 
 /* GET all artifacts */
 router.get("/", getAll);
-/* POST artifact */
-router.post("/", create);
+/* GET artifact */
+router.get("/:id", get);
+
+export default router;

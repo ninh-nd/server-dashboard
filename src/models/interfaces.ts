@@ -124,7 +124,6 @@ export interface IArtifact {
   updatedAt: Date;
   threatList: IThreat[];
   vulnerabilityList?: IVulnerability[];
-  projectName: string;
 }
 
 export interface IThreat {

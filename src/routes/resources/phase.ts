@@ -7,6 +7,9 @@ import {
   addTaskToPhase,
   getPresets,
   removeTaskFromPhase,
+  addArtifactToPhase,
+  removeArtifactFromPhase,
+  updateArtifact,
 } from "controllers/resources/phase.controller";
 
 const router = express.Router();
@@ -25,4 +28,10 @@ router.delete("/:id", remove);
 router.patch("/:id/task/add", addTaskToPhase);
 /* PATCH phase: Remove task from a phase */
 router.patch("/:id/task/delete", removeTaskFromPhase);
+/* PATCH phase: Create and add artifact to a phase */
+router.patch("/:id/artifact/add", addArtifactToPhase);
+/* PATCH phase: Remove and delete artifact from a phase */
+router.patch("/:id/artifact/delete/:artifactId", removeArtifactFromPhase);
+/* PATCH phase: Update artifact in a phase */
+router.patch("/:id/artifact/update/:artifactId", updateArtifact);
 export default router;

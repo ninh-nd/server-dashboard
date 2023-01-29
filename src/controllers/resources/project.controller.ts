@@ -9,9 +9,17 @@ export async function get(req: Request, res: Response) {
     const { projectName } = req.params;
     const project = await Project.findOne({ name: projectName }).populate({
       path: "phaseList",
-      populate: {
-        path: "tasks artifacts",
-      },
+      populate: [
+        {
+          path: "tasks",
+        },
+        {
+          path: "artifacts",
+          populate: {
+            path: "threatList vulnerabilityList",
+          },
+        },
+      ],
     });
     return res.json(successResponse(project, "Project found"));
   } catch (error) {
