@@ -114,13 +114,13 @@ export async function getProjectMembers(req: Request, res: Response) {
 
 export async function createPhaseModel(req: Request, res: Response) {
   const { projectName } = req.params;
-  const { phases } = req.body; // Phase model, contains an array of phase with name and description
+  const { data } = req.body; // Phase model, contains an array of phase with name and description
   try {
     const project = await Project.findOne({ name: projectName });
     if (project == null) {
       return res.json(errorResponse("Project not found"));
     }
-    phases.forEach(async (phase: IPhase) => {
+    data.forEach(async (phase: IPhase) => {
       const newPhase = new Phase(phase);
       newPhase.save(async (err, doc) => {
         const id = doc._id;

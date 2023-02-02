@@ -49,10 +49,12 @@ export async function remove(req: Request, res: Response) {
 }
 
 export async function addProjectOwn(req: Request, res: Response) {
+  const { id } = req.params;
+  const { projectId } = req.body;
   try {
     const pm = await ProjectManager.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { projectOwn: req.body.projectId } },
+      id,
+      { $addToSet: { projectOwn: projectId } },
       { new: true }
     );
     return res.json(successResponse(pm, "Project added to Project Manager"));

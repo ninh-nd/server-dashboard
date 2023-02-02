@@ -41,7 +41,8 @@ async function create(req: Request, res: Response) {
 
 async function addThirdPartyToAccount(req: Request, res: Response) {
   // Check if account exists
-  const account = await Account.findById(req.params.id);
+  const { id } = req.params;
+  const account = await Account.findById(id);
   if (account == null) {
     return res.json(errorResponse("Account not found"));
   }
@@ -62,12 +63,13 @@ async function addThirdPartyToAccount(req: Request, res: Response) {
 }
 
 async function changePassword(req: Request, res: Response) {
+  const { id } = req.params;
   const { oldPassword, newPassword } = req.body;
   if (!oldPassword || !newPassword) {
     return res.json(errorResponse("Missing old or new password"));
   }
   // Check if account exists
-  const account = await Account.findById(req.params.id);
+  const account = await Account.findById(id);
   if (account == null) {
     return res.json(errorResponse("Account not found"));
   }

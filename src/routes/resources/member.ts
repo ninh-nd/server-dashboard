@@ -19,7 +19,7 @@ router.put("/:id", update);
 /* DELETE member */
 router.delete("/:id", remove);
 /* PATCH member: Assign task */
-router.patch("/:id/assignTask", assignTask);
+router.patch("/:id/assignTask/:taskId", assignTask);
 /* PATCH member: Join project */
 router.patch("/:id/joinProject", joinProject);
 export default router;

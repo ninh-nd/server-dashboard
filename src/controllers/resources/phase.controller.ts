@@ -55,7 +55,7 @@ export async function addTaskToPhase(req: Request, res: Response) {
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
       req.params.id,
-      { $addToSet: { tasks: req.body.taskId } },
+      { $addToSet: { tasks: req.params.taskId } },
 
       { new: true }
     );
@@ -69,7 +69,7 @@ export async function removeTaskFromPhase(req: Request, res: Response) {
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
       req.params.id,
-      { $pull: { tasks: req.body.taskId } },
+      { $pull: { tasks: req.params.taskId } },
 
       { new: true }
     );
@@ -90,8 +90,8 @@ export async function getPresets(req: Request, res: Response) {
 
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
-  const { artifact } = req.body;
-  const ar = new Artifact(artifact);
+  const { data } = req.body;
+  const ar = new Artifact(data);
   try {
     await ar.save();
   } catch (error) {
@@ -126,9 +126,9 @@ export async function removeArtifactFromPhase(req: Request, res: Response) {
 
 export async function updateArtifact(req: Request, res: Response) {
   const { id, artifactId } = req.params;
-  const { artifact } = req.body;
+  const { data } = req.body;
   try {
-    await Artifact.findOneAndUpdate({ _id: artifactId }, artifact, {
+    await Artifact.findOneAndUpdate({ _id: artifactId }, data, {
       new: true,
     });
     const updatedPhase = await Phase.findById(id);

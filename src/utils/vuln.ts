@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { IVulnerability } from "models/interfaces";
 dotenv.config();
 export async function fetchCVE(id: string) {
   const username = process.env.OPENCVE_USERNAME;
@@ -16,7 +17,25 @@ export async function fetchCVE(id: string) {
     });
     const data = await response.json();
     if (data.message) return new Error("CVE does not exist");
-    return data;
+    const cveId = data.id;
+    const desc = data.summary;
+    const score = data.cvss.v3 === undefined ? data.cvss.v2 : data.cvss.v3;
+    const cwes = data.cwes; // Array of CWEs
+    const vendor = Object.keys(data.vendors)[0];
+    const product = data.vendors[`${vendor}`][0];
+    const version = data.raw_nvd_data.configurations.nodes[0].cpe_match.map(
+      ({ cpe23Uri }: { cpe23Uri: string; vulnerable: boolean }) =>
+        cpe23Uri.split(":")[5]
+    );
+    return {
+      cveId,
+      description: desc,
+      score,
+      cwes,
+      vendor,
+      product,
+      version,
+    };
   } catch (error) {
     return new Error("Error fetching data from OpenCVE");
   }

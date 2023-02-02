@@ -25,9 +25,9 @@ router.put("/:id", update);
 /* DELETE phase */
 router.delete("/:id", remove);
 /* PATCH phase: Add task to a phase */
-router.patch("/:id/task/add", addTaskToPhase);
+router.patch("/:id/task/add/:taskId", addTaskToPhase);
 /* PATCH phase: Remove task from a phase */
-router.patch("/:id/task/delete", removeTaskFromPhase);
+router.patch("/:id/task/delete/:taskId", removeTaskFromPhase);
 /* PATCH phase: Create and add artifact to a phase */
 router.patch("/:id/artifact/add", addArtifactToPhase);
 /* PATCH phase: Remove and delete artifact from a phase */

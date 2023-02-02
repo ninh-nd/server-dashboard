@@ -49,11 +49,12 @@ export async function remove(req: Request, res: Response) {
 }
 
 export async function assignTask(req: Request, res: Response) {
+  const { id, taskId } = req.params;
   try {
     // Check if task has already been assigned
     const member = await Member.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { taskAssigned: req.body.taskId } },
+      id,
+      { $addToSet: { taskAssigned: taskId } },
 
       { new: true }
     );
@@ -64,11 +65,13 @@ export async function assignTask(req: Request, res: Response) {
 }
 
 export async function joinProject(req: Request, res: Response) {
+  const { projectId } = req.body;
+  const { id } = req.params;
   try {
     // Check if project has already been added
     const member = await Member.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { projectParticipated: req.body.projectId } },
+      id,
+      { $addToSet: { projectParticipated: projectId } },
       { new: true }
     );
     return res.json(successResponse(member, "Project joined"));

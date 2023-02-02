@@ -22,8 +22,9 @@ export async function get(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
+  const { data } = req.body;
+  const { name, description, projectName, status } = data;
   try {
-    const { name, description, projectName, status } = req.body;
     const newTask = new Task({ name, description, projectName, status });
     await newTask.save();
     return res.json(successResponse(newTask, "Task created"));
@@ -33,8 +34,9 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function update(req: Request, res: Response) {
+  const { data } = req.body;
+  const { name, status, description } = data;
   try {
-    const { name, status, description } = req.body;
     const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
       { name, status, description },
