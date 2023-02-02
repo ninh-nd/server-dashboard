@@ -5,8 +5,9 @@ import { CallbackError, Document } from "mongoose";
 import { IAccount } from "models/interfaces";
 import getRole from "utils/account";
 export async function get(req: Request, res: Response) {
+  const { id } = req.params;
   try {
-    const pm = await ProjectManager.findById(req.params.id);
+    const pm = await ProjectManager.findById(id);
     return res.json(successResponse(pm, "Project Manager found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -23,8 +24,10 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
   try {
-    const pm = await ProjectManager.findByIdAndUpdate(req.params.id, req.body, {
+    const pm = await ProjectManager.findByIdAndUpdate(id, data, {
       new: true,
     });
     return res.json(successResponse(pm, "Project Manager updated"));
@@ -34,8 +37,9 @@ export async function update(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
+  const { id } = req.params;
   ProjectManager.findByIdAndDelete(
-    req.params.id,
+    id,
     (error: CallbackError, doc: Document) => {
       if (error != null) {
         return res.json(errorResponse(`Internal server error: ${error}`));

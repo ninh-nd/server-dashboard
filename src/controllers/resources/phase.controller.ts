@@ -5,8 +5,9 @@ import { CallbackError, Document } from "mongoose";
 import { PhasePreset } from "models/phasePreset";
 import { Artifact } from "models/artifact";
 export async function get(req: Request, res: Response) {
+  const { id } = req.params;
   try {
-    const phase = await Phase.findById(req.params.id);
+    const phase = await Phase.findById(id);
     return res.json(successResponse(phase, "Phase found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -24,12 +25,10 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
   try {
-    const updatedPhase = await Phase.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const updatedPhase = await Phase.findByIdAndUpdate(id, data, { new: true });
     return res.json(successResponse(updatedPhase, "Phase updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -37,25 +36,24 @@ export async function update(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
-  Phase.findByIdAndDelete(
-    req.params.id,
-    (error: CallbackError, doc: Document) => {
-      if (error != null) {
-        return res.json(errorResponse(`Internal server error: ${error}`));
-      }
-      if (!doc) {
-        return res.json(errorResponse("Phase not found"));
-      }
-      return res.json(successResponse(doc, "Phase deleted"));
+  const { id } = req.params;
+  Phase.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
+    if (error != null) {
+      return res.json(errorResponse(`Internal server error: ${error}`));
     }
-  );
+    if (!doc) {
+      return res.json(errorResponse("Phase not found"));
+    }
+    return res.json(successResponse(doc, "Phase deleted"));
+  });
 }
 
 export async function addTaskToPhase(req: Request, res: Response) {
+  const { id, taskId } = req.params;
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { tasks: req.params.taskId } },
+      id,
+      { $addToSet: { tasks: taskId } },
 
       { new: true }
     );
@@ -66,10 +64,11 @@ export async function addTaskToPhase(req: Request, res: Response) {
 }
 
 export async function removeTaskFromPhase(req: Request, res: Response) {
+  const { id, taskId } = req.params;
   try {
     const updatedPhase = await Phase.findByIdAndUpdate(
-      req.params.id,
-      { $pull: { tasks: req.params.taskId } },
+      id,
+      { $pull: { tasks: taskId } },
 
       { new: true }
     );

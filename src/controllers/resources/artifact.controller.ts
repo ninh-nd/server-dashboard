@@ -14,8 +14,9 @@ export async function getAll(req: Request, res: Response) {
   }
 }
 export async function get(req: Request, res: Response) {
+  const { id } = req.params;
   try {
-    const artifact = await Artifact.findById(req.params.id).populate({
+    const artifact = await Artifact.findById(id).populate({
       path: "threatList vulnerabilityList",
     });
     return res.json(successResponse(artifact, "Artifact fetched successfully"));

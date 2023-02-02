@@ -72,8 +72,9 @@ export async function addPhaseToProject(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
+  const { projectName } = req.params;
+  const { id } = req.params;
   try {
-    const { projectName } = req.params;
     const project = await Project.findOne({ name: projectName });
     if (project == null) {
       return res.json(errorResponse("Project not found"));
@@ -83,7 +84,7 @@ export async function remove(req: Request, res: Response) {
       return res.json(errorResponse("Project cannot be deleted"));
     }
 
-    await Project.findByIdAndDelete(req.params.id);
+    await Project.findByIdAndDelete(id);
     return res.json(successResponse(project, "Project deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

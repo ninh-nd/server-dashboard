@@ -12,8 +12,9 @@ export async function getAll(req: Request, res: Response) {
 }
 
 export async function get(req: Request, res: Response) {
+  const { id } = req.params;
   try {
-    const thirdParty = await ThirdParty.findById(req.params.id);
+    const thirdParty = await ThirdParty.findById(id);
     return res.json(successResponse(thirdParty, "Third party found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -31,13 +32,12 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
   try {
-    const updatedThirdParty = await ThirdParty.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-
-      { new: true }
-    );
+    const updatedThirdParty = await ThirdParty.findByIdAndUpdate(id, data, {
+      new: true,
+    });
     return res.json(successResponse(updatedThirdParty, "Third party updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -45,16 +45,14 @@ export async function update(req: Request, res: Response) {
 }
 
 export async function remove(req: Request, res: Response) {
-  ThirdParty.findByIdAndDelete(
-    req.params.id,
-    (error: CallbackError, doc: Document) => {
-      if (error != null) {
-        return res.json(errorResponse(`Internal server error: ${error}`));
-      }
-      if (!doc) {
-        return res.json(errorResponse("Third party not found"));
-      }
-      return res.json(successResponse(doc, "Third party deleted"));
+  const { id } = req.params;
+  ThirdParty.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
+    if (error != null) {
+      return res.json(errorResponse(`Internal server error: ${error}`));
     }
-  );
+    if (!doc) {
+      return res.json(errorResponse("Third party not found"));
+    }
+    return res.json(successResponse(doc, "Third party deleted"));
+  });
 }
