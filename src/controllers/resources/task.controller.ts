@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { Task } from "models/task";
 import { errorResponse, successResponse } from "utils/responseFormat";
-import { CallbackError, Document } from "mongoose";
+import { CallbackError, Condition, Document } from "mongoose";
+import { ITask } from "models/interfaces";
 export async function getAll(req: Request, res: Response) {
   try {
     const projectName = req.query.projectName;
@@ -34,11 +35,22 @@ export async function create(req: Request, res: Response) {
   }
 }
 
-export async function update(req: Request, res: Response) {
-  const { id } = req.params;
-  const { data } = req.body;
+export async function markTask(req: Request, res: Response) {
+  const { data, status } = req.body;
+  // @ts-ignore
+  let op = [];
   try {
-    const updatedTask = await Task.findByIdAndUpdate(id, data, { new: true });
+    const arrayOfTaskId = data;
+    arrayOfTaskId.forEach((id: string) => {
+      op.push({
+        updateOne: {
+          filter: { _id: id },
+          update: { status: status },
+        },
+      });
+    });
+    // @ts-ignore
+    const updatedTask = await Task.bulkWrite(op);
     return res.json(successResponse(updatedTask, "Task updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
