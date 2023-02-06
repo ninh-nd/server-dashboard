@@ -141,6 +141,7 @@ export interface ITicket {
   createdAt: Date;
   updatedAt: Date;
   targetedVulnerability: IVulnerability[];
+  projectName: string;
 }
 
 export interface ICPE {

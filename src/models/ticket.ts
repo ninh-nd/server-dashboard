@@ -35,6 +35,10 @@ const ticketSchema = new Schema<ITicket>(
         default: [],
       },
     ],
+    projectName: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
