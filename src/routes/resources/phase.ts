@@ -14,24 +14,24 @@ import {
 
 const router = express.Router();
 
-/* GET phase presets */
+// Get all phase presets
 router.get("/presets", getPresets);
-/* GET phase */
+// Get a phase
 router.get("/:id", get);
-/* POST phase */
+// Create a phase
 router.post("/", create);
-/* PUT phase */
+// Update a phase
 router.put("/:id", update);
-/* DELETE phase */
+// Remove a phase
 router.delete("/:id", remove);
-/* PATCH phase: Add task to a phase */
+// Add task to a phase
 router.patch("/:id/task/add/:taskId", addTaskToPhase);
-/* PATCH phase: Remove task from a phase */
+// Remove task from a phase
 router.patch("/:id/task/delete/:taskId", removeTaskFromPhase);
-/* PATCH phase: Create and add artifact to a phase */
+// Create and add artifact to a phase
 router.patch("/:id/artifact/add", addArtifactToPhase);
-/* PATCH phase: Remove and delete artifact from a phase */
+// Remove and delete artifact from a phase
 router.patch("/:id/artifact/delete/:artifactId", removeArtifactFromPhase);
-/* PATCH phase: Update artifact in a phase */
+// Update artifact in a phase
 router.patch("/:id/artifact/update/:artifactId", updateArtifact);
 export default router;

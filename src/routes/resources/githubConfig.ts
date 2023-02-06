@@ -6,11 +6,11 @@ import {
 } from "controllers/resources/githubConfig.controller";
 
 const router = express.Router();
-/* GET github config */
+// Get a github config
 router.get("/:projectId", get);
-/* POST github config */
+// Create a github config
 router.post("/", create);
-/* PUT github config */
+// Update a github config
 router.put("/:projectId", update);
 
 export default router;

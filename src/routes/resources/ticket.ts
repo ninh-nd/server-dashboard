@@ -1,8 +1,9 @@
-import { create, getAll } from "controllers/resources/threat.controller";
+import { create, getAll } from "controllers/resources/ticket.controller";
 import express from "express";
 const router = express.Router();
-// Get all threats
+
+// Get all tickets
 router.get("/", getAll);
-// Create a threat
+// Create a ticket
 router.post("/", create);
 export default router;

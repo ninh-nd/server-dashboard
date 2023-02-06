@@ -10,16 +10,16 @@ import {
 
 const router = express.Router();
 
-/* GET member */
+// Get a member
 router.get("/:id", get);
-/* POST member */
+// Create a member
 router.post("/", create);
-/* PUT member */
+// Update a member
 router.put("/:id", update);
-/* DELETE member */
+// Remove a member
 router.delete("/:id", remove);
-/* PATCH member: Assign task */
+// Assign task to a member
 router.patch("/:id/assignTask/:taskId", assignTask);
-/* PATCH member: Join project */
+// Let a member join a project
 router.patch("/:id/joinProject", joinProject);
 export default router;

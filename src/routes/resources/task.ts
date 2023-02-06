@@ -10,15 +10,15 @@ import { checkAuth } from "middlewares/auth";
 
 const router = express.Router();
 
-/* GET all tasks */
+// Get all tasks
 router.get("/", checkAuth, getAll);
-/* GET task */
+// Get a task
 router.get("/:id", checkAuth, get);
-/* POST task */
+// Create a task
 router.post("/", checkAuth, create);
-/* PUT task: Change status of tasks */
+// Change status of tasks
 router.patch("/", checkAuth, markTask);
-/* DELETE task */
+// Remove a task
 router.delete("/:id", checkAuth, remove);
 
 export default router;

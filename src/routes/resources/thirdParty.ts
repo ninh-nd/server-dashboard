@@ -9,15 +9,15 @@ import {
 
 const router = express.Router();
 
-/* GET all third parties */
+// Get all third parties
 router.get("/", getAll);
-/* GET third party */
+// Get a third party
 router.get("/:id", get);
-/* POST third party */
+// Create a third party
 router.post("/", create);
-/* PUT third party */
+// Update a third party
 router.put("/:id", update);
-/* DELETE third party */
+// Remove a third party
 router.delete("/:id", remove);
 
 export default router;

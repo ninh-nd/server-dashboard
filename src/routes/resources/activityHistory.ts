@@ -8,12 +8,12 @@ import {
 import { checkAuth } from "middlewares/auth";
 
 const router = express.Router();
-/* GET pull requests */
+// Get pull requests
 router.get("/:projectName/commit", checkAuth, getCommits);
-/* GET commits */
+// Get commits
 router.get("/:projectName/pullrequest", checkAuth, getPRs);
-/* GET commits by account */
+// Get commits by account
 router.get("/:projectName/commit/:username", checkAuth, getCommitsByAccount);
-/* GET pull requests by account */
+// Get pull requests by account
 router.get("/:projectName/pullrequest/:username", checkAuth, getPRsByAccount);
 export default router;

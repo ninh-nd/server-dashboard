@@ -11,18 +11,18 @@ import {
 
 const router = express.Router();
 
-/* GET project */
+// Get a project
 router.get("/:projectName", get);
-/* POST project */
+// Create a project
 router.post("/", create);
-/* POST phase from a given model */
+// Create a phase model from a given model
 router.post("/:projectName", createPhaseModel);
-/* PATCH project: Update status */
+// Update status of project
 router.patch("/:projectName", updateStatus);
-/* PATCH project: Add phase to project */
+// Add phases to a project
 router.patch("/:projectName/phase", addPhaseToProject);
-/* DELETE project */
+// Remove a project
 router.delete("/:projectName", remove);
-/* GET project members */
+// Get project members
 router.get("/:projectName/member", getProjectMembers);
 export default router;

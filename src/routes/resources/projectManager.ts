@@ -10,16 +10,16 @@ import {
 } from "controllers/resources/projectManager.controller";
 
 const router = express.Router();
-/* GET project manager projects */
+// Get a project manager's projects
 router.get("/project", checkAuth, checkProjectManager, getProjectOwn);
-/* GET project manager */
+// Get a project manager
 router.get("/:id", get);
-/* POST project manager */
+// Create a project manager
 router.post("/", create);
-/* PUT project manager */
+// Update a project manager
 router.put("/:id", update);
-/* DELETE project manager */
+// Remove a project manager
 router.delete("/:id", remove);
-/* PATCH project manager: Add project to project manager */
+// Add a project to aproject manager
 router.patch("/:id/project", addProjectOwn);
 export default router;
