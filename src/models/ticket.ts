@@ -14,8 +14,13 @@ const ticketSchema = new Schema<ITicket>(
     },
     assigner: {
       type: Schema.Types.ObjectId,
-      ref: "Member",
+      refPath: "roleModel",
       required: true,
+    },
+    roleModel: {
+      type: String,
+      required: true,
+      enum: ["Member", "ProjectManager"],
     },
     status: {
       type: String,

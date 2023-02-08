@@ -136,7 +136,8 @@ export interface ITicket {
   status: "open" | "closed";
   description: string;
   priority: "low" | "medium" | "high";
-  assigner: IMember;
+  assigner: IMember | IProjectManager;
+  roleModel: "Member" | "ProjectManager";
   assignee: IMember;
   createdAt: Date;
   updatedAt: Date;

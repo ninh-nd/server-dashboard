@@ -106,6 +106,9 @@ export async function getProjectMembers(req: Request, res: Response) {
       .populate({
         path: "taskAssigned",
         match: { projectName },
+      })
+      .populate({
+        path: "account",
       });
     return res.json(successResponse(members, "Members found"));
   } catch (error) {
