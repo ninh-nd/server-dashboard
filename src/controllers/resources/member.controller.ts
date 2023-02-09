@@ -5,7 +5,9 @@ import { CallbackError, Document } from "mongoose";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const member = await Member.findById(id).populate("activityHistory");
+    const member = await Member.findById(id).populate({
+      path: "activityHistory taskAssigned ticketAssigned account",
+    });
     return res.json(successResponse(member, "Member found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
