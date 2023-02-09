@@ -7,7 +7,17 @@ import { Artifact } from "models/artifact";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const phase = await Phase.findById(id);
+    const phase = await Phase.findById(id).populate([
+      {
+        path: "tasks",
+      },
+      {
+        path: "artifacts",
+        populate: {
+          path: "threatList vulnerabilityList",
+        },
+      },
+    ]);
     return res.json(successResponse(phase, "Phase found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

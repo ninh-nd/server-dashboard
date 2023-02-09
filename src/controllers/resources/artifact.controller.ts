@@ -5,7 +5,9 @@ import { successResponse } from "utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
   try {
-    const artifacts = await Artifact.find({ projectName });
+    const artifacts = await Artifact.find({ projectName }).populate({
+      path: "threatList vulnerabilityList",
+    });
     return res.json(
       successResponse(artifacts, "Artifacts fetched successfully")
     );
