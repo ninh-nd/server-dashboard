@@ -1,12 +1,44 @@
 import { Request, Response } from "express";
 import { Task } from "models/task";
+import { Project } from "models/project";
+import { CallbackError, Document } from "mongoose";
 import { errorResponse, successResponse } from "utils/responseFormat";
-import { CallbackError, Condition, Document } from "mongoose";
-import { ITask } from "models/interfaces";
 export async function getAll(req: Request, res: Response) {
+  const { projectName, filter } = req.query;
   try {
-    const projectName = req.query.projectName;
     const tasks = await Task.find({ projectName });
+    if (filter !== "all") {
+      const project = await Project.findOne({ name: projectName }).populate(
+        "phaseList"
+      );
+      if (filter === "unassigned") {
+        const filteredTasks = tasks.filter((task) => {
+          let isAssigned = false;
+          project?.phaseList.forEach((phase) => {
+            // @ts-ignore
+            if (phase.tasks.includes(task._id)) {
+              isAssigned = true;
+            }
+          });
+          return !isAssigned;
+        });
+        return res.json(successResponse(filteredTasks, "Tasks found"));
+      } else if (filter === "assigned") {
+        const filteredTasks = tasks.filter((task) => {
+          let isAssigned = false;
+          project?.phaseList.forEach((phase) => {
+            // @ts-ignore
+            if (phase.tasks.includes(task._id)) {
+              isAssigned = true;
+            }
+          });
+          return isAssigned;
+        });
+        return res.json(successResponse(filteredTasks, "Tasks found"));
+      }
+    } else {
+      return res.json(successResponse(tasks, "Tasks found"));
+    }
     return res.json(successResponse(tasks, "Tasks found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
