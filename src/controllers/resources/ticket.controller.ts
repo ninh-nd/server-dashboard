@@ -16,6 +16,23 @@ export async function getAll(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
+
+export async function get(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const ticket = await Ticket.findById(id).populate({
+      path: "assignee assigner targetedVulnerability",
+    });
+    if (ticket) {
+      return res.json(successResponse(ticket, "Ticket fetched successfully"));
+    } else {
+      return res.json(errorResponse("Ticket does not exist"));
+    }
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
   const { assigner } = data;
@@ -36,6 +53,20 @@ export async function create(req: Request, res: Response) {
     }
     const ticket = await Ticket.create(o);
     return res.json(successResponse(ticket, "Ticket created successfully"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
+  try {
+    const ticket = await Ticket.findByIdAndUpdate(id, data, { new: true });
+    if (ticket) {
+      return res.json(successResponse(ticket, "Ticket updated successfully"));
+    }
+    return res.json(errorResponse("Ticket does not exist"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

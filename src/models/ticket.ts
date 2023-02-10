@@ -7,11 +7,13 @@ const ticketSchema = new Schema<ITicket>(
       type: String,
       required: true,
     },
-    assignee: {
-      type: Schema.Types.ObjectId,
-      ref: "Member",
-      required: true,
-    },
+    assignee: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Member",
+        required: true,
+      },
+    ],
     assigner: {
       type: Schema.Types.ObjectId,
       refPath: "roleModel",
