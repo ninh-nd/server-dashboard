@@ -9,6 +9,11 @@ export async function get(req: Request, res: Response) {
     const { projectName } = req.params;
     const project = await Project.findOne({ name: projectName }).populate({
       path: "phaseList",
+      options: {
+        sort: {
+          order: 1,
+        },
+      },
       populate: [
         {
           path: "tasks",
