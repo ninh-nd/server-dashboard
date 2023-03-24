@@ -71,7 +71,7 @@ export async function getProjectOwn(req: Request, res: Response) {
   try {
     const account = req.user as IAccount;
     const roleObject = await getRole(account._id);
-    if (roleObject === undefined) return;
+    if (!roleObject) return;
     const { id } = roleObject;
     const pm = await ProjectManager.findById(id).populate("projectOwn");
     if (pm == null) {

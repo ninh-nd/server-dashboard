@@ -13,7 +13,7 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
 function checkProjectManager(req: Request, res: Response, next: NextFunction) {
   const account = req.user as IAccount;
   getRole(account._id).then((roleObject) => {
-    if (roleObject === undefined)
+    if (!roleObject)
       return res.status(500).send(errorResponse("Error getting role of user"));
     if (roleObject.role === "manager") {
       return next();

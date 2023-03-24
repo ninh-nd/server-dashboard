@@ -6,7 +6,7 @@ import { errorResponse, successResponse } from "utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
-  if (projectName === undefined) {
+  if (!projectName) {
     return res.json(errorResponse("Project name is required"));
   }
   try {
@@ -36,7 +36,7 @@ export async function get(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
   const { assigner } = data;
-  if (assigner === undefined) {
+  if (!assigner) {
     return res.json(errorResponse("Assigner is required"));
   }
   try {

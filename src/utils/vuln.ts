@@ -4,8 +4,7 @@ dotenv.config();
 export async function fetchCVE(id: string) {
   const username = process.env.OPENCVE_USERNAME;
   const password = process.env.OPENCVE_PASSWORD;
-  if (username === undefined || password === undefined)
-    return new Error("Invalid OpenCVE credentials");
+  if (!username || !password) return new Error("Invalid OpenCVE credentials");
   const headers = new Headers();
   headers.set(
     "Authorization",
@@ -19,7 +18,7 @@ export async function fetchCVE(id: string) {
     if (data.message) return new Error("CVE does not exist");
     const cveId = data.id;
     const desc = data.summary;
-    const score = data.cvss.v3 === undefined ? data.cvss.v2 : data.cvss.v3;
+    const score = data.cvss.v3 ?? data.cvss.v2;
     const cwes = data.cwes; // Array of CWEs
     const vendor = Object.keys(data.vendors)[0];
     const product = data.vendors[`${vendor}`][0];
