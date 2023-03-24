@@ -13,7 +13,7 @@ export async function getAll(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
   try {
-    const threat = await Threat.find({ name: data.name });
+    const threat = await Threat.findOne({ name: data.name });
     if (threat) {
       return res.json(errorResponse(`Threat already exists`));
     }
