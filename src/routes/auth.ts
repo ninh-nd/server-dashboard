@@ -12,7 +12,7 @@ router.get("/logout", logout);
 // Github login
 router.get(
   "/github",
-  passport.authenticate("github", { scope: ["user:email"] })
+  passport.authenticate("github", { scope: ["repo"] })
 );
 // Github login success
 router.get("/github/callback", passport.authenticate("github"), (req, res) =>
