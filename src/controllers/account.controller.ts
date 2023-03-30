@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { ThirdParty } from "models/thirdParty";
 import { IAccount } from "models/interfaces";
 
-async function get(req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   try {
     const account = req.user as IAccount;
     const findedAccount = await Account.findById(account._id);
@@ -16,7 +16,7 @@ async function get(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   const { username, password, email } = req.body;
   // Check if account exists
   const accountExists = await Account.findOne({ username });
@@ -39,7 +39,7 @@ async function create(req: Request, res: Response) {
   }
 }
 
-async function addThirdPartyToAccount(req: Request, res: Response) {
+export async function addThirdPartyToAccount(req: Request, res: Response) {
   // Check if account exists
   const { id } = req.params;
   const account = await Account.findById(id);
@@ -62,7 +62,7 @@ async function addThirdPartyToAccount(req: Request, res: Response) {
   }
 }
 
-async function changePassword(req: Request, res: Response) {
+export async function changePassword(req: Request, res: Response) {
   const { id } = req.params;
   const { oldPassword, newPassword } = req.body;
   if (!oldPassword || !newPassword) {
@@ -85,14 +85,3 @@ async function changePassword(req: Request, res: Response) {
   await account.save();
   return res.json(successResponse(account, "Password changed"));
 }
-
-async function logout(req: Request, res: Response) {
-  req.logout((err) => {
-    if (err) {
-      return res.json(errorResponse(err));
-    }
-  });
-  return res.json(successResponse(null, "Logged out"));
-}
-
-export { get, create, addThirdPartyToAccount, changePassword, logout };

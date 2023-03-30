@@ -1,4 +1,4 @@
-import { checkProjectManager, checkAuth } from "../../middlewares/auth";
+import { checkProjectManager, checkAuth } from "middlewares/auth";
 import express from "express";
 import {
   get,
@@ -7,7 +7,7 @@ import {
   remove,
   addProjectOwn,
   getProjectOwn,
-} from "controllers/resources/projectManager.controller";
+} from "controllers/projectManager.controller";
 
 const router = express.Router();
 // Get a project manager's projects

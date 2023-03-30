@@ -6,7 +6,7 @@ import {
   remove,
   assignTask,
   joinProject,
-} from "controllers/resources/member.controller";
+} from "controllers/member.controller";
 
 const router = express.Router();
 

@@ -5,7 +5,7 @@ import {
   create,
   markTask,
   remove,
-} from "controllers/resources/task.controller";
+} from "controllers/task.controller";
 import { checkAuth } from "middlewares/auth";
 
 const router = express.Router();

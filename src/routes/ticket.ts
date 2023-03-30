@@ -1,9 +1,4 @@
-import {
-  create,
-  get,
-  getAll,
-  update,
-} from "controllers/resources/ticket.controller";
+import { create, get, getAll, update } from "controllers/ticket.controller";
 import express from "express";
 const router = express.Router();
 

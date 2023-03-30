@@ -10,7 +10,7 @@ import {
   addArtifactToPhase,
   removeArtifactFromPhase,
   updateArtifact,
-} from "controllers/resources/phase.controller";
+} from "controllers/phase.controller";
 
 const router = express.Router();
 

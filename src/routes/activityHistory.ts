@@ -4,7 +4,7 @@ import {
   getCommits,
   getCommitsByAccount,
   getPRsByAccount,
-} from "controllers/resources/activityHistory.controller";
+} from "controllers/activityHistory.controller";
 import { checkAuth } from "middlewares/auth";
 
 const router = express.Router();

@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { getAll, get } from "controllers/resources/artifact.controller";
+import { getAll, get } from "controllers/artifact.controller";
 
 // Get all artifacts
 router.get("/", getAll);
