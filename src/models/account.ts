@@ -13,7 +13,6 @@ const accountSchema = new Schema<IAccount>({
   },
   email: {
     type: String,
-    required: true,
     lowercase: true,
   },
   thirdParty: [

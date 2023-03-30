@@ -42,6 +42,7 @@ function initialize(passport: PassportStatic) {
         const newAccount = new Account({
           username: profile.id,
           password: profile.id,
+          email: profile.emails ? profile.emails[0].value : "",
         });
         newAccount.save((err, account) => {
           if (err) {
@@ -62,7 +63,7 @@ function initialize(passport: PassportStatic) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/account/auth/github/callback",
+        callbackURL: "http://localhost:3001/auth/github/callback",
       },
       authenticateUserGithub
     )
