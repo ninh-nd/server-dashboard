@@ -5,6 +5,7 @@ import { IAccount } from "models/interfaces";
 import { Account } from "models/account";
 import Local from "passport-local";
 import Github from "passport-github2";
+import { ThirdParty } from "models/thirdParty";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
 interface IAccountPassport extends Express.User {
@@ -39,10 +40,17 @@ function initialize(passport: PassportStatic) {
     try {
       const account = await Account.findOne({ username: profile.id });
       if (!account) {
+        const newThirdParty = new ThirdParty({
+          name: "Github",
+          username: profile.username,
+          url: "http://github.com",
+        });
+        newThirdParty.save((err) => done(err));
         const newAccount = new Account({
           username: profile.id,
           password: profile.id,
           email: profile.emails ? profile.emails[0].value : "",
+          thirdParty: [newThirdParty],
         });
         newAccount.save((err, account) => {
           if (err) {
