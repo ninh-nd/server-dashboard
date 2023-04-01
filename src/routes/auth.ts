@@ -1,4 +1,4 @@
-import { logout } from "controllers/auth.controller";
+import { logout, redirectToHomePage } from "controllers/auth.controller";
 import express from "express";
 import passport from "passport";
 
@@ -10,13 +10,12 @@ router.post("/login", passport.authenticate("local"), (req, res) =>
 // Logout
 router.get("/logout", logout);
 // Github login
-router.get(
-  "/github",
-  passport.authenticate("github", { scope: ["repo"] })
-);
+router.get("/github", passport.authenticate("github", { scope: ["repo"] }));
 // Github login success
-router.get("/github/callback", passport.authenticate("github"), (req, res) =>
-  res.redirect("/")
+router.get(
+  "/github/callback",
+  passport.authenticate("github"),
+  redirectToHomePage
 );
 
 export default router;

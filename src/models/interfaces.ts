@@ -33,7 +33,7 @@ export interface IGithubConfig {
   owner: string;
 }
 
-export interface IMember {
+export interface IUser {
   name: string;
   account: Types.ObjectId;
   company: string;
@@ -85,13 +85,6 @@ export interface IPhasePreset {
   description: string;
   phases: IPhase[];
 }
-
-export interface IProjectManager {
-  name: string;
-  account: Types.ObjectId;
-  company: string;
-  projectOwn: IProject[];
-}
 export interface ICWE {
   cweId: string;
   name: string;
@@ -136,9 +129,8 @@ export interface ITicket {
   status: "open" | "closed";
   description: string;
   priority: "low" | "medium" | "high";
-  assigner: IMember | IProjectManager;
-  roleModel: "Member" | "ProjectManager";
-  assignee: IMember;
+  assigner: IUser;
+  assignee: IUser;
   createdAt: Date;
   updatedAt: Date;
   targetedVulnerability: IVulnerability[];

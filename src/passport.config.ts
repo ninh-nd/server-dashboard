@@ -44,13 +44,14 @@ function initialize(passport: PassportStatic) {
           name: "Github",
           username: profile.username,
           url: "http://github.com",
+          accessToken,
         });
         newThirdParty.save((err) => done(err));
         const newAccount = new Account({
           username: profile.id,
           password: profile.id,
           email: profile.emails ? profile.emails[0].value : "",
-          thirdParty: [newThirdParty],
+          thirdParty: [newThirdParty._id],
         });
         newAccount.save((err, account) => {
           if (err) {
@@ -59,6 +60,11 @@ function initialize(passport: PassportStatic) {
           return done(null, account);
         });
       }
+      await ThirdParty.findOneAndUpdate(
+        { username: profile.username },
+        { accessToken }
+      );
+      return done(null, account);
     } catch (e) {
       return done(e);
     }
@@ -71,7 +77,7 @@ function initialize(passport: PassportStatic) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "http://localhost:3001/auth/github/callback",
+        callbackURL: "/auth/github/callback",
       },
       authenticateUserGithub
     )

@@ -1,5 +1,5 @@
 import { Project } from "models/project";
-import { Member } from "models/member";
+import { User } from "models/user";
 import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
 import { Phase } from "models/phase";
@@ -103,7 +103,7 @@ export async function getProjectMembers(req: Request, res: Response) {
     if (project == null) {
       return res.json(errorResponse("Project not found"));
     }
-    const members = await Member.find({ projectId: project._id })
+    const users = await User.find({ projectId: project._id })
       .populate({
         path: "activityHistory",
         match: { projectId: project._id },
@@ -115,7 +115,7 @@ export async function getProjectMembers(req: Request, res: Response) {
       .populate({
         path: "account",
       });
-    return res.json(successResponse(members, "Members found"));
+    return res.json(successResponse(users, "Users found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

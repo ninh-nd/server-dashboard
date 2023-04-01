@@ -1,7 +1,7 @@
 import { Schema, Model, model } from "mongoose";
-import { IMember } from "./interfaces";
+import { IUser } from "./interfaces";
 
-const memberSchema = new Schema<IMember>({
+const userSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
@@ -40,6 +40,6 @@ const memberSchema = new Schema<IMember>({
     },
   ],
 });
-const Member: Model<IMember> = model("Member", memberSchema);
+const User: Model<IUser> = model("User", userSchema);
 
-export { Member, memberSchema };
+export { User, userSchema };

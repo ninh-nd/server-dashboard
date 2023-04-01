@@ -10,19 +10,14 @@ const ticketSchema = new Schema<ITicket>(
     assignee: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Member",
+        ref: "User",
         required: true,
       },
     ],
     assigner: {
       type: Schema.Types.ObjectId,
-      refPath: "roleModel",
+      refPath: "User",
       required: true,
-    },
-    roleModel: {
-      type: String,
-      required: true,
-      enum: ["Member", "ProjectManager"],
     },
     status: {
       type: String,

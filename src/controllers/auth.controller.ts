@@ -9,3 +9,4 @@ export async function logout(req: Request, res: Response) {
   });
   return res.json(successResponse(null, "Logged out"));
 }
+export async function redirectToHomePage(req: Request, res: Response) {}

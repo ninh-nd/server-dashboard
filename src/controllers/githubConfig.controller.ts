@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { GithubConfig } from "models/githubConfig";
 import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
+import { Octokit } from "octokit";
 export async function get(req: Request, res: Response) {
   const { projectId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(projectId)) {
@@ -41,6 +42,33 @@ export async function update(req: Request, res: Response) {
       return res.json(successResponse(githubConfig, "Github config updated"));
     }
     return res.json(errorResponse("No Github config found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function getProjects(req: Request, res: Response) {
+  const { username, accessToken } = req.query;
+  const forceUsername = username as string;
+  const octokit = new Octokit({
+    auth: accessToken,
+  });
+  try {
+    const projects = await octokit.rest.repos.listForUser({
+      username: forceUsername,
+      type: "owner",
+    });
+    const { data } = projects;
+    if (data.length === 0) {
+      return res.json(
+        errorResponse("No Github projects found on this account")
+      );
+    }
+    const response = data.map(({ name, html_url }) => ({
+      name,
+      url: html_url,
+    }));
+    return res.json(successResponse(response, "Github projects found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

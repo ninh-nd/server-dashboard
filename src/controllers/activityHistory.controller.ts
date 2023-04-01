@@ -1,7 +1,7 @@
 import { Octokit } from "octokit";
 import { Account } from "models/account";
 import { ActivityHistory } from "models/activityHistory";
-import { Member } from "models/member";
+import { User } from "models/user";
 import { GithubConfig } from "models/githubConfig";
 import { Project } from "models/project";
 import { errorResponse, successResponse } from "utils/responseFormat";
@@ -51,22 +51,22 @@ async function getGithubPull(
   );
   try {
     await ActivityHistory.insertMany([...processedPrData], { ordered: false });
-    // Add history to each member in the project
+    // Add history to each user in the project
     const history = await ActivityHistory.find({ projectId });
-    const members = await Member.find({ projectIn: projectId });
-    members.forEach(async (member) => {
+    const users = await User.find({ projectIn: projectId });
+    users.forEach(async (user) => {
       // Temporary solution as Github is the only third party
-      const account = await Account.findById(member.account);
+      const account = await Account.findById(user.account);
       if (account == null) {
         return new Error("Can't find account");
       }
       const thirdPartyUsername = account.thirdParty[0].username;
-      const memberHistory = history.filter(
+      const userHistory = history.filter(
         ({ createdBy }) => createdBy === thirdPartyUsername
       );
-      await Member.findByIdAndUpdate(
-        member._id,
-        { $addToSet: { activityHistory: memberHistory } },
+      await User.findByIdAndUpdate(
+        user._id,
+        { $addToSet: { activityHistory: userHistory } },
         { new: true }
       );
     });
@@ -113,22 +113,22 @@ async function getGithubCommits(
     await ActivityHistory.insertMany([...processedCommitData], {
       ordered: false,
     });
-    // Add history to each member in the project
+    // Add history to each user in the project
     const history = await ActivityHistory.find({ projectId });
-    const members = await Member.find({ projectIn: projectId });
-    members.forEach(async (member) => {
+    const users = await User.find({ projectIn: projectId });
+    users.forEach(async (user) => {
       // Temporary solution as Github is the only third party
-      const account = await Account.findById(member.account);
+      const account = await Account.findById(user.account);
       if (account == null) {
         return new Error("Can't find account");
       }
       const thirdPartyUsername = account.thirdParty[0].username;
-      const memberHistory = history.filter(
+      const userHistory = history.filter(
         ({ createdBy }) => createdBy === thirdPartyUsername
       );
-      await Member.findByIdAndUpdate(
-        member._id,
-        { $addToSet: { activityHistory: memberHistory } },
+      await User.findByIdAndUpdate(
+        user._id,
+        { $addToSet: { activityHistory: userHistory } },
         { new: true }
       );
     });
