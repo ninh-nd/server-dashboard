@@ -82,9 +82,9 @@ export async function addProjectIn(req: Request, res: Response) {
 }
 
 export async function getProjectIn(req: Request, res: Response) {
+  const account = req.user as IAccount;
+  const id = account._id;
   try {
-    const account = req.user as IAccount;
-    const id = account._id;
     const user = await User.findOne({ account: id }).populate("projectIn");
     if (user == null) {
       return res.json(errorResponse("User not found"));
