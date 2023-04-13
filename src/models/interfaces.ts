@@ -116,7 +116,7 @@ export interface IArtifact {
   createdAt: Date;
   updatedAt: Date;
   threatList: IThreat[];
-  vulnerabilityList?: IVulnerability[];
+  vulnerabilityList: IVulnerability[];
 }
 
 export interface IThreat {
