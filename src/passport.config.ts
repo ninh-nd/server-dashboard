@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import { Types } from "mongoose";
 import { PassportStatic } from "passport";
 import { IAccount } from "models/interfaces";
 import { Account } from "models/account";
@@ -8,9 +7,6 @@ import Github from "passport-github2";
 import { ThirdParty } from "models/thirdParty";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
-interface IAccountPassport extends Express.User {
-  _id?: Types.ObjectId;
-}
 function initialize(passport: PassportStatic) {
   const authenticateUser = async (
     username: string,
@@ -86,9 +82,7 @@ function initialize(passport: PassportStatic) {
   passport.use(
     new LocalStrategy({ usernameField: "username" }, authenticateUser)
   );
-  passport.serializeUser((account: IAccountPassport, done) =>
-    done(null, account._id)
-  );
+  passport.serializeUser((account, done) => done(null, account._id));
   passport.deserializeUser((id: string, done) => {
     Account.findById(id, (err: Error, account: IAccount) => {
       if (err) return done(err);

@@ -21,6 +21,11 @@ const accountSchema = new Schema<IAccount>({
       default: [],
     },
   ],
+  role: {
+    type: String,
+    enum: ["admin", "manager", "member"],
+    default: "member",
+  },
 });
 const Account: Model<IAccount> = model("Account", accountSchema);
 

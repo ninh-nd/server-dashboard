@@ -6,6 +6,7 @@ export interface IAccount {
   password: string;
   email: string;
   thirdParty: IThirdParty[];
+  role: "admin" | "manager" | "member";
 }
 
 export interface IThirdParty {

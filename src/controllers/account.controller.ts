@@ -10,7 +10,36 @@ export async function get(req: Request, res: Response) {
   try {
     const account = req.user as IAccount;
     const findedAccount = await Account.findById(account._id);
+    if (!findedAccount) {
+      return res.json(errorResponse("No account is found in the database"));
+    }
+    // @ts-ignore
+    delete findedAccount.password;
     return res.json(successResponse(findedAccount, "Account found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function getAll(req: Request, res: Response) {
+  try {
+    const accounts = await Account.find();
+    return res.json(successResponse(accounts, "Accounts found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function getById(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const account = await Account.findById(id);
+    if (!account) {
+      return res.json(
+        errorResponse(`No account with ${id} is found in the database`)
+      );
+    }
+    return res.json(successResponse(account, "Account found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -84,4 +113,35 @@ export async function changePassword(req: Request, res: Response) {
   account.password = hashedPassword;
   await account.save();
   return res.json(successResponse(account, "Password changed"));
+}
+
+export async function updateAccountInfo(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
+  // Check if account exists
+  const account = await Account.findById(id);
+  if (account == null) {
+    return res.json(errorResponse("Account not found"));
+  }
+  if (!data) return;
+  // Update account info
+  try {
+    const account = await Account.findByIdAndUpdate(id, data, { new: true });
+    return res.json(successResponse(account, "Account info updated"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function remove(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const account = await Account.findByIdAndDelete(id);
+    if (!account) {
+      return res.json(errorResponse("Account not found"));
+    }
+    return res.json(successResponse(account, "Account deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
 }
