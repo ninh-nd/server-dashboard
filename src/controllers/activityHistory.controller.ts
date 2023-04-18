@@ -57,7 +57,7 @@ async function getGithubPull(
     users.forEach(async (user) => {
       // Temporary solution as Github is the only third party
       const account = await Account.findById(user.account);
-      if (account == null) {
+      if (!account) {
         return new Error("Can't find account");
       }
       const thirdPartyUsername = account.thirdParty[0].username;
@@ -119,7 +119,7 @@ async function getGithubCommits(
     users.forEach(async (user) => {
       // Temporary solution as Github is the only third party
       const account = await Account.findById(user.account);
-      if (account == null) {
+      if (!account) {
         return new Error("Can't find account");
       }
       const thirdPartyUsername = account.thirdParty[0].username;
@@ -141,7 +141,7 @@ async function getGithubCommits(
 export async function getPRs(req: Request, res: Response) {
   const { projectName } = req.params;
   const githubConfig = await GithubConfig.findOne({ repo: projectName });
-  if (githubConfig == null) {
+  if (!githubConfig) {
     return res.json(errorResponse("No github config found"));
   }
   const { accessToken, owner, repo, projectId } = githubConfig;
@@ -172,7 +172,7 @@ export async function getPRs(req: Request, res: Response) {
 export async function getCommits(req: Request, res: Response) {
   const { projectName } = req.params;
   const githubConfig = await GithubConfig.findOne({ repo: projectName });
-  if (githubConfig == null) {
+  if (!githubConfig) {
     return res.json(errorResponse("No github config found"));
   }
   const { accessToken, owner, repo, projectId } = githubConfig;
@@ -206,11 +206,11 @@ export async function getCommitsByAccount(req: Request, res: Response) {
   const { username, projectName } = req.params;
   try {
     const projectId = await Project.findOne({ name: projectName });
-    if (projectId == null) {
+    if (!projectId) {
       return res.json(errorResponse("No project found"));
     }
     const user = await Account.findOne({ username });
-    if (user == null) {
+    if (!user) {
       return res.json(errorResponse("No user found"));
     }
     // Get the account linked to the internal account
@@ -230,11 +230,11 @@ export async function getPRsByAccount(req: Request, res: Response) {
   const { username, projectName } = req.params;
   try {
     const projectId = await Project.findOne({ name: projectName });
-    if (projectId == null) {
+    if (!projectId) {
       return res.json(errorResponse("No project found"));
     }
     const user = await Account.findOne({ username });
-    if (user == null) {
+    if (!user) {
       return res.json(errorResponse("No user found"));
     }
     // Get the account linked to the internal account

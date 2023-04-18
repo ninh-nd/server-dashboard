@@ -10,7 +10,7 @@ export async function get(req: Request, res: Response) {
   }
   try {
     const githubConfig = await GithubConfig.findOne({ projectId });
-    if (githubConfig != null) {
+    if (githubConfig) {
       return res.json(successResponse(githubConfig, "Github config found"));
     }
     return res.json(errorResponse("No Github config found"));
@@ -38,7 +38,7 @@ export async function update(req: Request, res: Response) {
 
       { new: true }
     );
-    if (githubConfig != null) {
+    if (githubConfig) {
       return res.json(successResponse(githubConfig, "Github config updated"));
     }
     return res.json(errorResponse("No Github config found"));

@@ -81,7 +81,7 @@ export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const project = await Project.findOne({ name: projectName });
-    if (project == null) {
+    if (!project) {
       return res.json(errorResponse("Project not found"));
     }
     // Check if the project has just been created for 1 day
@@ -100,7 +100,7 @@ export async function getProjectMembers(req: Request, res: Response) {
   try {
     const { projectName } = req.params;
     const project = await Project.findOne({ name: projectName });
-    if (project == null) {
+    if (!project) {
       return res.json(errorResponse("Project not found"));
     }
     const users = await User.find({ projectId: project._id })
@@ -126,7 +126,7 @@ export async function createPhaseModel(req: Request, res: Response) {
   const { data } = req.body; // Phase model, contains an array of phase with name and description
   try {
     const project = await Project.findOne({ name: projectName });
-    if (project == null) {
+    if (!project) {
       return res.json(errorResponse("Project not found"));
     }
     data.forEach(async (phase: IPhase) => {

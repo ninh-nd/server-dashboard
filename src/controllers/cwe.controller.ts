@@ -6,7 +6,7 @@ export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const cwe = await CWE.findOne({ cweId: id });
-    if (cwe === null)
+    if (!cwe)
       return res.json(errorResponse("CWE is not found in the database"));
     return res.json(successResponse(cwe, "CWE found"));
   } catch (error) {

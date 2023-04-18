@@ -14,7 +14,7 @@ function initialize(passport: PassportStatic) {
     done: (error: any, user?: any) => void
   ) => {
     const account = await Account.findOne({ username });
-    if (account == null) {
+    if (!account) {
       return done(null, false);
     }
 

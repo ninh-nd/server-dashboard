@@ -49,8 +49,12 @@ export async function create(req: Request, res: Response) {
   const { username, password, email } = req.body;
   // Check if account exists
   const accountExists = await Account.findOne({ username });
-  if (accountExists != null) {
+  if (accountExists) {
     return res.json(errorResponse("Username already exists"));
+  }
+  const emailUsed = await Account.findOne({ email });
+  if (emailUsed) {
+    return res.json(errorResponse("Email already used"));
   }
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -72,7 +76,7 @@ export async function addThirdPartyToAccount(req: Request, res: Response) {
   // Check if account exists
   const { id } = req.params;
   const account = await Account.findById(id);
-  if (account == null) {
+  if (!account) {
     return res.json(errorResponse("Account not found"));
   }
   // Add third party account to account
@@ -99,7 +103,7 @@ export async function changePassword(req: Request, res: Response) {
   }
   // Check if account exists
   const account = await Account.findById(id);
-  if (account == null) {
+  if (!account) {
     return res.json(errorResponse("Account not found"));
   }
   // Check if old password is correct
@@ -120,7 +124,7 @@ export async function updateAccountInfo(req: Request, res: Response) {
   const { data } = req.body;
   // Check if account exists
   const account = await Account.findById(id);
-  if (account == null) {
+  if (!account) {
     return res.json(errorResponse("Account not found"));
   }
   if (!data) return;

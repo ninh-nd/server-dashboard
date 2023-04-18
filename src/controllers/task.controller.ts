@@ -92,7 +92,7 @@ export async function markTask(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   Task.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
-    if (error != null) {
+    if (error) {
       return res.json(errorResponse(`Internal server error: ${error}`));
     }
     if (!doc) {

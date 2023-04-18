@@ -40,7 +40,7 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   User.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
-    if (error != null) {
+    if (error) {
       return res.json(errorResponse(`Internal server error: ${error}`));
     }
     if (!doc) {
@@ -86,7 +86,7 @@ export async function getProjectIn(req: Request, res: Response) {
   const id = account._id;
   try {
     const user = await User.findOne({ account: id }).populate("projectIn");
-    if (user == null) {
+    if (!user) {
       return res.json(errorResponse("User not found"));
     }
     const data = user.projectIn;
