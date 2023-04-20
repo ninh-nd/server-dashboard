@@ -46,7 +46,10 @@ export async function getById(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
-  const { username, password, email } = req.body;
+  const { username, password, confirmPassword, email } = req.body;
+  if (password !== confirmPassword) {
+    return res.json(errorResponse("Passwords do not match"));
+  }
   // Check if account exists
   const accountExists = await Account.findOne({ username });
   if (accountExists) {
