@@ -13,12 +13,11 @@ function initialize(passport: PassportStatic) {
     password: string,
     done: (error: any, user?: any) => void
   ) => {
-    const account = await Account.findOne({ username });
-    if (!account) {
-      return done(null, false);
-    }
-
     try {
+      const account = await Account.findOne({ username });
+      if (!account) {
+        return done(null, false);
+      }
       if (await bcrypt.compare(password, account.password)) {
         return done(null, account);
       }
@@ -34,27 +33,24 @@ function initialize(passport: PassportStatic) {
     done: (error: any, user?: any) => void
   ) => {
     try {
-      const account = await Account.findOne({ username: profile.id });
+      const account = await Account.findOne({
+        username: `Github_${profile.username}`,
+      });
+      // First time login
       if (!account) {
-        const newThirdParty = new ThirdParty({
+        const newThirdParty = await ThirdParty.create({
           name: "Github",
           username: profile.username,
           url: "http://github.com",
           accessToken,
         });
-        newThirdParty.save((err) => done(err));
-        const newAccount = new Account({
-          username: profile.id,
+        const newAccount = await Account.create({
+          username: `Github_${profile.username}`,
           password: profile.id,
           email: profile.emails ? profile.emails[0].value : "",
-          thirdParty: [newThirdParty._id],
+          thirdParty: [newThirdParty],
         });
-        newAccount.save((err, account) => {
-          if (err) {
-            return done(err);
-          }
-          return done(null, account);
-        });
+        return done(null, newAccount);
       }
       await ThirdParty.findOneAndUpdate(
         { username: profile.username },
