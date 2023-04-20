@@ -1,43 +1,27 @@
-import express from "express";
 import cors from "cors";
-import morgan from "morgan";
+import crypto from "crypto";
+import express, { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import session from "express-session";
+import morgan from "morgan";
 import passport from "passport";
+import initialize from "./passport.config";
+import { redisClient } from "./redisServer";
+import accountRoute from "./routes/account";
+import activityRoute from "./routes/activityHistory";
+import artifactRoute from "./routes/artifact";
+import authRoute from "./routes/auth";
+import githubConfigRoute from "./routes/githubConfig";
+import phaseRoute from "./routes/phase";
+import projectRoute from "./routes/project";
 import taskRoute from "./routes/task";
 import thirdPartyRoute from "./routes/thirdParty";
-import projectRoute from "./routes/project";
-import phaseRoute from "./routes/phase";
-import userRoute from "./routes/user";
-import activityRoute from "./routes/activityHistory";
-import accountRoute from "./routes/account";
-import githubConfigRoute from "./routes/githubConfig";
-import vulnerabilityRoute from "./routes/vulnerability";
-import artifactRoute from "./routes/artifact";
 import threatRoute from "./routes/threat";
 import ticketRoute from "./routes/ticket";
-import authRoute from "./routes/auth";
-import initialize from "./passport.config";
-import { Request, Response } from "express";
-import crypto from "crypto";
-import { redisClient } from "./redisServer";
-import { Artifact } from "models/artifact";
-import { CWE } from "models/cwe";
-import { PhasePreset } from "models/phasePreset";
-import { Threat } from "models/threat";
-import { Ticket } from "models/ticket";
-import { Vulnerability } from "models/vulnerability";
+import userRoute from "./routes/user";
+import vulnerabilityRoute from "./routes/vulnerability";
 let RedisStore = require("connect-redis")(session);
 const app = express();
-function registerModels() {
-  Artifact.find();
-  CWE.find();
-  PhasePreset.find();
-  Threat.find();
-  Ticket.find();
-  Vulnerability.find();
-}
-registerModels();
 app.use(express.json());
 app.use(
   cors({
