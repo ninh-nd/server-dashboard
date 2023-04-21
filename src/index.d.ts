@@ -1,13 +1,8 @@
+import { IAccount } from "models/interfaces";
+
 declare global {
   namespace Express {
-    interface User {
-      _id: Types.ObjectId;
-      username: string;
-      password: string;
-      email: string;
-      thirdParty: IThirdParty[];
-      role: "admin" | "manager" | "member";
-    }
+    interface User extends IAccount {}
   }
 }
 export {};
