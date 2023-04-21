@@ -7,6 +7,7 @@ import {
   getById,
   updateAccountInfo,
   remove,
+  updateAccountPermission,
 } from "controllers/account.controller";
 import express from "express";
 import { checkAuth, checkAdmin } from "middlewares/auth";
@@ -27,4 +28,6 @@ router.patch("/:id/thirdParty", addThirdPartyToAccount);
 router.patch("/:id/password", changePassword);
 // Delete account
 router.delete("/:id", checkAuth, checkAdmin, remove);
+// Update account permission
+router.patch("/:id/permission", checkAuth, checkAdmin, updateAccountPermission);
 export default router;

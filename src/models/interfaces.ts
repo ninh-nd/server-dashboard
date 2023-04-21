@@ -7,6 +7,7 @@ export interface IAccount {
   email: string;
   thirdParty: IThirdParty[];
   role: "admin" | "manager" | "member";
+  permission: string[];
 }
 
 export interface IThirdParty {

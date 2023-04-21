@@ -125,15 +125,11 @@ export async function changePassword(req: Request, res: Response) {
 export async function updateAccountInfo(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
-  // Check if account exists
-  const account = await Account.findById(id);
-  if (!account) {
-    return res.json(errorResponse("Account not found"));
-  }
-  if (!data) return;
+  if (!data) return res.json(errorResponse("Missing payload"));
   // Update account info
   try {
     const account = await Account.findByIdAndUpdate(id, data, { new: true });
+    if (!account) return res.json(errorResponse("Account not found"));
     return res.json(successResponse(account, "Account info updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -148,6 +144,19 @@ export async function remove(req: Request, res: Response) {
       return res.json(errorResponse("Account not found"));
     }
     return res.json(successResponse(account, "Account deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function updateAccountPermission(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body; // data is an array of permitted permission
+  if (!data) return res.json(errorResponse("Missing payload"));
+  try {
+    const account = await Account.findByIdAndUpdate(id, { permission: data });
+    if (!account) return res.json(errorResponse("Account not found"));
+    return res.json(successResponse(account, "Account permission updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
