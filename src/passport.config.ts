@@ -33,6 +33,14 @@ function initialize(passport: PassportStatic) {
     done: (error: any, user?: any) => void
   ) => {
     try {
+      // Check if there is an account that has already linked to this Github account
+      const linkedAccount = await Account.findOne({
+        "thirdParty.username": profile.username,
+        "thirdParty.name": "Github",
+      });
+      if (linkedAccount) {
+        return done(null, linkedAccount);
+      }
       const account = await Account.findOne({
         username: `Github_${profile.username}`,
       });
