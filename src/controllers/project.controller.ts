@@ -103,7 +103,7 @@ export async function getProjectMembers(req: Request, res: Response) {
     if (!project) {
       return res.json(errorResponse("Project not found"));
     }
-    const users = await User.find({ projectId: project._id })
+    const users = await User.find({ projectIn: project._id })
       .populate({
         path: "activityHistory",
         match: { projectId: project._id },
