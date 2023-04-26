@@ -89,8 +89,12 @@ export async function removeTaskFromPhase(req: Request, res: Response) {
 }
 
 export async function getPresets(req: Request, res: Response) {
+  const username = req.user?.username;
   try {
-    const presets = await PhasePreset.find();
+    const presets = await PhasePreset.find({
+      isPrivate: false,
+      createdBy: username,
+    });
     return res.json(successResponse(presets, "Phase presets found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

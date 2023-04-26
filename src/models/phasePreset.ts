@@ -20,6 +20,15 @@ const phasePresetSchema = new Schema<IPhasePreset>({
       },
     },
   ],
+  isPrivate: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+  createdBy: {
+    type: String,
+    required: true,
+  },
 });
 
 const PhasePreset = model<IPhasePreset>("PhasePreset", phasePresetSchema);

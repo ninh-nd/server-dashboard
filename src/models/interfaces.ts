@@ -86,6 +86,8 @@ export interface IPhasePreset {
   name: string;
   description: string;
   phases: IPhase[];
+  isPrivate: boolean;
+  createdBy: string; // username
 }
 export interface ICWE {
   cweId: string;
