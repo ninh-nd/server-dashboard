@@ -21,6 +21,8 @@ import ticketRoute from "./routes/ticket";
 import userRoute from "./routes/user";
 import vulnerabilityRoute from "./routes/vulnerability";
 import permissionRoute from "./routes/permission";
+import { envVariables } from "./env";
+envVariables.parse(process.env);
 let RedisStore = require("connect-redis")(session);
 const app = express();
 app.use(express.json());
