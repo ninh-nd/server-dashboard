@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
-import { Task } from "models/task";
-import { Project } from "models/project";
+import { ProjectModel, TaskModel } from "models/models";
 import { CallbackError, Document } from "mongoose";
 import { errorResponse, successResponse } from "utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   const { projectName, filter } = req.query;
   try {
-    const tasks = await Task.find({ projectName });
+    const tasks = await TaskModel.find({ projectName });
     if (filter !== "all") {
-      const project = await Project.findOne({ name: projectName }).populate(
-        "phaseList"
-      );
+      const project = await ProjectModel.findOne({
+        name: projectName,
+      }).populate("phaseList");
       if (filter === "unassigned") {
         const filteredTasks = tasks.filter((task) => {
           let isAssigned = false;
@@ -48,7 +47,7 @@ export async function getAll(req: Request, res: Response) {
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const task = await Task.findById(id);
+    const task = await TaskModel.findById(id);
     return res.json(successResponse(task, "Task found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -59,7 +58,7 @@ export async function create(req: Request, res: Response) {
   const { data } = req.body;
   const { name, description, projectName, status } = data;
   try {
-    const newTask = new Task({ name, description, projectName, status });
+    const newTask = new TaskModel({ name, description, projectName, status });
     await newTask.save();
     return res.json(successResponse(newTask, "Task created"));
   } catch (error) {
@@ -82,7 +81,7 @@ export async function markTask(req: Request, res: Response) {
       });
     });
     // @ts-ignore
-    const updatedTask = await Task.bulkWrite(op);
+    const updatedTask = await TaskModel.bulkWrite(op);
     return res.json(successResponse(updatedTask, "Task updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -91,7 +90,7 @@ export async function markTask(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  Task.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
+  TaskModel.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
     if (error) {
       return res.json(errorResponse(`Internal server error: ${error}`));
     }

@@ -1,15 +1,13 @@
-import "dotenv/config";
 import bcrypt from "bcrypt";
-import { Account } from "models/account";
-import { successResponse, errorResponse } from "utils/responseFormat";
+import "dotenv/config";
 import { Request, Response } from "express";
-import { ThirdParty } from "models/thirdParty";
-import { IAccount } from "models/interfaces";
+import { AccountModel, ThirdPartyModel } from "models/models";
+import { errorResponse, successResponse } from "utils/responseFormat";
 
 export async function get(req: Request, res: Response) {
   try {
-    const account = req.user as IAccount;
-    const findedAccount = await Account.findById(account._id);
+    const account = req.user;
+    const findedAccount = await AccountModel.findById(account._id);
     if (!findedAccount) {
       return res.json(errorResponse("No account is found in the database"));
     }
@@ -23,7 +21,7 @@ export async function get(req: Request, res: Response) {
 
 export async function getAll(req: Request, res: Response) {
   try {
-    const accounts = await Account.find();
+    const accounts = await AccountModel.find();
     return res.json(successResponse(accounts, "Accounts found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -33,7 +31,7 @@ export async function getAll(req: Request, res: Response) {
 export async function getById(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const account = await Account.findById(id);
+    const account = await AccountModel.findById(id);
     if (!account) {
       return res.json(
         errorResponse(`No account with ${id} is found in the database`)
@@ -51,11 +49,11 @@ export async function create(req: Request, res: Response) {
     return res.json(errorResponse("Passwords do not match"));
   }
   // Check if account exists
-  const accountExists = await Account.findOne({ username });
+  const accountExists = await AccountModel.findOne({ username });
   if (accountExists) {
     return res.json(errorResponse("Username already exists"));
   }
-  const emailUsed = await Account.findOne({ email });
+  const emailUsed = await AccountModel.findOne({ email });
   if (emailUsed) {
     return res.json(errorResponse("Email already used"));
   }
@@ -63,7 +61,7 @@ export async function create(req: Request, res: Response) {
   const hashedPassword = await bcrypt.hash(password, 10);
   // Create account
   try {
-    const newAccount = new Account({
+    const newAccount = new AccountModel({
       username,
       password: hashedPassword,
       email,
@@ -78,14 +76,14 @@ export async function create(req: Request, res: Response) {
 export async function addThirdPartyToAccount(req: Request, res: Response) {
   // Check if account exists
   const { id } = req.params;
-  const account = await Account.findById(id);
+  const account = await AccountModel.findById(id);
   if (!account) {
     return res.json(errorResponse("Account not found"));
   }
   // Add third party account to account
   try {
     const { name, username, url } = req.body;
-    const newThirdParty = new ThirdParty({
+    const newThirdParty = new ThirdPartyModel({
       name,
       username,
       url,
@@ -105,7 +103,7 @@ export async function changePassword(req: Request, res: Response) {
     return res.json(errorResponse("Missing old or new password"));
   }
   // Check if account exists
-  const account = await Account.findById(id);
+  const account = await AccountModel.findById(id);
   if (!account) {
     return res.json(errorResponse("Account not found"));
   }
@@ -128,7 +126,9 @@ export async function updateAccountInfo(req: Request, res: Response) {
   if (!data) return res.json(errorResponse("Missing payload"));
   // Update account info
   try {
-    const account = await Account.findByIdAndUpdate(id, data, { new: true });
+    const account = await AccountModel.findByIdAndUpdate(id, data, {
+      new: true,
+    });
     if (!account) return res.json(errorResponse("Account not found"));
     return res.json(successResponse(account, "Account info updated"));
   } catch (error) {
@@ -139,7 +139,7 @@ export async function updateAccountInfo(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const account = await Account.findByIdAndDelete(id);
+    const account = await AccountModel.findByIdAndDelete(id);
     if (!account) {
       return res.json(errorResponse("Account not found"));
     }
@@ -154,7 +154,9 @@ export async function updateAccountPermission(req: Request, res: Response) {
   const { data } = req.body; // data is an array of permitted permission
   if (!data) return res.json(errorResponse("Missing payload"));
   try {
-    const account = await Account.findByIdAndUpdate(id, { permission: data });
+    const account = await AccountModel.findByIdAndUpdate(id, {
+      permission: data,
+    });
     if (!account) return res.json(errorResponse("Account not found"));
     return res.json(successResponse(account, "Account permission updated"));
   } catch (error) {

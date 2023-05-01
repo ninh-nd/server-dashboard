@@ -1,17 +1,10 @@
-import { Model, model, Schema } from "mongoose";
-import { IThreat } from "./interfaces";
+import { prop } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+export interface Threat extends Base {}
+export class Threat {
+  @prop({ required: true })
+  public name!: string;
 
-const threatSchema = new Schema<IThreat>({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-});
-
-const Threat: Model<IThreat> = model("Threat", threatSchema);
-
-export { Threat, threatSchema };
+  @prop({ required: true })
+  public description!: string;
+}

@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { Account } from "models/account";
-import { ActivityHistory } from "models/activityHistory";
-import { GithubConfig } from "models/githubConfig";
-import { Project } from "models/project";
-import { User } from "models/user";
+import {
+  AccountModel,
+  ActivityHistoryModel,
+  GithubConfigModel,
+  ProjectModel,
+  UserModel,
+} from "models/models";
 import { Types } from "mongoose";
 import { Octokit } from "octokit";
 import redisClient from "redisServer";
@@ -46,13 +48,15 @@ async function getGithubPull(
     }
   );
   try {
-    await ActivityHistory.insertMany([...processedPrData], { ordered: false });
+    await ActivityHistoryModel.insertMany([...processedPrData], {
+      ordered: false,
+    });
     // Add history to each user in the project
-    const history = await ActivityHistory.find({ projectId });
-    const users = await User.find({ projectIn: projectId });
+    const history = await ActivityHistoryModel.find({ projectId });
+    const users = await UserModel.find({ projectIn: projectId });
     users.forEach(async (user) => {
       // Temporary solution as Github is the only third party
-      const account = await Account.findById(user.account);
+      const account = await AccountModel.findById(user.account);
       if (!account) {
         return new Error("Can't find account");
       }
@@ -62,7 +66,7 @@ async function getGithubPull(
       const userHistory = history.filter(
         ({ createdBy }) => createdBy === thirdPartyUsername
       );
-      await User.findByIdAndUpdate(
+      await UserModel.findByIdAndUpdate(
         user._id,
         { $addToSet: { activityHistory: userHistory } },
         { new: true }
@@ -108,15 +112,15 @@ async function getGithubCommits(
     return { id, action: "commit", content, createdAt, createdBy, projectId };
   });
   try {
-    await ActivityHistory.insertMany([...processedCommitData], {
+    await ActivityHistoryModel.insertMany([...processedCommitData], {
       ordered: false,
     });
     // Add history to each user in the project
-    const history = await ActivityHistory.find({ projectId });
-    const users = await User.find({ projectIn: projectId });
+    const history = await ActivityHistoryModel.find({ projectId });
+    const users = await UserModel.find({ projectIn: projectId });
     users.forEach(async (user) => {
       // Temporary solution as Github is the only third party
-      const account = await Account.findById(user.account);
+      const account = await AccountModel.findById(user.account);
       if (!account) {
         return new Error("Can't find account");
       }
@@ -126,7 +130,7 @@ async function getGithubCommits(
       const userHistory = history.filter(
         ({ createdBy }) => createdBy === thirdPartyUsername
       );
-      await User.findByIdAndUpdate(
+      await UserModel.findByIdAndUpdate(
         user._id,
         { $addToSet: { activityHistory: userHistory } },
         { new: true }
@@ -140,7 +144,7 @@ async function getGithubCommits(
 
 export async function getPRs(req: Request, res: Response) {
   const { projectName } = req.params;
-  const githubConfig = await GithubConfig.findOne({ repo: projectName });
+  const githubConfig = await GithubConfigModel.findOne({ repo: projectName });
   if (!githubConfig) {
     return res.json(errorResponse("No github config found"));
   }
@@ -150,7 +154,7 @@ export async function getPRs(req: Request, res: Response) {
     return res.json(errorResponse(`Error retrieving PRs: ${result.message}`));
   }
   try {
-    const prs = await ActivityHistory.find({ projectId, action: "pr" });
+    const prs = await ActivityHistoryModel.find({ projectId, action: "pr" });
     const total = prs.length;
     const authorArray = prs.map((pr) => pr.createdBy);
     const uniqueAuthors = [...new Set(authorArray)];
@@ -171,7 +175,7 @@ export async function getPRs(req: Request, res: Response) {
 
 export async function getCommits(req: Request, res: Response) {
   const { projectName } = req.params;
-  const githubConfig = await GithubConfig.findOne({ repo: projectName });
+  const githubConfig = await GithubConfigModel.findOne({ repo: projectName });
   if (!githubConfig) {
     return res.json(errorResponse("No github config found"));
   }
@@ -183,7 +187,10 @@ export async function getCommits(req: Request, res: Response) {
     );
   }
   try {
-    const commits = await ActivityHistory.find({ projectId, action: "commit" });
+    const commits = await ActivityHistoryModel.find({
+      projectId,
+      action: "commit",
+    });
     const total = commits.length;
     const authorArray = commits.map((cm) => cm.createdBy);
     const uniqueAuthors = [...new Set(authorArray)];
@@ -205,16 +212,16 @@ export async function getCommits(req: Request, res: Response) {
 export async function getCommitsByAccount(req: Request, res: Response) {
   const { username, projectName } = req.params;
   try {
-    const projectId = await Project.findOne({ name: projectName });
+    const projectId = await ProjectModel.findOne({ name: projectName });
     if (!projectId) {
       return res.json(errorResponse("No project found"));
     }
-    const user = await Account.findOne({ username });
+    const user = await AccountModel.findOne({ username });
     if (!user) {
       return res.json(errorResponse("No user found"));
     }
     // Get the account linked to the internal account
-    const commits = await ActivityHistory.find({
+    const commits = await ActivityHistoryModel.find({
       createdBy: user.thirdParty.find((x) => x.name === "Github")?.username,
       action: "commit",
       projectId,
@@ -229,16 +236,16 @@ export async function getCommitsByAccount(req: Request, res: Response) {
 export async function getPRsByAccount(req: Request, res: Response) {
   const { username, projectName } = req.params;
   try {
-    const projectId = await Project.findOne({ name: projectName });
+    const projectId = await ProjectModel.findOne({ name: projectName });
     if (!projectId) {
       return res.json(errorResponse("No project found"));
     }
-    const user = await Account.findOne({ username });
+    const user = await AccountModel.findOne({ username });
     if (!user) {
       return res.json(errorResponse("No user found"));
     }
     // Get the account linked to the internal account
-    const prs = await ActivityHistory.find({
+    const prs = await ActivityHistoryModel.find({
       createdBy: user.thirdParty.find((x) => x.name === "Github")?.username,
       action: "pr",
       projectId,

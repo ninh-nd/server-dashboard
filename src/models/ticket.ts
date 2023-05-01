@@ -1,50 +1,30 @@
-import { Model, model, Schema } from "mongoose";
-import { ITicket } from "./interfaces";
+import { prop, Ref } from "@typegoose/typegoose";
+import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { User } from "./user";
+import { Vulnerability } from "./vulnerability";
+export interface Ticket extends Base {}
+export class Ticket extends TimeStamps {
+  @prop({ required: true })
+  public title!: string;
 
-const ticketSchema = new Schema<ITicket>(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    assignee: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-    ],
-    assigner: {
-      type: Schema.Types.ObjectId,
-      refPath: "User",
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: ["open", "closed"],
-      default: "open",
-    },
-    description: String,
-    priority: {
-      type: String,
-      enum: ["low", "medium", "high"],
-      default: "low",
-    },
-    targetedVulnerability: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Vulnerability",
-        default: [],
-      },
-    ],
-    projectName: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+  @prop({ required: true, ref: () => User })
+  public assignee!: Ref<User>;
 
-const Ticket: Model<ITicket> = model("Ticket", ticketSchema);
+  @prop({ required: true, ref: () => User })
+  public assigner!: Ref<User>;
 
-export { Ticket, ticketSchema };
+  @prop({ required: true, enum: ["open", "closed"], default: "open" })
+  public status!: string;
+
+  @prop()
+  public description?: string;
+
+  @prop({ required: true, enum: ["low", "medium", "high"], default: "low" })
+  public priority!: string;
+
+  @prop({ ref: () => Vulnerability, default: [] })
+  public targetedVulnerability?: Ref<Vulnerability>[];
+
+  @prop({ required: true })
+  public projectName!: string;
+}

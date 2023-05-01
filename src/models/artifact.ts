@@ -1,36 +1,26 @@
-import { Model, model, Schema } from "mongoose";
-import { IArtifact } from "./interfaces";
+import { Ref, prop } from "@typegoose/typegoose";
+import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { Threat } from "./threat";
+export interface Artifact extends Base {}
+export class Artifact extends TimeStamps {
+  @prop({ required: true })
+  public name!: string;
 
-const artifactSchema = new Schema<IArtifact>(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: String,
-      enum: ["image", "log", "source code", "executable", "library"],
-      required: true,
-    },
-    url: String,
-    threatList: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Threat",
-        default: [],
-      },
-    ],
-    vulnerabilityList: [
-      {
-        type: String,
-        default: [],
-      },
-    ],
-    cpe: String,
-  },
-  { timestamps: true }
-);
+  @prop({
+    required: true,
+    enum: ["image", "log", "source code", "executable", "library"],
+  })
+  public type!: string;
 
-const Artifact: Model<IArtifact> = model("Artifact", artifactSchema);
+  @prop()
+  public url?: string;
 
-export { Artifact, artifactSchema };
+  @prop({ ref: () => Threat, default: [] })
+  public threatList?: Ref<Threat>[];
+
+  @prop({ default: [] })
+  public vulnerabilityList?: string[];
+
+  @prop()
+  public cpe?: string;
+}

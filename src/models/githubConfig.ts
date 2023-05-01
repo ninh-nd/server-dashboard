@@ -1,28 +1,17 @@
-import { Schema, Model, model } from "mongoose";
-import { IGithubConfig } from "./interfaces";
+import { prop } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+import { Project } from "./project";
+export interface GithubConfig extends Base {}
+export class GithubConfig {
+  @prop({ ref: () => Project, required: true })
+  public projectId!: string;
 
-const githubConfigSchema = new Schema<IGithubConfig>({
-  projectId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "Project",
-  },
-  accessToken: {
-    type: String,
-    required: true,
-  },
-  repo: {
-    type: String,
-    required: true,
-  },
-  owner: {
-    type: String,
-    required: true,
-  },
-});
-const GithubConfig: Model<IGithubConfig> = model(
-  "GithubConfig",
-  githubConfigSchema
-);
+  @prop({ required: true })
+  public accessToken!: string;
 
-export { GithubConfig, githubConfigSchema };
+  @prop({ required: true })
+  public repo!: string;
+
+  @prop({ required: true })
+  public owner!: string;
+}

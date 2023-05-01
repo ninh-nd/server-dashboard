@@ -1,30 +1,22 @@
-import { Schema, Model, model } from "mongoose";
-import { ITask } from "./interfaces";
+import { prop } from "@typegoose/typegoose";
+import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+export interface Task extends Base {}
+export class Task extends TimeStamps {
+  @prop({ required: true })
+  public name!: string;
 
-const taskSchema = new Schema<ITask>(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    status: {
-      type: String,
-      default: "active",
-      enum: ["active", "completed"],
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    createdBy: String,
-    updatedBy: String,
-    projectName: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
-const Task: Model<ITask> = model("Task", taskSchema);
+  @prop({ required: true, enum: ["active", "completed"], default: "active" })
+  public status!: string;
 
-export { Task, taskSchema };
+  @prop({ require: true })
+  public description!: string;
+
+  @prop()
+  public createdBy?: string;
+
+  @prop()
+  public updatedBy?: string;
+
+  @prop({ required: true })
+  public projectName!: string;
+}

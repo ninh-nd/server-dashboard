@@ -1,33 +1,23 @@
-import { Schema, Model, model } from "mongoose";
-import { IActivityHistory } from "./interfaces";
+import { Ref, prop } from "@typegoose/typegoose";
+import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { Project } from "./project";
+export interface ActivityHistory extends Base {}
+export class ActivityHistory extends TimeStamps {
+  @prop({ required: true })
+  public id!: string;
 
-const activityHistorySchema = new Schema<IActivityHistory>(
-  {
-    id: {
-      type: String,
-      required: true,
-    },
-    action: {
-      type: String,
-      required: true,
-      enum: ["commit", "pr"],
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-    createdBy: String,
-    updatedBy: String,
-    projectId: {
-      type: Schema.Types.ObjectId,
-      ref: "Project",
-    },
-  },
-  { timestamps: true }
-);
-const ActivityHistory: Model<IActivityHistory> = model(
-  "ActivityHistory",
-  activityHistorySchema
-);
+  @prop({ required: true, enum: ["commit", "pr"] })
+  public action!: string;
 
-export { ActivityHistory, activityHistorySchema };
+  @prop({ required: true })
+  public content!: string;
+
+  @prop()
+  public createdBy?: string;
+
+  @prop()
+  public updatedBy?: string;
+
+  @prop({ ref: () => Project })
+  public projectId?: Ref<Project>;
+}

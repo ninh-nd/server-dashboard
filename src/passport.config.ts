@@ -1,10 +1,9 @@
 import bcrypt from "bcrypt";
 import { PassportStatic } from "passport";
-import { IAccount } from "models/interfaces";
-import { Account } from "models/account";
+import { AccountModel } from "models/models";
 import Local from "passport-local";
 import Github from "passport-github2";
-import { ThirdParty } from "models/thirdParty";
+import { ThirdPartyModel } from "models/models";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
 function initialize(passport: PassportStatic) {
@@ -14,7 +13,7 @@ function initialize(passport: PassportStatic) {
     done: (error: any, user?: any) => void
   ) => {
     try {
-      const account = await Account.findOne({ username });
+      const account = await AccountModel.findOne({ username });
       if (!account) {
         return done(null, false);
       }
@@ -34,25 +33,25 @@ function initialize(passport: PassportStatic) {
   ) => {
     try {
       // Check if there is an account that has already linked to this Github account
-      const linkedAccount = await Account.findOne({
+      const linkedAccount = await AccountModel.findOne({
         "thirdParty.username": profile.username,
         "thirdParty.name": "Github",
       });
       if (linkedAccount) {
         return done(null, linkedAccount);
       }
-      const account = await Account.findOne({
+      const account = await AccountModel.findOne({
         username: `Github_${profile.username}`,
       });
       // First time login
       if (!account) {
-        const newThirdParty = await ThirdParty.create({
+        const newThirdParty = await ThirdPartyModel.create({
           name: "Github",
           username: profile.username,
           url: "http://github.com",
           accessToken,
         });
-        const newAccount = await Account.create({
+        const newAccount = await AccountModel.create({
           username: `Github_${profile.username}`,
           password: profile.id,
           email: profile.emails ? profile.emails[0].value : "",
@@ -60,7 +59,7 @@ function initialize(passport: PassportStatic) {
         });
         return done(null, newAccount);
       }
-      await ThirdParty.findOneAndUpdate(
+      await ThirdPartyModel.findOneAndUpdate(
         { username: profile.username },
         { accessToken }
       );
@@ -87,11 +86,15 @@ function initialize(passport: PassportStatic) {
     new LocalStrategy({ usernameField: "username" }, authenticateUser)
   );
   passport.serializeUser((account, done) => done(null, account._id));
-  passport.deserializeUser((id: string, done) => {
-    Account.findById(id, (err: Error, account: IAccount) => {
-      if (err) return done(err);
-      return done(null, account);
-    });
+  passport.deserializeUser(async (id: string, done) => {
+    try {
+      const results = await AccountModel.findById(id);
+      if (results) {
+        return done(null, results);
+      }
+    } catch (error) {
+      return done(error);
+    }
   });
 }
 

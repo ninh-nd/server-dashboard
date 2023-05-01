@@ -1,40 +1,9 @@
-import { model, Schema, Model } from "mongoose";
-import { IAccount } from "./interfaces";
-import { thirdPartySchema } from "./thirdParty";
+import { pre, prop } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "utils/permission";
-
-const accountSchema = new Schema<IAccount>({
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    lowercase: true,
-  },
-  thirdParty: [
-    {
-      type: thirdPartySchema,
-      default: [],
-    },
-  ],
-  role: {
-    type: String,
-    enum: ["admin", "manager", "member"],
-    default: "member",
-  },
-  permission: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
-});
-accountSchema.pre("save", function (next) {
+import { ThirdParty } from "./thirdParty";
+export interface Account extends Base {}
+@pre<Account>("save", function () {
   if (this.role === "admin") {
     this.permission = permissions;
   } else if (this.role === "manager") {
@@ -54,8 +23,23 @@ accountSchema.pre("save", function (next) {
     });
     this.permission = perm;
   }
-  next();
-});
-const Account: Model<IAccount> = model("Account", accountSchema);
+})
+export class Account {
+  @prop({ required: true })
+  public username!: string;
 
-export { Account, accountSchema };
+  @prop({ required: true })
+  public password!: string;
+
+  @prop({ lowercase: true })
+  public email?: string;
+
+  @prop({ ref: () => ThirdParty, default: [], required: true })
+  public thirdParty!: ThirdParty[];
+
+  @prop({ enum: ["admin", "manager", "member"], default: "member" })
+  public role?: string;
+
+  @prop({ required: true })
+  public permission?: string[];
+}

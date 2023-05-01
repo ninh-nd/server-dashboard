@@ -1,33 +1,32 @@
-import { Schema, Model, model } from "mongoose";
-import { IProject } from "./interfaces";
+import { Ref, prop } from "@typegoose/typegoose";
+import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { Phase } from "./phase";
+export interface Project extends Base {}
+export class Project extends TimeStamps {
+  @prop({ required: true })
+  public name!: string;
 
-const projectSchema = new Schema<IProject>(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    url: String,
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
-    },
-    description: String,
-    startDate: Date,
-    endDate: Date,
-    createdBy: String,
-    updatedBy: String,
-    phaseList: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Phase",
-        default: [],
-      },
-    ],
-  },
-  { timestamps: true }
-);
-const Project: Model<IProject> = model("Project", projectSchema);
+  @prop()
+  public url?: string;
 
-export { Project, projectSchema };
+  @prop({ required: true, enum: ["active", "inactive"], default: "active" })
+  public status!: string;
+
+  @prop()
+  public description?: string;
+
+  @prop()
+  public startDate?: Date;
+
+  @prop()
+  public endDate?: Date;
+
+  @prop()
+  public createdBy?: string;
+
+  @prop()
+  public updatedBy?: string;
+
+  @prop({ ref: "Phase", default: [] })
+  public phaseList?: Ref<Phase>[];
+}

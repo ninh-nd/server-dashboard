@@ -1,13 +1,11 @@
-import { Phase } from "models/phase";
-import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
+import { ArtifactModel, PhaseModel, PhasePresetModel } from "models/models";
 import { CallbackError, Document } from "mongoose";
-import { PhasePreset } from "models/phasePreset";
-import { Artifact } from "models/artifact";
+import { errorResponse, successResponse } from "utils/responseFormat";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const phase = await Phase.findById(id).populate([
+    const phase = await PhaseModel.findById(id).populate([
       {
         path: "tasks",
       },
@@ -26,7 +24,7 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   try {
-    const newPhase = new Phase(req.body);
+    const newPhase = new PhaseModel(req.body);
     await newPhase.save();
     return res.json(successResponse(newPhase, "Phase created"));
   } catch (error) {
@@ -38,7 +36,9 @@ export async function update(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
   try {
-    const updatedPhase = await Phase.findByIdAndUpdate(id, data, { new: true });
+    const updatedPhase = await PhaseModel.findByIdAndUpdate(id, data, {
+      new: true,
+    });
     return res.json(successResponse(updatedPhase, "Phase updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -47,7 +47,7 @@ export async function update(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  Phase.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
+  PhaseModel.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
     if (error) {
       return res.json(errorResponse(`Internal server error: ${error}`));
     }
@@ -61,7 +61,7 @@ export async function remove(req: Request, res: Response) {
 export async function addTaskToPhase(req: Request, res: Response) {
   const { id, taskId } = req.params;
   try {
-    const updatedPhase = await Phase.findByIdAndUpdate(
+    const updatedPhase = await PhaseModel.findByIdAndUpdate(
       id,
       { $addToSet: { tasks: taskId } },
 
@@ -76,7 +76,7 @@ export async function addTaskToPhase(req: Request, res: Response) {
 export async function removeTaskFromPhase(req: Request, res: Response) {
   const { id, taskId } = req.params;
   try {
-    const updatedPhase = await Phase.findByIdAndUpdate(
+    const updatedPhase = await PhaseModel.findByIdAndUpdate(
       id,
       { $pull: { tasks: taskId } },
 
@@ -91,7 +91,7 @@ export async function removeTaskFromPhase(req: Request, res: Response) {
 export async function getPresets(req: Request, res: Response) {
   const username = req.user?.username;
   try {
-    const presets = await PhasePreset.find({
+    const presets = await PhasePresetModel.find({
       isPrivate: false,
       createdBy: username,
     });
@@ -104,14 +104,14 @@ export async function getPresets(req: Request, res: Response) {
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
-  const ar = new Artifact(data);
+  const ar = new ArtifactModel(data);
   try {
     await ar.save();
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
   try {
-    const updatedPhase = await Phase.findByIdAndUpdate(
+    const updatedPhase = await PhaseModel.findByIdAndUpdate(
       id,
       { $addToSet: { artifacts: ar._id } },
       { new: true }
@@ -125,10 +125,10 @@ export async function addArtifactToPhase(req: Request, res: Response) {
 export async function removeArtifactFromPhase(req: Request, res: Response) {
   const { id, artifactId } = req.params;
   try {
-    const updatedPhase = await Phase.findByIdAndUpdate(id, {
+    const updatedPhase = await PhaseModel.findByIdAndUpdate(id, {
       $pull: { artifacts: artifactId },
     });
-    await Artifact.deleteOne({ _id: artifactId });
+    await ArtifactModel.deleteOne({ _id: artifactId });
     return res.json(
       successResponse(updatedPhase, "Artifact removed from phase")
     );
@@ -141,10 +141,10 @@ export async function updateArtifact(req: Request, res: Response) {
   const { id, artifactId } = req.params;
   const { data } = req.body;
   try {
-    await Artifact.findOneAndUpdate({ _id: artifactId }, data, {
+    await ArtifactModel.findOneAndUpdate({ _id: artifactId }, data, {
       new: true,
     });
-    const updatedPhase = await Phase.findById(id);
+    const updatedPhase = await PhaseModel.findById(id);
     return res.json(successResponse(updatedPhase, "Artifact updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

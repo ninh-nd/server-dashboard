@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
-import { GithubConfig } from "models/githubConfig";
-import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
+import { GithubConfigModel } from "models/models";
+import mongoose from "mongoose";
 import { Octokit } from "octokit";
+import { errorResponse, successResponse } from "utils/responseFormat";
 export async function get(req: Request, res: Response) {
   const { projectId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(projectId)) {
     return res.json(errorResponse("Invalid project id"));
   }
   try {
-    const githubConfig = await GithubConfig.findOne({ projectId });
+    const githubConfig = await GithubConfigModel.findOne({ projectId });
     if (githubConfig) {
       return res.json(successResponse(githubConfig, "Github config found"));
     }
@@ -20,7 +20,7 @@ export async function get(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
-  const githubConfig = new GithubConfig(req.body);
+  const githubConfig = new GithubConfigModel(req.body);
   try {
     const newGithubConfig = await githubConfig.save();
     return res.json(successResponse(newGithubConfig, "Github config created"));
@@ -32,7 +32,7 @@ export async function create(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
   const { projectId } = req.params;
   try {
-    const githubConfig = await GithubConfig.findOneAndUpdate(
+    const githubConfig = await GithubConfigModel.findOneAndUpdate(
       { projectId },
       req.body,
 

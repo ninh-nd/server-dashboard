@@ -1,36 +1,30 @@
-import { Schema, model } from "mongoose";
-import { IPhasePreset } from "./interfaces";
+import { prop } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+export interface PhasePreset extends Base {}
+class Phase {
+  @prop({ required: true })
+  public name!: string;
 
-const phasePresetSchema = new Schema<IPhasePreset>({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: String,
-  phases: [
-    {
-      name: {
-        type: String,
-        required: true,
-      },
-      description: String,
-      order: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
-  isPrivate: {
-    type: Boolean,
-    required: true,
-    default: true,
-  },
-  createdBy: {
-    type: String,
-    required: true,
-  },
-});
+  @prop()
+  public description?: string;
 
-const PhasePreset = model<IPhasePreset>("PhasePreset", phasePresetSchema);
+  @prop({ required: true })
+  public order!: number;
+}
 
-export { PhasePreset, phasePresetSchema };
+export class PhasePreset {
+  @prop({ required: true })
+  public name!: string;
+
+  @prop()
+  public description?: string;
+
+  @prop({ _id: false, ref: () => Phase })
+  public phases?: Phase[];
+
+  @prop({ default: true })
+  public isPrivate?: boolean;
+
+  @prop({ required: true })
+  public createdBy!: string;
+}

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { Threat } from "models/threat";
+import { ThreatModel } from "models/models";
 import { errorResponse, successResponse } from "utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   try {
-    const threats = await Threat.find();
+    const threats = await ThreatModel.find();
     return res.json(successResponse(threats, "Threats retrieved successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -13,11 +13,11 @@ export async function getAll(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
   try {
-    const threat = await Threat.findOne({ name: data.name });
+    const threat = await ThreatModel.findOne({ name: data.name });
     if (threat) {
       return res.json(errorResponse(`Threat already exists`));
     }
-    const newThreat = new Threat(data);
+    const newThreat = new ThreatModel(data);
     await newThreat.save();
     return res.json(successResponse(newThreat, "Threat created successfully"));
   } catch (error) {

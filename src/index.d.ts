@@ -1,8 +1,8 @@
-import { IAccount } from "models/interfaces";
+import { Account } from "models/account";
 
 declare global {
   namespace Express {
-    interface User extends IAccount {}
+    interface User extends Account {}
   }
 }
 export {};

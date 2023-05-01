@@ -1,20 +1,16 @@
-import { Schema, Model, model } from "mongoose";
-import { IThirdParty } from "./interfaces";
+import { prop } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+export interface ThirdParty extends Base {}
+export class ThirdParty {
+  @prop({ required: true })
+  public name!: string;
 
-const thirdPartySchema = new Schema<IThirdParty>({
-  name: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    required: true,
-  },
-  url: {
-    type: String,
-    required: true,
-  },
-  accessToken: String,
-});
-const ThirdParty: Model<IThirdParty> = model("ThirdParty", thirdPartySchema);
-export { ThirdParty, thirdPartySchema };
+  @prop({ required: true })
+  public username!: string;
+
+  @prop({ required: true })
+  public url!: string;
+
+  @prop()
+  public accessToken?: string;
+}

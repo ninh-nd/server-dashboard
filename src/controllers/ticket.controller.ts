@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "models/user";
-import { Ticket } from "models/ticket";
+import { TicketModel, UserModel } from "models/models";
 import { errorResponse, successResponse } from "utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
@@ -9,7 +8,7 @@ export async function getAll(req: Request, res: Response) {
     return res.json(errorResponse("Project name is required"));
   }
   try {
-    const tickets = await Ticket.find({ projectName: projectName });
+    const tickets = await TicketModel.find({ projectName: projectName });
     return res.json(successResponse(tickets, "Tickets fetched successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -19,7 +18,7 @@ export async function getAll(req: Request, res: Response) {
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const ticket = await Ticket.findById(id).populate({
+    const ticket = await TicketModel.findById(id).populate({
       path: "assignee assigner targetedVulnerability",
     });
     if (ticket) {
@@ -39,10 +38,10 @@ export async function create(req: Request, res: Response) {
     return res.json(errorResponse("Assigner is required"));
   }
   try {
-    const user = await User.findOne({ account: assigner });
+    const user = await UserModel.findOne({ account: assigner });
     if (user) {
       const o = { ...data, assigner: user._id };
-      const ticket = await Ticket.create(o);
+      const ticket = await TicketModel.create(o);
       return res.json(successResponse(ticket, "Ticket created successfully"));
     } else {
       return res.json(errorResponse("Assigner does not exist"));
@@ -56,7 +55,7 @@ export async function update(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
   try {
-    const ticket = await Ticket.findByIdAndUpdate(id, data, { new: true });
+    const ticket = await TicketModel.findByIdAndUpdate(id, data, { new: true });
     if (ticket) {
       return res.json(successResponse(ticket, "Ticket updated successfully"));
     }

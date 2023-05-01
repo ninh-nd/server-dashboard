@@ -1,13 +1,10 @@
-import { Project } from "models/project";
-import { User } from "models/user";
-import { errorResponse, successResponse } from "utils/responseFormat";
 import { Request, Response } from "express";
-import { Phase } from "models/phase";
-import { IPhase } from "models/interfaces";
+import { Phase, PhaseModel, ProjectModel, UserModel } from "models/models";
+import { errorResponse, successResponse } from "utils/responseFormat";
 export async function get(req: Request, res: Response) {
   try {
     const { projectName } = req.params;
-    const project = await Project.findOne({ name: projectName }).populate({
+    const project = await ProjectModel.findOne({ name: projectName }).populate({
       path: "phaseList",
       options: {
         sort: {
@@ -34,7 +31,7 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   try {
-    const project = await Project.create(req.body);
+    const project = await ProjectModel.create(req.body);
     return res.json(successResponse(project, "Project created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -45,7 +42,7 @@ export async function updateStatus(req: Request, res: Response) {
   try {
     const { projectName } = req.params;
     const { status } = req.body;
-    const project = await Project.findOneAndUpdate(
+    const project = await ProjectModel.findOneAndUpdate(
       { name: projectName },
       { status },
 
@@ -61,7 +58,7 @@ export async function addPhaseToProject(req: Request, res: Response) {
   try {
     const { projectName } = req.params;
     const { phaseId } = req.body;
-    const project = await Project.findOneAndUpdate(
+    const project = await ProjectModel.findOneAndUpdate(
       { name: projectName },
       {
         $addToSet: {
@@ -80,7 +77,7 @@ export async function remove(req: Request, res: Response) {
   const { projectName } = req.params;
   const { id } = req.params;
   try {
-    const project = await Project.findOne({ name: projectName });
+    const project = await ProjectModel.findOne({ name: projectName });
     if (!project) {
       return res.json(errorResponse("Project not found"));
     }
@@ -89,7 +86,7 @@ export async function remove(req: Request, res: Response) {
       return res.json(errorResponse("Project cannot be deleted"));
     }
 
-    await Project.findByIdAndDelete(id);
+    await ProjectModel.findByIdAndDelete(id);
     return res.json(successResponse(project, "Project deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -99,11 +96,11 @@ export async function remove(req: Request, res: Response) {
 export async function getProjectMembers(req: Request, res: Response) {
   try {
     const { projectName } = req.params;
-    const project = await Project.findOne({ name: projectName });
+    const project = await ProjectModel.findOne({ name: projectName });
     if (!project) {
       return res.json(errorResponse("Project not found"));
     }
-    const users = await User.find({ projectIn: project._id })
+    const users = await UserModel.find({ projectIn: project._id })
       .populate({
         path: "activityHistory",
         match: { projectId: project._id },
@@ -125,15 +122,15 @@ export async function createPhaseModel(req: Request, res: Response) {
   const { projectName } = req.params;
   const { data } = req.body; // Phase model, contains an array of phase with name and description
   try {
-    const project = await Project.findOne({ name: projectName });
+    const project = await ProjectModel.findOne({ name: projectName });
     if (!project) {
       return res.json(errorResponse("Project not found"));
     }
-    data.forEach(async (phase: IPhase) => {
-      const newPhase = new Phase(phase);
+    data.forEach(async (phase: Phase) => {
+      const newPhase = new PhaseModel(phase);
       newPhase.save(async (err, doc) => {
         const id = doc._id;
-        await Project.findOneAndUpdate(
+        await ProjectModel.findOneAndUpdate(
           { name: projectName },
           {
             $addToSet: {
