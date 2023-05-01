@@ -1,41 +1,41 @@
-import * as dotenv from "dotenv";
-import { IVulnerability } from "models/interfaces";
-dotenv.config();
-export async function fetchCVE(id: string) {
-  const username = process.env.OPENCVE_USERNAME;
-  const password = process.env.OPENCVE_PASSWORD;
-  if (!username || !password) return new Error("Invalid OpenCVE credentials");
-  const headers = new Headers();
-  headers.set(
-    "Authorization",
-    "Basic " + Buffer.from(username + ":" + password).toString("base64")
-  );
-  try {
-    const response = await fetch(`https://www.opencve.io/api/cve/${id}`, {
-      headers,
-    });
-    const data = await response.json();
-    if (data.message) return new Error("CVE does not exist");
-    const cveId = data.id;
-    const desc = data.summary;
-    const score = data.cvss.v3 ?? data.cvss.v2;
-    const cwes = data.cwes; // Array of CWEs
-    const vendor = Object.keys(data.vendors)[0];
-    const product = data.vendors[`${vendor}`][0];
-    const version = data.raw_nvd_data.configurations.nodes[0].cpe_match.map(
-      ({ cpe23Uri }: { cpe23Uri: string; vulnerable: boolean }) =>
-        cpe23Uri.split(":")[5]
-    );
+import { Result } from "./vulnType";
+function resolveData(data: Result) {
+  if (data.totalResults === 0) return [];
+  return data.vulnerabilities.map((v) => {
+    const cveId = v.cve.id;
+    const description = v.cve.descriptions[0].value;
+    const score = v.cve.metrics.cvssMetricV2[0].cvssData.baseScore;
+    const severity = v.cve.metrics.cvssMetricV2[0].baseSeverity;
+    const cwes = v.cve.weaknesses.map((w) => w.description[0].value);
+    const confidentialityImpact =
+      v.cve.metrics.cvssMetricV2[0].cvssData.confidentialityImpact;
+    const integrityImpact =
+      v.cve.metrics.cvssMetricV2[0].cvssData.integrityImpact;
+    const availabilityImpact =
+      v.cve.metrics.cvssMetricV2[0].cvssData.availabilityImpact;
     return {
       cveId,
-      description: desc,
+      description,
       score,
+      severity,
       cwes,
-      vendor,
-      product,
-      version,
+      confidentialityImpact,
+      integrityImpact,
+      availabilityImpact,
     };
+  });
+}
+export async function fetchVulnsFromNVD(cpe: string) {
+  const url = `https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=${cpe}`;
+  try {
+    const res = await fetch(url);
+    const data = (await res.json()) as Result;
+    return resolveData(data);
   } catch (error) {
-    return new Error("Error fetching data from OpenCVE");
+    let message = "Error fetching vulns from NVD";
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    throw new Error(message);
   }
 }
