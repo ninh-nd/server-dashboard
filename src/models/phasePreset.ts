@@ -1,4 +1,4 @@
-import { prop } from "@typegoose/typegoose";
+import { ArraySubDocumentType, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 export interface PhasePreset extends Base {}
 class Phase {
@@ -19,8 +19,8 @@ export class PhasePreset {
   @prop()
   public description?: string;
 
-  @prop({ _id: false, ref: () => Phase })
-  public phases?: Phase[];
+  @prop({ _id: false, type: () => Phase })
+  public phases?: ArraySubDocumentType<Phase>[];
 
   @prop({ default: true })
   public isPrivate?: boolean;

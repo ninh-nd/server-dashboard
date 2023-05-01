@@ -11,13 +11,13 @@ export class User {
   public name!: string;
 
   @prop({ ref: () => Account, required: true })
-  publicaccount!: Ref<Account>;
+  public account!: Ref<Account>;
 
   @prop()
   public company?: string;
 
   @prop({ ref: () => Task, default: [] })
-  publictaskAssigned?: Ref<Task>[];
+  public taskAssigned?: Ref<Task>[];
 
   @prop({ ref: () => Ticket, default: [] })
   public ticketAssigned?: Ref<Ticket>[];

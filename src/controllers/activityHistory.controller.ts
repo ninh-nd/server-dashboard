@@ -1,3 +1,4 @@
+import { Ref } from "@typegoose/typegoose";
 import { Request, Response } from "express";
 import {
   AccountModel,
@@ -6,6 +7,7 @@ import {
   ProjectModel,
   UserModel,
 } from "models/models";
+import { Project } from "models/project";
 import { Types } from "mongoose";
 import { Octokit } from "octokit";
 import redisClient from "redisServer";
@@ -14,7 +16,7 @@ async function getGithubPull(
   owner: string,
   repo: string,
   accessToken: string,
-  projectId: Types.ObjectId
+  projectId: Ref<Project>
 ) {
   const cache = await redisClient.v4.get(`github-pr-${repo}`);
   if (cache) {
@@ -74,7 +76,7 @@ async function getGithubPull(
     });
     return true;
   } catch (error) {
-    return new Error("Error retrieving PRs from Github API");
+    return false;
   }
 }
 
@@ -82,7 +84,7 @@ async function getGithubCommits(
   owner: string,
   repo: string,
   accessToken: string,
-  projectId: Types.ObjectId
+  projectId: Ref<Project>
 ) {
   const cache = await redisClient.v4.get(`github-commit-${repo}`);
   if (cache) {
@@ -138,7 +140,7 @@ async function getGithubCommits(
     });
     return true;
   } catch (error) {
-    return new Error("Error retrieving commits from Github API");
+    return false;
   }
 }
 

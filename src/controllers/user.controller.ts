@@ -82,6 +82,7 @@ export async function addProjectIn(req: Request, res: Response) {
 
 export async function getProjectIn(req: Request, res: Response) {
   const account = req.user;
+  if (!account) return res.json(errorResponse("Not logged in"));
   const id = account._id;
   try {
     const user = await UserModel.findOne({ account: id }).populate("projectIn");

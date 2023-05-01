@@ -27,6 +27,6 @@ export class Project extends TimeStamps {
   @prop()
   public updatedBy?: string;
 
-  @prop({ ref: "Phase", default: [] })
-  public phaseList?: Ref<Phase>[];
+  @prop({ ref: "Phase", default: [], required: true })
+  public phaseList!: Ref<Phase>[];
 }

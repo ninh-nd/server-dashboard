@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { Phase, PhaseModel, ProjectModel, UserModel } from "models/models";
+import { PhaseModel, ProjectModel, UserModel } from "models/models";
+import { Phase } from "models/phase";
 import { errorResponse, successResponse } from "utils/responseFormat";
 export async function get(req: Request, res: Response) {
   try {
@@ -81,11 +82,6 @@ export async function remove(req: Request, res: Response) {
     if (!project) {
       return res.json(errorResponse("Project not found"));
     }
-    // Check if the project has just been created for 1 day
-    if (project.createdAt.getTime() + 86400000 > Date.now()) {
-      return res.json(errorResponse("Project cannot be deleted"));
-    }
-
     await ProjectModel.findByIdAndDelete(id);
     return res.json(successResponse(project, "Project deleted"));
   } catch (error) {
@@ -128,18 +124,11 @@ export async function createPhaseModel(req: Request, res: Response) {
     }
     data.forEach(async (phase: Phase) => {
       const newPhase = new PhaseModel(phase);
-      newPhase.save(async (err, doc) => {
-        const id = doc._id;
-        await ProjectModel.findOneAndUpdate(
-          { name: projectName },
-          {
-            $addToSet: {
-              phaseList: id,
-            },
-          },
-          { new: true }
-        );
-      });
+      await newPhase.save();
+      await ProjectModel.findOneAndUpdate(
+        { name: projectName },
+        { $addToSet: { phaseList: newPhase._id } }
+      );
     });
     return res.json(successResponse(project, "Phase added to project"));
   } catch (error) {

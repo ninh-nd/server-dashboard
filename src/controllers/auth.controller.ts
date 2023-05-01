@@ -11,6 +11,7 @@ export async function logout(req: Request, res: Response) {
 }
 export async function redirectToHomePage(req: Request, res: Response) {
   const account = req.user;
+  if (!account) return;
   const { username } = account;
   return res.redirect(`${process.env.CLIENT_URL}/user/${username}`);
 }

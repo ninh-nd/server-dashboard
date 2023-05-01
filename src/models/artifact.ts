@@ -1,6 +1,7 @@
 import { Ref, prop } from "@typegoose/typegoose";
 import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { Threat } from "./threat";
+import { Vulnerability } from "./vulnerability";
 export interface Artifact extends Base {}
 export class Artifact extends TimeStamps {
   @prop({ required: true })
@@ -18,8 +19,8 @@ export class Artifact extends TimeStamps {
   @prop({ ref: () => Threat, default: [] })
   public threatList?: Ref<Threat>[];
 
-  @prop({ default: [] })
-  public vulnerabilityList?: string[];
+  @prop({ default: [], ref: () => Vulnerability })
+  public vulnerabilityList?: Ref<Vulnerability>[];
 
   @prop()
   public cpe?: string;

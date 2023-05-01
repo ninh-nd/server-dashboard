@@ -1,4 +1,4 @@
-import { pre, prop } from "@typegoose/typegoose";
+import { ArraySubDocumentType, pre, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "utils/permission";
 import { ThirdParty } from "./thirdParty";
@@ -34,8 +34,8 @@ export class Account {
   @prop({ lowercase: true })
   public email?: string;
 
-  @prop({ ref: () => ThirdParty, default: [], required: true })
-  public thirdParty!: ThirdParty[];
+  @prop({ type: () => ThirdParty, default: [], required: true })
+  public thirdParty!: ArraySubDocumentType<ThirdParty>[];
 
   @prop({ enum: ["admin", "manager", "member"], default: "member" })
   public role?: string;
