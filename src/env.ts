@@ -8,8 +8,6 @@ export const envVariables = z.object({
   SESSION_SECRET: z.string(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
-  OPENCVE_USERNAME: z.string(),
-  OPENCVE_PASSWORD: z.string(),
 });
 
 declare global {
