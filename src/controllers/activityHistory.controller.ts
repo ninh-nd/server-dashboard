@@ -1,13 +1,13 @@
-import { Octokit } from "octokit";
+import { Request, Response } from "express";
 import { Account } from "models/account";
 import { ActivityHistory } from "models/activityHistory";
-import { User } from "models/user";
 import { GithubConfig } from "models/githubConfig";
 import { Project } from "models/project";
-import { errorResponse, successResponse } from "utils/responseFormat";
-import { DEFAULT_TTL, redisClient } from "redisServer";
-import { Request, Response } from "express";
+import { User } from "models/user";
 import { Types } from "mongoose";
+import { Octokit } from "octokit";
+import redisClient from "redisServer";
+import { errorResponse, successResponse } from "utils/responseFormat";
 async function getGithubPull(
   owner: string,
   repo: string,
@@ -31,11 +31,7 @@ async function getGithubPull(
   } catch (error) {
     return new Error("Error retrieving PRs from Github API");
   }
-  await redisClient.v4.setEx(
-    `github-pr-${repo}`,
-    DEFAULT_TTL,
-    JSON.stringify(prData)
-  );
+  await redisClient.v4.setEx(`github-pr-${repo}`, 60, JSON.stringify(prData));
   const processedPrData = prData.data.map(
     ({ id, title: content, created_at: createdAt, user }) => {
       const createdBy = user?.login;
@@ -60,7 +56,9 @@ async function getGithubPull(
       if (!account) {
         return new Error("Can't find account");
       }
-      const thirdPartyUsername = account.thirdParty[0].username;
+      const thirdPartyUsername = account.thirdParty.find(
+        (x) => x.name === "Github"
+      )?.username;
       const userHistory = history.filter(
         ({ createdBy }) => createdBy === thirdPartyUsername
       );
@@ -100,7 +98,7 @@ async function getGithubCommits(
   }
   await redisClient.v4.setEx(
     `github-commit-${repo}`,
-    DEFAULT_TTL,
+    60,
     JSON.stringify(commitData)
   );
   const processedCommitData = commitData.data.map(({ sha: id, commit }) => {
@@ -122,7 +120,9 @@ async function getGithubCommits(
       if (!account) {
         return new Error("Can't find account");
       }
-      const thirdPartyUsername = account.thirdParty[0].username;
+      const thirdPartyUsername = account.thirdParty.find(
+        (x) => x.name === "Github"
+      )?.username;
       const userHistory = history.filter(
         ({ createdBy }) => createdBy === thirdPartyUsername
       );
@@ -215,7 +215,7 @@ export async function getCommitsByAccount(req: Request, res: Response) {
     }
     // Get the account linked to the internal account
     const commits = await ActivityHistory.find({
-      createdBy: user.thirdParty[0].username,
+      createdBy: user.thirdParty.find((x) => x.name === "Github")?.username,
       action: "commit",
       projectId,
     });
@@ -239,7 +239,7 @@ export async function getPRsByAccount(req: Request, res: Response) {
     }
     // Get the account linked to the internal account
     const prs = await ActivityHistory.find({
-      createdBy: user.thirdParty[0].username,
+      createdBy: user.thirdParty.find((x) => x.name === "Github")?.username,
       action: "pr",
       projectId,
     });
