@@ -6,7 +6,7 @@ import session from "express-session";
 import morgan from "morgan";
 import passport from "passport";
 import initialize from "./passport.config";
-import { redisClient } from "./redisServer";
+import redisClient from "./redisServer";
 import accountRoute from "./routes/account";
 import activityRoute from "./routes/activityHistory";
 import artifactRoute from "./routes/artifact";
