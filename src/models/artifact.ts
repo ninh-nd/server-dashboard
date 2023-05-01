@@ -7,14 +7,12 @@ const artifactSchema = new Schema<IArtifact>(
       type: String,
       required: true,
     },
-    content: String,
     type: {
       type: String,
       enum: ["image", "log", "source code", "executable", "library"],
       required: true,
     },
     url: String,
-    version: String,
     threatList: [
       {
         type: Schema.Types.ObjectId,
@@ -24,11 +22,11 @@ const artifactSchema = new Schema<IArtifact>(
     ],
     vulnerabilityList: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Vulnerability",
+        type: String,
         default: [],
       },
     ],
+    cpe: String,
   },
   { timestamps: true }
 );

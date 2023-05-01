@@ -102,21 +102,20 @@ export interface ICWE {
 
 export interface IVulnerability {
   cveId: string;
-  vendor: string;
-  product: string;
-  version: string[];
   description: string;
   score: number;
   severity: string;
   cwes: string[];
+  availabilityImpact: string;
+  confidentialityImpact: string;
+  integrityImpact: string;
 }
 
 export interface IArtifact {
   name: string;
   type: "image" | "log" | "source code" | "executable" | "library";
-  content: string;
   url: string;
-  version: string;
+  cpe?: string;
   createdAt: Date;
   updatedAt: Date;
   threatList: IThreat[];
