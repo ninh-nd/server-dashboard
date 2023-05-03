@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ArtifactModel, ProjectModel } from "models/models";
-import { errorResponse, successResponse } from "utils/responseFormat";
+import { ArtifactModel, ProjectModel } from "~/models/models";
+import { errorResponse, successResponse } from "~/utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;

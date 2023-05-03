@@ -1,9 +1,8 @@
 import bcrypt from "bcrypt";
+import { AccountModel, ThirdPartyModel } from "~/models/models";
 import { PassportStatic } from "passport";
-import { AccountModel } from "models/models";
-import Local from "passport-local";
 import Github from "passport-github2";
-import { ThirdPartyModel } from "models/models";
+import Local from "passport-local";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
 function initialize(passport: PassportStatic) {

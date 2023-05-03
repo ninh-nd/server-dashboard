@@ -5,7 +5,7 @@ import {
   create,
   update,
   remove,
-} from "controllers/thirdParty.controller";
+} from "~/controllers/thirdParty.controller";
 
 const router = express.Router();
 

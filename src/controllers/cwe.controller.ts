@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CWEModel } from "models/models";
-import { errorResponse, successResponse } from "utils/responseFormat";
+import { CWEModel } from "~/models/models";
+import { errorResponse, successResponse } from "~/utils/responseFormat";
 
 export async function get(req: Request, res: Response) {
   const { id } = req.params;

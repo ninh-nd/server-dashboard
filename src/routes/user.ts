@@ -7,8 +7,8 @@ import {
   assignTask,
   getProjectIn,
   addProjectIn,
-} from "controllers/user.controller";
-import { checkAuth } from "middlewares/auth";
+} from "~/controllers/user.controller";
+import { checkAuth } from "~/middlewares/auth";
 
 const router = express.Router();
 // Get a user's projects

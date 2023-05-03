@@ -1,12 +1,6 @@
-import {
-  ArraySubDocumentType,
-  Severity,
-  modelOptions,
-  pre,
-  prop,
-} from "@typegoose/typegoose";
+import { ArraySubDocumentType, pre, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import permissions from "utils/permission";
+import permissions from "~/utils/permission";
 import { ThirdParty } from "./thirdParty";
 export interface Account extends Base {}
 @pre<Account>("save", function () {
@@ -31,19 +25,23 @@ export interface Account extends Base {}
   }
 })
 export class Account {
-  @prop({ required: true })
+  @prop({ required: true, type: String })
   public username!: string;
 
-  @prop({ required: true })
+  @prop({ required: true, type: String })
   public password!: string;
 
-  @prop({ lowercase: true })
+  @prop({ lowercase: true, type: String })
   public email?: string;
 
   @prop({ type: () => ThirdParty, default: [], required: true })
   public thirdParty!: ArraySubDocumentType<ThirdParty>[];
 
-  @prop({ enum: ["admin", "manager", "member"], default: "member" })
+  @prop({
+    enum: ["admin", "manager", "member"],
+    default: "member",
+    type: String,
+  })
   public role?: string;
 
   @prop({ required: true, type: () => [String] })

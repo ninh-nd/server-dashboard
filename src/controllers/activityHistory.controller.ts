@@ -1,17 +1,16 @@
 import { Ref } from "@typegoose/typegoose";
 import { Request, Response } from "express";
+import { Octokit } from "octokit";
 import {
   AccountModel,
   ActivityHistoryModel,
   GithubConfigModel,
   ProjectModel,
   UserModel,
-} from "models/models";
-import { Project } from "models/project";
-import { Types } from "mongoose";
-import { Octokit } from "octokit";
-import redisClient from "redisServer";
-import { errorResponse, successResponse } from "utils/responseFormat";
+} from "~/models/models";
+import { Project } from "~/models/project";
+import redisClient from "~/redisServer";
+import { errorResponse, successResponse } from "~/utils/responseFormat";
 async function getGithubPull(
   owner: string,
   repo: string,

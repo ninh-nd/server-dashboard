@@ -7,13 +7,13 @@ import { Task } from "./task";
 import { Ticket } from "./ticket";
 export interface User extends Base {}
 export class User {
-  @prop({ required: true })
+  @prop({ required: true, type: String })
   public name!: string;
 
   @prop({ ref: () => Account, required: true })
   public account!: Ref<Account>;
 
-  @prop()
+  @prop({ type: String })
   public company?: string;
 
   @prop({ ref: () => Task, default: [] })

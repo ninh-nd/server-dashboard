@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ThreatModel } from "models/models";
-import { errorResponse, successResponse } from "utils/responseFormat";
+import { ThreatModel } from "~/models/models";
+import { errorResponse, successResponse } from "~/utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   try {

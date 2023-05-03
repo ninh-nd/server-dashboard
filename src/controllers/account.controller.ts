@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import { Request, Response } from "express";
-import { AccountModel, ThirdPartyModel } from "models/models";
-import { errorResponse, successResponse } from "utils/responseFormat";
+import { errorResponse, successResponse } from "~/utils/responseFormat";
+import { AccountModel, ThirdPartyModel } from "~/models/models";
 
 export async function get(req: Request, res: Response) {
   try {

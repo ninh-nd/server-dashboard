@@ -4,7 +4,7 @@ import {
   create,
   update,
   getProjects,
-} from "controllers/githubConfig.controller";
+} from "~/controllers/githubConfig.controller";
 
 const router = express.Router();
 // Get list of available Github project

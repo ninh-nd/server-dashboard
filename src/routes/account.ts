@@ -8,9 +8,9 @@ import {
   updateAccountInfo,
   remove,
   updateAccountPermission,
-} from "controllers/account.controller";
+} from "~/controllers/account.controller";
 import express from "express";
-import { checkAuth, checkAdmin } from "middlewares/auth";
+import { checkAuth, checkAdmin } from "~/middlewares/auth";
 const router = express.Router();
 // Get an account
 router.get("/", checkAuth, get);

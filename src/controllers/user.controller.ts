@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { UserModel } from "models/models";
+import { UserModel } from "~/models/models";
 import { CallbackError, Document } from "mongoose";
-import { errorResponse, successResponse } from "utils/responseFormat";
+import { errorResponse, successResponse } from "~/utils/responseFormat";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {

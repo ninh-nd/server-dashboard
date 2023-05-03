@@ -4,13 +4,13 @@ import { Artifact } from "./artifact";
 import { Task } from "./task";
 export interface Phase extends Base {}
 export class Phase {
-  @prop({ required: true })
+  @prop({ required: true, type: String })
   public name!: string;
 
-  @prop()
+  @prop({ type: String })
   public description?: string;
 
-  @prop({ required: true })
+  @prop({ required: true, type: Number })
   public order!: number;
 
   @prop({ ref: () => Task, default: [] })
@@ -19,9 +19,9 @@ export class Phase {
   @prop({ ref: () => Artifact, default: [] })
   public artifacts?: Ref<Artifact>[];
 
-  @prop()
+  @prop({ type: String })
   public createdBy?: string;
 
-  @prop()
+  @prop({ type: String })
   public updatedBy?: string;
 }

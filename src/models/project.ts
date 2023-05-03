@@ -3,28 +3,33 @@ import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { Phase } from "./phase";
 export interface Project extends Base {}
 export class Project extends TimeStamps {
-  @prop({ required: true })
+  @prop({ required: true, type: String })
   public name!: string;
 
-  @prop()
+  @prop({ type: String })
   public url?: string;
 
-  @prop({ required: true, enum: ["active", "inactive"], default: "active" })
+  @prop({
+    required: true,
+    enum: ["active", "inactive"],
+    default: "active",
+    type: String,
+  })
   public status!: string;
 
-  @prop()
+  @prop({ type: String })
   public description?: string;
 
-  @prop()
+  @prop({ type: Date })
   public startDate?: Date;
 
-  @prop()
+  @prop({ type: Date })
   public endDate?: Date;
 
-  @prop()
+  @prop({ type: String })
   public createdBy?: string;
 
-  @prop()
+  @prop({ type: String })
   public updatedBy?: string;
 
   @prop({ ref: "Phase", default: [], required: true })
