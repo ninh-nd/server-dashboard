@@ -78,7 +78,7 @@ export interface CvssMetricV2 {
   source: CvssMetricV2Source;
   type: Type;
   cvssData: CvssMetricV2CvssData;
-  baseSeverity: Ity;
+  baseSeverity: Severity;
   exploitabilityScore: number;
   impactScore: number;
   acInsufInfo: boolean;
@@ -88,7 +88,7 @@ export interface CvssMetricV2 {
   userInteractionRequired: boolean;
 }
 
-export enum Ity {
+export enum Severity {
   High = "HIGH",
   Low = "LOW",
   Medium = "MEDIUM",
@@ -98,11 +98,11 @@ export interface CvssMetricV2CvssData {
   version: string;
   vectorString: string;
   accessVector: Vector;
-  accessComplexity: Ity;
+  accessComplexity: Severity;
   authentication: Authentication;
-  confidentialityImpact: ItyImpact;
-  integrityImpact: ItyImpact;
-  availabilityImpact: ItyImpact;
+  confidentialityImpact: SeverityImpact;
+  integrityImpact: SeverityImpact;
+  availabilityImpact: SeverityImpact;
   baseScore: number;
 }
 
@@ -116,7 +116,7 @@ export enum Authentication {
   Single = "SINGLE",
 }
 
-export enum ItyImpact {
+export enum SeverityImpact {
   Complete = "COMPLETE",
   None = "NONE",
   Partial = "PARTIAL",
@@ -145,7 +145,7 @@ export interface CvssMetricV30CvssData {
   version: string;
   vectorString: string;
   attackVector: Vector;
-  attackComplexity: Ity;
+  attackComplexity: Severity;
   privilegesRequired: AvailabilityImpact;
   userInteraction: UserInteraction;
   scope: Scope;
