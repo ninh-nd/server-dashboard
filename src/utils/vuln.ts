@@ -32,10 +32,6 @@ export async function fetchVulnsFromNVD(cpe: string) {
     const data = (await res.json()) as Result;
     return resolveData(data);
   } catch (error) {
-    let message = "Error fetching vulns from NVD";
-    if (error instanceof Error) {
-      message = error.message;
-    }
-    throw new Error(message);
+    return [];
   }
 }

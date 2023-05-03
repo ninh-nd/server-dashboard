@@ -1,4 +1,4 @@
-import { Ref, prop } from "@typegoose/typegoose";
+import { ArraySubDocumentType, prop } from "@typegoose/typegoose";
 import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { Threat } from "./threat";
 import { Vulnerability } from "./vulnerability";
@@ -16,11 +16,11 @@ export class Artifact extends TimeStamps {
   @prop()
   public url?: string;
 
-  @prop({ ref: () => Threat, default: [] })
-  public threatList?: Ref<Threat>[];
+  @prop({ type: () => Threat, default: [] })
+  public threatList?: ArraySubDocumentType<Threat>[];
 
-  @prop({ default: [], ref: () => Vulnerability })
-  public vulnerabilityList?: Ref<Vulnerability>[];
+  @prop({ default: [], type: () => Vulnerability })
+  public vulnerabilityList?: ArraySubDocumentType<Vulnerability>[];
 
   @prop()
   public cpe?: string;

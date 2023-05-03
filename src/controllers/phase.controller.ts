@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ArtifactModel, PhaseModel, PhasePresetModel } from "models/models";
 import { CallbackError, Document } from "mongoose";
 import { errorResponse, successResponse } from "utils/responseFormat";
+import { fetchVulnsFromNVD } from "utils/vuln";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
@@ -104,6 +105,16 @@ export async function getPresets(req: Request, res: Response) {
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
+  const { cpe } = data;
+  // Attempt to find CVEs if CPE exists
+  if (cpe) {
+    try {
+      const vulns = await fetchVulnsFromNVD(cpe);
+      data.vulnerabilityList = vulns;
+    } catch (error) {
+      data.vulnerabilityList = [];
+    }
+  }
   const ar = new ArtifactModel(data);
   try {
     await ar.save();
