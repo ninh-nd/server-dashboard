@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { ThirdPartyModel } from "~/models/models";
+import { ThirdPartyModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
-import { errorResponse, successResponse } from "~/utils/responseFormat";
+import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   try {
     const thirdParties = await ThirdPartyModel.find();

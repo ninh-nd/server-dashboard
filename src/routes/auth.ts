@@ -1,4 +1,4 @@
-import { logout, redirectToHomePage } from "~/controllers/auth.controller";
+import { logout, redirectToHomePage } from "../controllers/auth.controller";
 import express from "express";
 import passport from "passport";
 

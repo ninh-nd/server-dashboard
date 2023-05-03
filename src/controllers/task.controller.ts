@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { ProjectModel, TaskModel } from "~/models/models";
+import { ProjectModel, TaskModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
-import { errorResponse, successResponse } from "~/utils/responseFormat";
+import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   const { projectName, filter } = req.query;
   try {

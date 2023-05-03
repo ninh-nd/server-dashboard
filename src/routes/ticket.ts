@@ -1,6 +1,6 @@
-import { create, get, getAll, update } from "~/controllers/ticket.controller";
+import { create, get, getAll, update } from "../controllers/ticket.controller";
 import express from "express";
-import { checkPermission } from "~/middlewares/permission";
+import { checkPermission } from "../middlewares/permission";
 const router = express.Router();
 
 // Get all tickets

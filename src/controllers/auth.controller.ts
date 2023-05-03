@@ -1,4 +1,4 @@
-import { errorResponse, successResponse } from "~/utils/responseFormat";
+import { errorResponse, successResponse } from "../utils/responseFormat";
 import { Request, Response } from "express";
 
 export async function logout(req: Request, res: Response) {

@@ -25,9 +25,6 @@ dependencies:
   express-session:
     specifier: ^1.17.3
     version: 1.17.3
-  module-alias:
-    specifier: ^2.2.2
-    version: 2.2.2
   mongoose:
     specifier: ^7.1.0
     version: 7.1.0
@@ -2443,10 +2440,6 @@ packages:
       pkg-types: 1.0.3
       ufo: 1.1.1
     dev: true
-
-  /module-alias@2.2.2:
-    resolution: {integrity: sha512-A/78XjoX2EmNvppVWEhM2oGk3x4lLxnkEA4jTbaK97QKSDjkIoOsKQlfylt/d3kKKi596Qy3NP5XrXJ6fZIC9Q==}
-    dev: false
 
   /mongodb-connection-string-url@2.6.0:
     resolution: {integrity: sha512-WvTZlI9ab0QYtTYnuMLgobULWhokRjtC7db9LtcVfJ+Hsnyr5eo6ZtNAt3Ly24XZScGMelOcGtm7lSn0332tPQ==}

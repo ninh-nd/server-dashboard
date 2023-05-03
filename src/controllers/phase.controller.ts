@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { ArtifactModel, PhaseModel, PhasePresetModel } from "~/models/models";
+import { ArtifactModel, PhaseModel, PhasePresetModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
-import { errorResponse, successResponse } from "~/utils/responseFormat";
-import { fetchVulnsFromNVD } from "~/utils/vuln";
+import { errorResponse, successResponse } from "../utils/responseFormat";
+import { fetchVulnsFromNVD } from "../utils/vuln";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {

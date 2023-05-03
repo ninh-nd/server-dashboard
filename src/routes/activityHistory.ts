@@ -4,8 +4,8 @@ import {
   getCommits,
   getCommitsByAccount,
   getPRsByAccount,
-} from "~/controllers/activityHistory.controller";
-import { checkAuth } from "~/middlewares/auth";
+} from "../controllers/activityHistory.controller";
+import { checkAuth } from "../middlewares/auth";
 
 const router = express.Router();
 // Get pull requests

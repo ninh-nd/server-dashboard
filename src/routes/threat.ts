@@ -1,4 +1,4 @@
-import { create, getAll } from "~/controllers/threat.controller";
+import { create, getAll } from "../controllers/threat.controller";
 import express from "express";
 const router = express.Router();
 // Get all threats

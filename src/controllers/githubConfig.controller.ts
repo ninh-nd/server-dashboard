@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { GithubConfigModel } from "~/models/models";
+import { GithubConfigModel } from "../models/models";
 import mongoose from "mongoose";
 import { Octokit } from "octokit";
-import { errorResponse, successResponse } from "~/utils/responseFormat";
+import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function get(req: Request, res: Response) {
   const { projectId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(projectId)) {

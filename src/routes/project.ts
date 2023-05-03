@@ -7,7 +7,7 @@ import {
   remove,
   getProjectMembers,
   createPhaseModel,
-} from "~/controllers/project.controller";
+} from "../controllers/project.controller";
 
 const router = express.Router();
 

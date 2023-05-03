@@ -1,6 +1,6 @@
 import { ArraySubDocumentType, pre, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
-import permissions from "~/utils/permission";
+import permissions from "../utils/permission";
 import { ThirdParty } from "./thirdParty";
 export interface Account extends Base {}
 @pre<Account>("save", function () {

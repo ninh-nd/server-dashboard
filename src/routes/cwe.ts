@@ -1,4 +1,4 @@
-import { get } from "~/controllers/cwe.controller";
+import { get } from "../controllers/cwe.controller";
 import express from "express";
 const router = express.Router();
 
