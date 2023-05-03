@@ -11,18 +11,18 @@ export class CWE {
   @prop({ required: true })
   public description!: string;
 
-  @prop({ required: true })
+  @prop({ required: true, type: () => [String] })
   public modesOfIntroduction!: string[];
 
   @prop({ enum: ["Low", "Medium", "High", "Unknown"] })
   public likelihood?: string;
 
-  @prop({ required: true })
+  @prop({ required: true, type: () => [String] })
   public mitigation!: string[];
 
-  @prop({ required: true })
+  @prop({ required: true, type: () => [String] })
   public consequences!: string[];
 
-  @prop({ required: true })
+  @prop({ required: true, type: () => [String] })
   public detectionMethods!: string[];
 }

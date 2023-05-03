@@ -1,4 +1,10 @@
-import { ArraySubDocumentType, pre, prop } from "@typegoose/typegoose";
+import {
+  ArraySubDocumentType,
+  Severity,
+  modelOptions,
+  pre,
+  prop,
+} from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "utils/permission";
 import { ThirdParty } from "./thirdParty";
@@ -40,6 +46,6 @@ export class Account {
   @prop({ enum: ["admin", "manager", "member"], default: "member" })
   public role?: string;
 
-  @prop({ required: true })
+  @prop({ required: true, type: () => [String] })
   public permission?: string[];
 }
