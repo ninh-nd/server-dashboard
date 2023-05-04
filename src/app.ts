@@ -1,17 +1,20 @@
+import RedisStore from "connect-redis";
 import cors from "cors";
-import crypto from "crypto";
 import express, { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import session from "express-session";
 import morgan from "morgan";
 import passport from "passport";
+import { envVariables } from "./env";
 import initialize from "./passport.config";
-import redisClient from "./redisServer";
+import redis from "./redis";
 import accountRoute from "./routes/account";
 import activityRoute from "./routes/activityHistory";
 import artifactRoute from "./routes/artifact";
 import authRoute from "./routes/auth";
+import cweRoute from "./routes/cwe";
 import githubConfigRoute from "./routes/githubConfig";
+import permissionRoute from "./routes/permission";
 import phaseRoute from "./routes/phase";
 import projectRoute from "./routes/project";
 import taskRoute from "./routes/task";
@@ -20,11 +23,7 @@ import threatRoute from "./routes/threat";
 import ticketRoute from "./routes/ticket";
 import userRoute from "./routes/user";
 import vulnerabilityRoute from "./routes/vulnerability";
-import permissionRoute from "./routes/permission";
-import cweRoute from "./routes/cwe";
-import { envVariables } from "./env";
 envVariables.parse(process.env);
-let RedisStore = require("connect-redis")(session);
 const app = express();
 app.use(express.json());
 app.use(
@@ -45,11 +44,13 @@ app.use(limiter);
 app.get("/", (req: Request, res: Response) => {
   res.send("server-dashboard API. Start using with /{resource}");
 });
+const redisStore = new RedisStore({
+  client: redis,
+});
 app.use(
   session({
-    store: new RedisStore({ client: redisClient }),
-    secret:
-      process.env.SESSION_SECRET || crypto.randomBytes(20).toString("hex"),
+    store: redisStore,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   })

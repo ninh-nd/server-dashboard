@@ -9,7 +9,7 @@ import {
   UserModel,
 } from "../models/models";
 import { Project } from "../models/project";
-import redisClient from "../redisServer";
+import redis from "../redis";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 async function getGithubPull(
   owner: string,
@@ -17,7 +17,7 @@ async function getGithubPull(
   accessToken: string,
   projectId: Ref<Project>
 ) {
-  const cache = await redisClient.v4.get(`github-pr-${repo}`);
+  const cache = await redis.get(`github-pr-${repo}`);
   if (cache) {
     return true;
   }
@@ -34,7 +34,7 @@ async function getGithubPull(
   } catch (error) {
     return new Error("Error retrieving PRs from Github API");
   }
-  await redisClient.v4.setEx(`github-pr-${repo}`, 60, JSON.stringify(prData));
+  await redis.set(`github-pr-${repo}`, JSON.stringify(prData), "EX", 60);
   const processedPrData = prData.data.map(
     ({ id, title: content, created_at: createdAt, user }) => {
       const createdBy = user?.login;
@@ -85,7 +85,7 @@ async function getGithubCommits(
   accessToken: string,
   projectId: Ref<Project>
 ) {
-  const cache = await redisClient.v4.get(`github-commit-${repo}`);
+  const cache = await redis.get(`github-commit-${repo}`);
   if (cache) {
     return true;
   }
@@ -101,10 +101,11 @@ async function getGithubCommits(
   } catch (error) {
     return new Error("Error retrieving PRs from Github API");
   }
-  await redisClient.v4.setEx(
+  await redis.set(
     `github-commit-${repo}`,
-    60,
-    JSON.stringify(commitData)
+    JSON.stringify(commitData),
+    "EX",
+    60
   );
   const processedCommitData = commitData.data.map(({ sha: id, commit }) => {
     const content = commit.message;
