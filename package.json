@@ -1,5 +1,6 @@
 {
-  "name": "software-project-management",
+  "name": "software-project-management-api",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
