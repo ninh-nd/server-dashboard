@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { AccountModel, ThirdPartyModel } from "../src/models/models";
+import { AccountModel, ThirdPartyModel } from "./models/models";
 import { PassportStatic } from "passport";
 import Github from "passport-github2";
 import Local from "passport-local";
