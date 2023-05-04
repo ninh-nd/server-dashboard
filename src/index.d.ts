@@ -1,4 +1,4 @@
-import { Account } from "models/account";
+import { Account } from "../src/models/account";
 
 declare global {
   namespace Express {

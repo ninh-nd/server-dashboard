@@ -44,6 +44,6 @@ export class Account {
   })
   public role?: string;
 
-  @prop({ required: true, type: () => [String] })
-  public permission?: string[];
+  @prop({ required: true, type: () => [String], default: [] })
+  public permission!: string[];
 }

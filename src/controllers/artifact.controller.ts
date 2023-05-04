@@ -1,3 +1,4 @@
+import { isDocumentArray } from "@typegoose/typegoose";
 import { Request, Response } from "express";
 import { ArtifactModel, ProjectModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
@@ -18,15 +19,17 @@ export async function getAll(req: Request, res: Response) {
       if (!project) {
         return res.json(errorResponse("Project not found"));
       }
-      const artifacts = project.phaseList
-        .map((phase) => phase.artifacts)
-        .flat();
-      return res.json(
-        successResponse(
-          artifacts,
-          "Get all artifacts with respective vulnerabilities"
-        )
-      );
+      if (isDocumentArray(project.phaseList)) {
+        const artifacts = project.phaseList
+          .map((phase) => phase.artifacts)
+          .flat();
+        return res.json(
+          successResponse(
+            artifacts,
+            "Get all artifacts with respective vulnerabilities"
+          )
+        );
+      }
     }
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

@@ -7,6 +7,9 @@ import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function get(req: Request, res: Response) {
   try {
     const account = req.user;
+    if (!account) {
+      return res.json(errorResponse("Unauthenticated"));
+    }
     const findedAccount = await AccountModel.findById(account._id);
     if (!findedAccount) {
       return res.json(errorResponse("No account is found in the database"));
@@ -76,20 +79,16 @@ export async function create(req: Request, res: Response) {
 export async function addThirdPartyToAccount(req: Request, res: Response) {
   // Check if account exists
   const { id } = req.params;
-  const account = await AccountModel.findById(id);
-  if (!account) {
-    return res.json(errorResponse("Account not found"));
-  }
-  // Add third party account to account
   try {
     const { name, username, url } = req.body;
-    const newThirdParty = new ThirdPartyModel({
+    const document = await ThirdPartyModel.create({
       name,
       username,
       url,
     });
-    account.thirdParty.push(newThirdParty);
-    await account.save();
+    const account = await AccountModel.findByIdAndUpdate(id, {
+      $push: { thirdParty: document._id },
+    });
     return res.json(successResponse(account, "Third party account added"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
