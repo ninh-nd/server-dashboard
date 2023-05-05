@@ -3,7 +3,6 @@ import { Account } from "./account";
 import { ActivityHistory } from "./activityHistory";
 import { Artifact } from "./artifact";
 import { CWE } from "./cwe";
-import { GithubConfig } from "./githubConfig";
 import { Phase } from "./phase";
 import { Project } from "./project";
 import { Task } from "./task";
@@ -18,7 +17,6 @@ const AccountModel = getModelForClass(Account);
 const ActivityHistoryModel = getModelForClass(ActivityHistory);
 const ArtifactModel = getModelForClass(Artifact);
 const CWEModel = getModelForClass(CWE);
-const GithubConfigModel = getModelForClass(GithubConfig);
 const PhaseModel = getModelForClass(Phase);
 const PhaseTemplateModel = getModelForClass(PhaseTemplate);
 const ProjectModel = getModelForClass(Project);
@@ -34,7 +32,6 @@ export {
   ActivityHistoryModel,
   ArtifactModel,
   CWEModel,
-  GithubConfigModel,
   PhaseModel,
   PhaseTemplateModel,
   ProjectModel,

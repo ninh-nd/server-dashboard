@@ -4,7 +4,6 @@ import { Octokit } from "octokit";
 import {
   AccountModel,
   ActivityHistoryModel,
-  GithubConfigModel,
   ProjectModel,
   UserModel,
 } from "../models/models";
