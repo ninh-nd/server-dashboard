@@ -162,3 +162,29 @@ export async function updateAccountPermission(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
+export async function updateGithubAccessToken(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
+  try {
+    const account = await AccountModel.findById(id);
+    if (!account) return res.json(errorResponse("Account not found"));
+    // Find the third party in the account that has the name of "Github" and then update the access token
+    const filter = {
+      _id: id,
+      "thirdParty.name": "Github",
+    };
+    const update = {
+      $set: {
+        "thirdParty.$.accessToken": data,
+      },
+    };
+    const accountUpdated = await AccountModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+    return res.json(
+      successResponse(accountUpdated, "Github access token updated")
+    );
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}

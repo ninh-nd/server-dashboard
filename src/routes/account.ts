@@ -8,6 +8,7 @@ import {
   updateAccountInfo,
   remove,
   updateAccountPermission,
+  updateGithubAccessToken,
 } from "../controllers/account.controller";
 import express from "express";
 import { checkAuth, checkAdmin } from "../middlewares/auth";
@@ -30,4 +31,6 @@ router.patch("/:id/password", changePassword);
 router.delete("/:id", checkAuth, checkAdmin, remove);
 // Update account permission
 router.patch("/:id/permission", checkAuth, checkAdmin, updateAccountPermission);
+// Update Github's access token
+router.patch("/:id/thirdParty/github", checkAuth, updateGithubAccessToken);
 export default router;
