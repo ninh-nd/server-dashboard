@@ -12,11 +12,14 @@ import { Project } from "../models/project";
 import redis from "../redis";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 async function getGithubPull(
-  owner: string,
-  repo: string,
-  accessToken: string,
+  owner: string | undefined,
+  repo: string | undefined,
+  accessToken: string | undefined,
   projectId: Ref<Project>
 ) {
+  if (!owner || !repo || !accessToken) {
+    return new Error("Missing owner, repo or access token");
+  }
   const cache = await redis.get(`github-pr-${repo}`);
   if (cache) {
     return true;
@@ -80,11 +83,14 @@ async function getGithubPull(
 }
 
 async function getGithubCommits(
-  owner: string,
-  repo: string,
-  accessToken: string,
+  owner: string | undefined,
+  repo: string | undefined,
+  accessToken: string | undefined,
   projectId: Ref<Project>
 ) {
+  if (!owner || !repo || !accessToken) {
+    return new Error("Missing owner, repo or access token");
+  }
   const cache = await redis.get(`github-commit-${repo}`);
   if (cache) {
     return true;
@@ -146,68 +152,89 @@ async function getGithubCommits(
 
 export async function getPRs(req: Request, res: Response) {
   const { projectName } = req.params;
-  const githubConfig = await GithubConfigModel.findOne({ repo: projectName });
-  if (!githubConfig) {
-    return res.json(errorResponse("No github config found"));
-  }
-  const { accessToken, owner, repo, projectId } = githubConfig;
-  const result = await getGithubPull(owner, repo, accessToken, projectId);
-  if (result instanceof Error) {
-    return res.json(errorResponse(`Error retrieving PRs: ${result.message}`));
-  }
-  try {
-    const prs = await ActivityHistoryModel.find({ projectId, action: "pr" });
-    const total = prs.length;
-    const authorArray = prs.map((pr) => pr.createdBy);
-    const uniqueAuthors = [...new Set(authorArray)];
-    const individualContribution: Array<{ author: string; total: number }> = [];
-    uniqueAuthors.forEach((author) => {
-      const prOfAnAuthor = prs.filter((pr) => pr.createdBy === author);
-      const totalOfAnAuthor = prOfAnAuthor.length;
-      if (author) {
-        individualContribution.push({ author, total: totalOfAnAuthor });
-      }
-    });
-    const data = { total, contribution: individualContribution };
-    return res.json(successResponse(data, "Successfully retrieved PRs"));
-  } catch (error) {
-    return res.json(errorResponse("Error retrieving PRs"));
+  const project = await ProjectModel.findOne({ name: projectName });
+  const accessToken = req.user?.thirdParty.find(
+    (x) => x.name === "Github"
+  )?.accessToken;
+  if (project) {
+    const { url, _id } = project;
+    if (!url) {
+      return res.json(errorResponse("Missing url of the repository"));
+    }
+    const urlObject = new URL(url);
+    const owner = urlObject.pathname.split("/")[1];
+    const repo = urlObject.pathname.split("/")[2];
+    const result = await getGithubPull(owner, repo, accessToken, _id);
+    if (result instanceof Error) {
+      return res.json(errorResponse(`Error retrieving PRs: ${result.message}`));
+    }
+    try {
+      const prs = await ActivityHistoryModel.find({
+        projectId: _id,
+        action: "pr",
+      });
+      const total = prs.length;
+      const authorArray = prs.map((pr) => pr.createdBy);
+      const uniqueAuthors = [...new Set(authorArray)];
+      const individualContribution: Array<{ author: string; total: number }> =
+        [];
+      uniqueAuthors.forEach((author) => {
+        const prOfAnAuthor = prs.filter((pr) => pr.createdBy === author);
+        const totalOfAnAuthor = prOfAnAuthor.length;
+        if (author) {
+          individualContribution.push({ author, total: totalOfAnAuthor });
+        }
+      });
+      const data = { total, contribution: individualContribution };
+      return res.json(successResponse(data, "Successfully retrieved PRs"));
+    } catch (error) {
+      return res.json(errorResponse("Error retrieving PRs"));
+    }
   }
 }
 
 export async function getCommits(req: Request, res: Response) {
   const { projectName } = req.params;
-  const githubConfig = await GithubConfigModel.findOne({ repo: projectName });
-  if (!githubConfig) {
-    return res.json(errorResponse("No github config found"));
-  }
-  const { accessToken, owner, repo, projectId } = githubConfig;
-  const result = await getGithubCommits(owner, repo, accessToken, projectId);
-  if (result instanceof Error) {
-    return res.json(
-      errorResponse(`Error retrieving commits: ${result.message}`)
-    );
-  }
-  try {
-    const commits = await ActivityHistoryModel.find({
-      projectId,
-      action: "commit",
-    });
-    const total = commits.length;
-    const authorArray = commits.map((cm) => cm.createdBy);
-    const uniqueAuthors = [...new Set(authorArray)];
-    const individualContribution: Array<{ author: string; total: number }> = [];
-    uniqueAuthors.forEach((author) => {
-      const prOfAnAuthor = commits.filter((cm) => cm.createdBy === author);
-      const totalOfAnAuthor = prOfAnAuthor.length;
-      if (author) {
-        individualContribution.push({ author, total: totalOfAnAuthor });
-      }
-    });
-    const data = { total, contribution: individualContribution };
-    return res.json(successResponse(data, "Successfully retrieved commits"));
-  } catch (error) {
-    return res.json(errorResponse("Error retrieving commits"));
+  const project = await ProjectModel.findOne({ name: projectName });
+  const accessToken = req.user?.thirdParty.find(
+    (x) => x.name === "Github"
+  )?.accessToken;
+  if (project) {
+    const { url, _id } = project;
+    if (!url) {
+      return res.json(errorResponse("Missing url of the repository"));
+    }
+    const urlObject = new URL(url);
+    const owner = urlObject.pathname.split("/")[1];
+    const repo = urlObject.pathname.split("/")[2];
+    const result = await getGithubCommits(owner, repo, accessToken, _id);
+    if (result instanceof Error) {
+      return res.json(
+        errorResponse(`Error retrieving commits: ${result.message}`)
+      );
+    }
+    try {
+      const commits = await ActivityHistoryModel.find({
+        projectId: _id,
+        action: "commit",
+      });
+      const total = commits.length;
+      const authorArray = commits.map((cm) => cm.createdBy);
+      const uniqueAuthors = [...new Set(authorArray)];
+      const individualContribution: Array<{ author: string; total: number }> =
+        [];
+      uniqueAuthors.forEach((author) => {
+        const prOfAnAuthor = commits.filter((cm) => cm.createdBy === author);
+        const totalOfAnAuthor = prOfAnAuthor.length;
+        if (author) {
+          individualContribution.push({ author, total: totalOfAnAuthor });
+        }
+      });
+      const data = { total, contribution: individualContribution };
+      return res.json(successResponse(data, "Successfully retrieved commits"));
+    } catch (error) {
+      return res.json(errorResponse("Error retrieving commits"));
+    }
   }
 }
 
