@@ -12,7 +12,7 @@ import { Threat } from "./threat";
 import { Ticket } from "./ticket";
 import { User } from "./user";
 import { Vulnerability } from "./vulnerability";
-import { PhasePreset } from "./phasePreset";
+import { PhaseTemplate } from "./phaseTemplate";
 
 const AccountModel = getModelForClass(Account);
 const ActivityHistoryModel = getModelForClass(ActivityHistory);
@@ -20,7 +20,7 @@ const ArtifactModel = getModelForClass(Artifact);
 const CWEModel = getModelForClass(CWE);
 const GithubConfigModel = getModelForClass(GithubConfig);
 const PhaseModel = getModelForClass(Phase);
-const PhasePresetModel = getModelForClass(PhasePreset);
+const PhaseTemplateModel = getModelForClass(PhaseTemplate);
 const ProjectModel = getModelForClass(Project);
 const TaskModel = getModelForClass(Task);
 const ThirdPartyModel = getModelForClass(ThirdParty);
@@ -36,7 +36,7 @@ export {
   CWEModel,
   GithubConfigModel,
   PhaseModel,
-  PhasePresetModel,
+  PhaseTemplateModel,
   ProjectModel,
   TaskModel,
   ThirdPartyModel,

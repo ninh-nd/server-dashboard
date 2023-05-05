@@ -1,25 +1,25 @@
 import express from "express";
 import {
   get,
-  create,
+  createFromTemplate,
   update,
   remove,
   addTaskToPhase,
-  getPresets,
   removeTaskFromPhase,
   addArtifactToPhase,
   removeArtifactFromPhase,
   updateArtifact,
+  getTemplates,
 } from "../controllers/phase.controller";
 
 const router = express.Router();
 
-// Get all phase presets
-router.get("/presets", getPresets);
+// Get all phase templates
+router.get("/templates", getTemplates);
 // Get a phase
 router.get("/:id", get);
-// Create a phase
-router.post("/", create);
+// Create a phase from a template
+router.post("/templates", createFromTemplate);
 // Update a phase
 router.put("/:id", update);
 // Remove a phase

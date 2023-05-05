@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
-import { ArtifactModel, PhaseModel, PhasePresetModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
+import {
+  ArtifactModel,
+  PhaseModel,
+  PhaseTemplateModel,
+  ProjectModel,
+} from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 import { fetchVulnsFromNVD } from "../utils/vuln";
 export async function get(req: Request, res: Response) {
@@ -23,11 +28,43 @@ export async function get(req: Request, res: Response) {
   }
 }
 
-export async function create(req: Request, res: Response) {
+export async function createFromTemplate(req: Request, res: Response) {
+  const { data, projectName } = req.body;
+  const username = req.user?.username;
+  const { phases } = data;
   try {
-    const newPhase = new PhaseModel(req.body);
-    await newPhase.save();
-    return res.json(successResponse(newPhase, "Phase created"));
+    // Template check: To determine whether is a new template or an existing one
+    if (!data._id) {
+      const newTemplate = await PhaseTemplateModel.create({
+        ...data,
+        createdBy: username,
+      });
+    }
+    // Create new phases
+    const phasesWithoutIds = phases.map(
+      ({
+        name,
+        description,
+        order,
+      }: {
+        name: string;
+        description: string;
+        order: number;
+      }) => ({
+        name,
+        description,
+        order,
+      })
+    );
+    const phasesCreated = await PhaseModel.insertMany(phasesWithoutIds);
+    // Add phases to project
+    await ProjectModel.findOneAndUpdate(
+      { name: projectName },
+      { phaseList: phasesCreated.map((phase) => phase._id) }
+    );
+    return res.json(
+      successResponse(phasesCreated, "Phases and template created")
+    );
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -89,14 +126,14 @@ export async function removeTaskFromPhase(req: Request, res: Response) {
   }
 }
 
-export async function getPresets(req: Request, res: Response) {
+export async function getTemplates(req: Request, res: Response) {
   const username = req.user?.username;
   try {
-    const presets = await PhasePresetModel.find({
-      isPrivate: false,
-      createdBy: username,
-    });
-    return res.json(successResponse(presets, "Phase presets found"));
+    const templates = await PhaseTemplateModel.find().or([
+      { isPrivate: false },
+      { createdBy: username },
+    ]);
+    return res.json(successResponse(templates, "Phase templates found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
