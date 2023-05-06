@@ -13,7 +13,7 @@ import {
 import express from "express";
 import { checkAuth, checkAdmin } from "../middlewares/auth";
 const router = express.Router();
-// Get an account
+// Get account info using session
 router.get("/", checkAuth, get);
 // Get list of account
 router.get("/list", checkAuth, checkAdmin, getAll);
