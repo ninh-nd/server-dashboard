@@ -31,9 +31,32 @@ export async function get(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
+  const { data } = req.body;
+  const { type, data: createData } = data;
   try {
-    const project = await ProjectModel.create(req.body);
-    return res.json(successResponse(project, "Project created"));
+    if (type === "import") {
+      const { name, url } = createData;
+      const project = await ProjectModel.create({
+        name,
+        url,
+        createdBy: req.user?.username,
+      });
+      // Add project to user
+      await UserModel.findOneAndUpdate(
+        {
+          account: req.user?._id,
+        },
+        {
+          $addToSet: {
+            projectIn: project._id,
+          },
+        }
+      );
+      return res.json(successResponse(project, "Project created"));
+    }
+    if (type === "create") {
+      // TODO
+    }
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

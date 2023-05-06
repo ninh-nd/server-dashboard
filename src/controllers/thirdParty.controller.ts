@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ThirdPartyModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
 import { errorResponse, successResponse } from "../utils/responseFormat";
+import { Octokit } from "octokit";
 export async function getAll(req: Request, res: Response) {
   try {
     const thirdParties = await ThirdPartyModel.find();
@@ -62,4 +63,38 @@ export async function remove(req: Request, res: Response) {
       return res.json(successResponse(doc, "Third party deleted"));
     }
   );
+}
+
+export async function getReposFromGithub(req: Request, res: Response) {
+  const account = req.user;
+  if (!account) {
+    return res.json(errorResponse("You are not authenticated"));
+  }
+  try {
+    const thirdParty = account.thirdParty.find((x) => x.name === "Github");
+    if (!thirdParty) {
+      return res.json(errorResponse("No Github account linked"));
+    }
+    const { username, accessToken } = thirdParty;
+    if (!accessToken) {
+      return res.json(errorResponse("No Github access token"));
+    }
+    const octokit = new Octokit({
+      auth: accessToken,
+    });
+    const repos = await octokit.rest.repos.listForAuthenticatedUser({
+      username,
+    });
+    const formattedRepos = repos.data.map(
+      ({ name, html_url, visibility, owner }) => ({
+        name,
+        url: html_url,
+        status: visibility,
+        owner: owner.login,
+      })
+    );
+    return res.json(successResponse(formattedRepos, "Github repos found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
 }

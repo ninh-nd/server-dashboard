@@ -5,6 +5,7 @@ import {
   create,
   update,
   remove,
+  getReposFromGithub,
 } from "../controllers/thirdParty.controller";
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.post("/", create);
 router.put("/:id", update);
 // Remove a third party
 router.delete("/:id", remove);
-
+// Get a list of repos from Github
+router.get("/github/repo", getReposFromGithub);
 export default router;
