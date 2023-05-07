@@ -7,4 +7,21 @@ export class Threat {
 
   @prop({ required: true, type: String })
   public description!: string;
+
+  @prop({
+    required: true,
+    type: String,
+    enum: [
+      "Spoofing",
+      "Tampering",
+      "Repudiation",
+      "Information Disclosure",
+      "Denial of Service",
+      "Elevation of Privilege",
+    ],
+  })
+  public category!: string;
+
+  @prop({ type: String })
+  public mitigation?: string;
 }
