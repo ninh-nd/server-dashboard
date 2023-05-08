@@ -1,42 +1,45 @@
+import { isDocumentArray } from "@typegoose/typegoose";
 import { Request, Response } from "express";
-import { ProjectModel, TaskModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
+import { ProjectModel, TaskModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   const { projectName, filter } = req.query;
   try {
     const tasks = await TaskModel.find({ projectName });
-    if (filter !== "all") {
-      const project = await ProjectModel.findOne({
-        name: projectName,
-      }).populate("phaseList");
-      if (filter === "unassigned") {
-        const filteredTasks = tasks.filter((task) => {
+    const project = await ProjectModel.findOne({
+      name: projectName,
+    }).populate("phaseList");
+    if (!project) {
+      return res.json(errorResponse("Project not found"));
+    }
+    switch (filter) {
+      case "unassigned":
+        const filteredUnassigned = tasks.filter((task) => {
           let isAssigned = false;
-          project?.phaseList.forEach((phase) => {
-            // @ts-ignore
-            if (phase.tasks.includes(task._id)) {
-              isAssigned = true;
-            }
-          });
-          return !isAssigned;
+          if (isDocumentArray(project.phaseList)) {
+            project.phaseList.forEach((phase) => {
+              if (phase.tasks.includes(task._id)) {
+                isAssigned = true;
+              }
+            });
+            return !isAssigned;
+          }
         });
-        return res.json(successResponse(filteredTasks, "Tasks found"));
-      } else if (filter === "assigned") {
-        const filteredTasks = tasks.filter((task) => {
+        return res.json(successResponse(filteredUnassigned, "Tasks found"));
+      case "assigned":
+        const filteredAssigned = tasks.filter((task) => {
           let isAssigned = false;
-          project?.phaseList.forEach((phase) => {
-            // @ts-ignore
-            if (phase.tasks.includes(task._id)) {
-              isAssigned = true;
-            }
-          });
-          return isAssigned;
+          if (isDocumentArray(project.phaseList)) {
+            project.phaseList.forEach((phase) => {
+              if (phase.tasks.includes(task._id)) {
+                isAssigned = true;
+              }
+            });
+            return isAssigned;
+          }
         });
-        return res.json(successResponse(filteredTasks, "Tasks found"));
-      }
-    } else {
-      return res.json(successResponse(tasks, "Tasks found"));
+        return res.json(successResponse(filteredAssigned, "Tasks found"));
     }
     return res.json(successResponse(tasks, "Tasks found"));
   } catch (error) {
@@ -68,20 +71,18 @@ export async function create(req: Request, res: Response) {
 
 export async function markTask(req: Request, res: Response) {
   const { data, status } = req.body;
-  // @ts-ignore
-  let op = [];
+  let operations: any[] = [];
   try {
     const arrayOfTaskId = data;
     arrayOfTaskId.forEach((id: string) => {
-      op.push({
+      operations.push({
         updateOne: {
           filter: { _id: id },
           update: { status: status },
         },
       });
     });
-    // @ts-ignore
-    const updatedTask = await TaskModel.bulkWrite(op);
+    const updatedTask = await TaskModel.bulkWrite(operations);
     return res.json(successResponse(updatedTask, "Task updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

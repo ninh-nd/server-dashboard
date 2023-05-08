@@ -13,8 +13,8 @@ export class Phase {
   @prop({ required: true, type: Number })
   public order!: number;
 
-  @prop({ ref: () => Task, default: [] })
-  public tasks?: Ref<Task>[];
+  @prop({ ref: () => Task, default: [], required: true })
+  public tasks!: Ref<Task>[];
 
   @prop({ ref: () => Artifact, default: [] })
   public artifacts?: Ref<Artifact>[];
