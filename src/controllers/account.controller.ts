@@ -10,12 +10,12 @@ export async function get(req: Request, res: Response) {
     if (!account) {
       return res.json(errorResponse("Unauthenticated"));
     }
-    const findedAccount = await AccountModel.findById(account._id);
+    const findedAccount = await AccountModel.findById(account._id, {
+      password: 0,
+    });
     if (!findedAccount) {
       return res.json(errorResponse("No account is found in the database"));
     }
-    // @ts-ignore
-    delete findedAccount.password;
     return res.json(successResponse(findedAccount, "Account found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
