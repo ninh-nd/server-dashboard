@@ -1,19 +1,21 @@
 import express from "express";
 import {
-  getPRs,
-  getCommits,
-  getCommitsByAccount,
-  getPRsByAccount,
+  getActivityHistoryByProject,
+  getActivityHistoryByUsername,
 } from "../controllers/activityHistory.controller";
 import { checkAuth } from "../middlewares/auth";
 
 const router = express.Router();
-// Get pull requests
-router.get("/:projectName/commit", checkAuth, getCommits);
-// Get commits
-router.get("/:projectName/pullrequest", checkAuth, getPRs);
-// Get commits by account
-router.get("/:projectName/commit/:username", checkAuth, getCommitsByAccount);
-// Get pull requests by account
-router.get("/:projectName/pullrequest/:username", checkAuth, getPRsByAccount);
+// Get activity history of a project
+router.get(
+  "/:projectName/activityHistory",
+  checkAuth,
+  getActivityHistoryByProject
+);
+// Get activity history by account
+router.get(
+  "/:projectName/activityHistory/:username",
+  checkAuth,
+  getActivityHistoryByUsername
+);
 export default router;
