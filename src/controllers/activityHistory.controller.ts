@@ -103,36 +103,49 @@ async function githubCacheValidation(
   }
 }
 
-export async function getActivityHistoryByProject(req: Request, res: Response) {
+export async function getActivityHistory(req: Request, res: Response) {
   const { projectName } = req.params;
-  const project = await ProjectModel.findOne({ name: projectName });
-  const accessToken = req.user?.thirdParty.find(
-    (x) => x.name === "Github"
-  )?.accessToken;
-  if (project) {
-    const { url, _id } = project;
-    if (!url) {
-      return res.json(errorResponse("Missing url of the repository"));
-    }
-    const urlObject = new URL(url);
-    const owner = urlObject.pathname.split("/")[1];
-    const repo = urlObject.pathname.split("/")[2];
-    const result = await githubCacheValidation(owner, repo, accessToken, _id);
-    if (result instanceof Error) {
-      return res.json(
-        errorResponse(`Error retrieving activity history: ${result.message}`)
-      );
-    }
-    try {
+  const { username } = req.query;
+  try {
+    const user = await AccountModel.findOne({ username });
+    const project = await ProjectModel.findOne({ name: projectName });
+    const accessToken = req.user?.thirdParty.find(
+      (x) => x.name === "Github"
+    )?.accessToken;
+    if (project) {
+      const { url, _id } = project;
+      if (!url) {
+        return res.json(errorResponse("Missing url of the repository"));
+      }
+      const urlObject = new URL(url);
+      const owner = urlObject.pathname.split("/")[1];
+      const repo = urlObject.pathname.split("/")[2];
+      const result = await githubCacheValidation(owner, repo, accessToken, _id);
+      if (result instanceof Error) {
+        return res.json(
+          errorResponse(`Error retrieving activity history: ${result.message}`)
+        );
+      }
+      // Query by username
+      if (user) {
+        const actHist = await ActivityHistoryModel.find({
+          projectId: _id,
+          createdBy: user.thirdParty.find((x) => x.name === "Github")?.username,
+        });
+        return res.json(
+          successResponse(actHist, "Successfully retrieved activity history")
+        );
+      }
+      // Query all
       const actHist = await ActivityHistoryModel.find({
         projectId: _id,
       });
       return res.json(
         successResponse(actHist, "Successfully retrieved activity history")
       );
-    } catch (error) {
-      return res.json(errorResponse(`Internal server error: ${error}`));
     }
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
 
