@@ -1,11 +1,11 @@
 import { logout, redirectToHomePage } from "../controllers/auth.controller";
-import express from "express";
+import express, { Response } from "express";
 import passport from "passport";
 
 const router = express.Router();
 // Login
-router.post("/login", passport.authenticate("local"), (req, res) =>
-  res.redirect("/")
+router.post("/login", passport.authenticate("local"), (req, res: Response) =>
+  res.sendStatus(201)
 );
 // Logout
 router.get("/logout", logout);

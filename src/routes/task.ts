@@ -3,7 +3,7 @@ import {
   get,
   getAll,
   create,
-  markTask,
+  update,
   remove,
 } from "../controllers/task.controller";
 import { checkAuth } from "../middlewares/auth";
@@ -17,7 +17,7 @@ router.get("/:id", checkAuth, get);
 // Create a task
 router.post("/", checkAuth, create);
 // Change status of tasks
-router.patch("/", checkAuth, markTask);
+router.patch("/:id", checkAuth, update);
 // Remove a task
 router.delete("/:id", checkAuth, remove);
 

@@ -3,12 +3,21 @@ import { UserModel } from "../models/models";
 import { CallbackError, Document } from "mongoose";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function get(req: Request, res: Response) {
-  const { id } = req.params;
+  // Allows to get a user by memberId or accountId
+  const { memberId, accountId } = req.query;
   try {
-    const user = await UserModel.findById(id).populate({
-      path: "activityHistory taskAssigned ticketAssigned account",
-    });
-    return res.json(successResponse(user, "User found"));
+    if (memberId) {
+      const user = await UserModel.findById(memberId).populate({
+        path: "activityHistory taskAssigned ticketAssigned account",
+      });
+      return res.json(successResponse(user, "User found"));
+    }
+    if (accountId) {
+      const user = await UserModel.findOne({ account: accountId }).populate({
+        path: "activityHistory taskAssigned ticketAssigned account",
+      });
+      return res.json(successResponse(user, "User found"));
+    }
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

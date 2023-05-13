@@ -17,10 +17,10 @@ export class User {
   public company?: string;
 
   @prop({ ref: () => Task, default: [] })
-  public taskAssigned?: Ref<Task>[];
+  public taskAssigned!: Ref<Task>[];
 
   @prop({ ref: () => Ticket, default: [] })
-  public ticketAssigned?: Ref<Ticket>[];
+  public ticketAssigned!: Ref<Ticket>[];
 
   @prop({ ref: () => ActivityHistory, default: [] })
   public activityHistory?: Ref<ActivityHistory>[];

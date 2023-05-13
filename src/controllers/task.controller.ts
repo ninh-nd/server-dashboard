@@ -1,6 +1,5 @@
 import { isDocumentArray } from "@typegoose/typegoose";
 import { Request, Response } from "express";
-import { CallbackError, Document } from "mongoose";
 import { ProjectModel, TaskModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
@@ -59,31 +58,20 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
-  const { name, description, projectName, status } = data;
   try {
-    const newTask = new TaskModel({ name, description, projectName, status });
-    await newTask.save();
+    const newTask = await TaskModel.create(data);
     return res.json(successResponse(newTask, "Task created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
 
-export async function markTask(req: Request, res: Response) {
-  const { data, status } = req.body;
-  let operations: any[] = [];
+export async function update(req: Request, res: Response) {
+  const { data } = req.body;
+  const { id } = req.params;
   try {
-    const arrayOfTaskId = data;
-    arrayOfTaskId.forEach((id: string) => {
-      operations.push({
-        updateOne: {
-          filter: { _id: id },
-          update: { status: status },
-        },
-      });
-    });
-    const updatedTask = await TaskModel.bulkWrite(operations);
-    return res.json(successResponse(updatedTask, "Task updated"));
+    const task = await TaskModel.findByIdAndUpdate(id, data, { new: true });
+    return res.json(successResponse(task, "Task updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -91,13 +79,10 @@ export async function markTask(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  TaskModel.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
-    if (error) {
-      return res.json(errorResponse(`Internal server error: ${error}`));
-    }
-    if (!doc) {
-      return res.json(errorResponse("Task not found"));
-    }
-    return res.json(successResponse(doc, "Task deleted"));
-  });
+  try {
+    const results = await TaskModel.findByIdAndDelete(id);
+    return res.json(successResponse(results, "Task deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
 }

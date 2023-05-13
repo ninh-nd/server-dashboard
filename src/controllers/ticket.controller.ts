@@ -42,6 +42,8 @@ export async function create(req: Request, res: Response) {
     if (user) {
       const o = { ...data, assigner: user._id };
       const ticket = await TicketModel.create(o);
+      // Add ticket to ticketAssigned of User
+      user.ticketAssigned.push(ticket._id);
       return res.json(successResponse(ticket, "Ticket created successfully"));
     } else {
       return res.json(errorResponse("Assigner does not exist"));

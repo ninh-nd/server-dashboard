@@ -16,7 +16,7 @@ router.get("/project", checkAuth, getProjectIn);
 // Add a project to a user
 router.patch("/:id/project", addProjectIn);
 // Get a user
-router.get("/:id", get);
+router.get("/", get);
 // Create a user
 router.post("/", create);
 // Update a user
