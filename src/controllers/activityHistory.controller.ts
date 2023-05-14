@@ -10,7 +10,7 @@ import {
 import { Project } from "../models/project";
 import redis from "../redis";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-async function githubCacheValidation(
+async function fetchLatestFromGithub(
   owner: string | undefined,
   repo: string | undefined,
   accessToken: string | undefined,
@@ -19,12 +19,8 @@ async function githubCacheValidation(
   if (!owner || !repo || !accessToken) {
     return new Error("Missing owner, repo or access token");
   }
-  const pullRequestCache = await redis.get(`github-pr-${repo}`);
-  if (pullRequestCache) {
-    return true;
-  }
-  const commitCache = await redis.get(`github-commit-${repo}`);
-  if (commitCache) {
+  const cache = await redis.get(`github-${repo}`);
+  if (cache) {
     return true;
   }
   const octokit = new Octokit({
@@ -44,7 +40,7 @@ async function githubCacheValidation(
   } catch (error) {
     return new Error("Error retrieving PRs from Github API");
   }
-  await redis.set(`github-pr-${repo}`, JSON.stringify(prData), "EX", 60);
+  redis.set(`github-${repo}`, Date.now().toString(), "EX", 60);
   const processedPrData = prData.data.map(
     ({ id, title: content, created_at: createdAt, user }) => {
       const createdBy = user?.login;
@@ -57,12 +53,6 @@ async function githubCacheValidation(
         projectId,
       };
     }
-  );
-  await redis.set(
-    `github-commit-${repo}`,
-    JSON.stringify(commitData),
-    "EX",
-    60
   );
   const processedCommitData = commitData.data.map(({ sha: id, commit }) => {
     const content = commit.message;
@@ -120,10 +110,12 @@ export async function getActivityHistory(req: Request, res: Response) {
       const urlObject = new URL(url);
       const owner = urlObject.pathname.split("/")[1];
       const repo = urlObject.pathname.split("/")[2];
-      const result = await githubCacheValidation(owner, repo, accessToken, _id);
+      const result = await fetchLatestFromGithub(owner, repo, accessToken, _id);
       if (result instanceof Error) {
         return res.json(
-          errorResponse(`Error retrieving activity history: ${result.message}`)
+          errorResponse(
+            `Error updating latest activity history: ${result.message}`
+          )
         );
       }
       // Query by username
