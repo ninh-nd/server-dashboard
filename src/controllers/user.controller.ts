@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/models";
-import { CallbackError, Document } from "mongoose";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function get(req: Request, res: Response) {
   // Allows to get a user by memberId or accountId
@@ -47,15 +46,12 @@ export async function update(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  UserModel.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
-    if (error) {
-      return res.json(errorResponse(`Internal server error: ${error}`));
-    }
-    if (!doc) {
-      return res.json(errorResponse("User not found"));
-    }
-    return res.json(successResponse(doc, "User deleted"));
-  });
+  try {
+    const user = await UserModel.findByIdAndDelete(id);
+    return res.json(successResponse(user, "User deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
 }
 
 export async function assignTask(req: Request, res: Response) {

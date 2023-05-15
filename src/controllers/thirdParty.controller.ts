@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { ThirdPartyModel } from "../models/models";
-import { CallbackError, Document } from "mongoose";
-import { errorResponse, successResponse } from "../utils/responseFormat";
 import { Octokit } from "octokit";
+import { ThirdPartyModel } from "../models/models";
+import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   try {
     const thirdParties = await ThirdPartyModel.find();
@@ -23,9 +22,9 @@ export async function get(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
+  const { data } = req.body;
   try {
-    const newThirdParty = new ThirdPartyModel(req.body);
-    await newThirdParty.save();
+    const newThirdParty = await ThirdPartyModel.create(data);
     return res.json(successResponse(newThirdParty, "Third party created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -51,18 +50,12 @@ export async function update(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  ThirdPartyModel.findByIdAndDelete(
-    id,
-    (error: CallbackError, doc: Document) => {
-      if (error) {
-        return res.json(errorResponse(`Internal server error: ${error}`));
-      }
-      if (!doc) {
-        return res.json(errorResponse("Third party not found"));
-      }
-      return res.json(successResponse(doc, "Third party deleted"));
-    }
-  );
+  try {
+    const deletedThirdParty = await ThirdPartyModel.findByIdAndDelete(id);
+    return res.json(successResponse(deletedThirdParty, "Third party deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
 }
 
 export async function getReposFromGithub(req: Request, res: Response) {

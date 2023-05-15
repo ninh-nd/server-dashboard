@@ -17,8 +17,7 @@ export async function create(req: Request, res: Response) {
     if (threat) {
       return res.json(errorResponse(`Threat already exists`));
     }
-    const newThreat = new ThreatModel(data);
-    await newThreat.save();
+    const newThreat = await ThreatModel.create(data);
     return res.json(successResponse(newThreat, "Threat created successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

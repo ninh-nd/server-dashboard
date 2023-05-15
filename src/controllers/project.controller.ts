@@ -146,8 +146,7 @@ export async function createPhaseModel(req: Request, res: Response) {
       return res.json(errorResponse("Project not found"));
     }
     data.forEach(async (phase: Phase) => {
-      const newPhase = new PhaseModel(phase);
-      await newPhase.save();
+      const newPhase = await PhaseModel.create(phase);
       await ProjectModel.findOneAndUpdate(
         { name: projectName },
         { $addToSet: { phaseList: newPhase._id } }

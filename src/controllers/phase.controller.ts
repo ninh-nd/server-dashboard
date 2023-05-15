@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { CallbackError, Document } from "mongoose";
 import {
   ArtifactModel,
   PhaseModel,
@@ -85,15 +84,12 @@ export async function update(req: Request, res: Response) {
 
 export async function remove(req: Request, res: Response) {
   const { id } = req.params;
-  PhaseModel.findByIdAndDelete(id, (error: CallbackError, doc: Document) => {
-    if (error) {
-      return res.json(errorResponse(`Internal server error: ${error}`));
-    }
-    if (!doc) {
-      return res.json(errorResponse("Phase not found"));
-    }
-    return res.json(successResponse(doc, "Phase deleted"));
-  });
+  try {
+    const deletedPhase = await PhaseModel.findByIdAndDelete(id);
+    return res.json(successResponse(deletedPhase, "Phase deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
 }
 
 export async function addTaskToPhase(req: Request, res: Response) {
@@ -152,16 +148,11 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       data.vulnerabilityList = [];
     }
   }
-  const ar = new ArtifactModel(data);
   try {
-    await ar.save();
-  } catch (error) {
-    return res.json(errorResponse(`Internal server error: ${error}`));
-  }
-  try {
+    const artifact = await ArtifactModel.create(data);
     const updatedPhase = await PhaseModel.findByIdAndUpdate(
       id,
-      { $addToSet: { artifacts: ar._id } },
+      { $addToSet: { artifacts: artifact._id } },
       { new: true }
     );
     return res.json(successResponse(updatedPhase, "Artifact added to phase"));

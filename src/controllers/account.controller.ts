@@ -64,12 +64,11 @@ export async function create(req: Request, res: Response) {
   const hashedPassword = await bcrypt.hash(password, 10);
   // Create account
   try {
-    const newAccount = new AccountModel({
+    const newAccount = await AccountModel.create({
       username,
       password: hashedPassword,
       email,
     });
-    await newAccount.save();
     return res.json(successResponse(newAccount, "Account created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -114,8 +113,7 @@ export async function changePassword(req: Request, res: Response) {
   // Hash new password
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   // Change password
-  account.password = hashedPassword;
-  await account.save();
+  await AccountModel.findByIdAndUpdate(id, { password: hashedPassword });
   return res.json(successResponse(account, "Password changed"));
 }
 
