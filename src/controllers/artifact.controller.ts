@@ -1,6 +1,6 @@
 import { isDocumentArray } from "@typegoose/typegoose";
 import { Request, Response } from "express";
-import { ArtifactModel, ProjectModel } from "../models/models";
+import { ArtifactModel, ProjectModel, ThreatModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
@@ -40,6 +40,27 @@ export async function get(req: Request, res: Response) {
   try {
     const artifact = await ArtifactModel.findById(id);
     return res.json(successResponse(artifact, "Artifact fetched successfully"));
+  } catch (error) {
+    return res.json(`Internal server error: ${error}`);
+  }
+}
+export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
+  const { threatList } = data; // Array of threat's name
+  try {
+    const threats = await ThreatModel.find({ name: { $in: threatList } });
+    const artifact = await ArtifactModel.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        threatList: threats, // Using sub-document binding
+      },
+      {
+        new: true,
+      }
+    );
+    return res.json(successResponse(artifact, "Artifact updated successfully"));
   } catch (error) {
     return res.json(`Internal server error: ${error}`);
   }

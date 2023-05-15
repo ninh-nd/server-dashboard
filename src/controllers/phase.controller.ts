@@ -175,17 +175,3 @@ export async function removeArtifactFromPhase(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
-
-export async function updateArtifact(req: Request, res: Response) {
-  const { id, artifactId } = req.params;
-  const { data } = req.body;
-  try {
-    await ArtifactModel.findOneAndUpdate({ _id: artifactId }, data, {
-      new: true,
-    });
-    const updatedPhase = await PhaseModel.findById(id);
-    return res.json(successResponse(updatedPhase, "Artifact updated"));
-  } catch (error) {
-    return res.json(errorResponse(`Internal server error: ${error}`));
-  }
-}

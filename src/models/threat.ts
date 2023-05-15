@@ -21,7 +21,7 @@ class Score {
   @prop({ type: Number, required: true })
   public total!: number;
 
-  @prop({ type: Number, required: true })
+  @prop({ type: DetailScore, required: true })
   public details!: DetailScore;
 }
 @pre<Threat>("save", function (next) {

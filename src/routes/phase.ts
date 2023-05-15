@@ -8,7 +8,6 @@ import {
   removeTaskFromPhase,
   addArtifactToPhase,
   removeArtifactFromPhase,
-  updateArtifact,
   getTemplates,
 } from "../controllers/phase.controller";
 
@@ -32,6 +31,4 @@ router.patch("/:id/task/delete/:taskId", removeTaskFromPhase);
 router.patch("/:id/artifact/add", addArtifactToPhase);
 // Remove and delete artifact from a phase
 router.patch("/:id/artifact/delete/:artifactId", removeArtifactFromPhase);
-// Update artifact in a phase
-router.patch("/:id/artifact/update/:artifactId", updateArtifact);
 export default router;
