@@ -23,8 +23,8 @@ export class User {
   public ticketAssigned!: Ref<Ticket>[];
 
   @prop({ ref: () => ActivityHistory, default: [] })
-  public activityHistory?: Ref<ActivityHistory>[];
+  public activityHistory!: Ref<ActivityHistory>[];
 
   @prop({ ref: () => Project, default: [] })
-  public projectIn?: Ref<Project>[];
+  public projectIn!: Ref<Project>[];
 }
