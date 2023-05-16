@@ -4,6 +4,7 @@ import {
   PhaseModel,
   PhaseTemplateModel,
   ProjectModel,
+  ThreatModel,
 } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 import { fetchVulnsFromNVD } from "../utils/vuln";
@@ -138,7 +139,7 @@ export async function getTemplates(req: Request, res: Response) {
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
-  const { cpe } = data;
+  const { cpe, threatList } = data;
   // Attempt to find CVEs if CPE exists
   if (cpe) {
     try {
@@ -146,6 +147,15 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       data.vulnerabilityList = vulns;
     } catch (error) {
       data.vulnerabilityList = [];
+    }
+  }
+  if (threatList) {
+    // Attached threats to artifact
+    try {
+      const threats = await ThreatModel.find({ name: { $in: threatList } });
+      data.threatList = threats;
+    } catch (error) {
+      data.threatList = [];
     }
   }
   try {
