@@ -18,7 +18,24 @@ export async function create(req: Request, res: Response) {
       return res.json(errorResponse(`Threat already exists`));
     }
     const newThreat = await ThreatModel.create(data);
-    return res.json(successResponse(newThreat, "Threat created successfully"));
+    return res.json(
+      successResponse(
+        newThreat,
+        "Registered a new threat successfully. Threat is now available in the database"
+      )
+    );
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+export async function get(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const threat = await ThreatModel.findById(id);
+    if (!threat) {
+      return res.json(errorResponse(`Threat not found`));
+    }
+    return res.json(successResponse(threat, "Threat retrieved successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

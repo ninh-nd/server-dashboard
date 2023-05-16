@@ -55,8 +55,8 @@ export class Threat {
   })
   public type!: string;
 
-  @prop({ type: String })
-  public mitigation?: string;
+  @prop({ type: [String], required: true, default: [] })
+  public mitigation!: string[];
 
   @prop({ type: Score, required: true })
   public score!: Score;
