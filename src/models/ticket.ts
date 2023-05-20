@@ -1,4 +1,4 @@
-import { prop, Ref } from "@typegoose/typegoose";
+import { ArraySubDocumentType, prop, Ref } from "@typegoose/typegoose";
 import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { User } from "./user";
 import { Vulnerability } from "./vulnerability";
@@ -32,8 +32,8 @@ export class Ticket extends TimeStamps {
   })
   public priority!: string;
 
-  @prop({ ref: () => Vulnerability, default: [] })
-  public targetedVulnerability?: Ref<Vulnerability>[];
+  @prop({ type: () => Vulnerability, default: [] })
+  public targetedVulnerability?: ArraySubDocumentType<Vulnerability>[];
 
   @prop({ required: true, type: String })
   public projectName!: string;

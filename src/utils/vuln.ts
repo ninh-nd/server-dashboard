@@ -7,21 +7,13 @@ function resolveData(data: Result) {
     const score = v.cve.metrics.cvssMetricV2[0].cvssData.baseScore;
     const severity = v.cve.metrics.cvssMetricV2[0].baseSeverity;
     const cwes = v.cve.weaknesses.map((w) => w.description[0].value);
-    const confidentialityImpact =
-      v.cve.metrics.cvssMetricV2[0].cvssData.confidentialityImpact;
-    const integrityImpact =
-      v.cve.metrics.cvssMetricV2[0].cvssData.integrityImpact;
-    const availabilityImpact =
-      v.cve.metrics.cvssMetricV2[0].cvssData.availabilityImpact;
+
     return {
       cveId,
       description,
       score,
       severity,
       cwes,
-      confidentialityImpact,
-      integrityImpact,
-      availabilityImpact,
     };
   });
 }

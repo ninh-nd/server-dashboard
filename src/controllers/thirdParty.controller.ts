@@ -77,6 +77,7 @@ export async function getReposFromGithub(req: Request, res: Response) {
     });
     const repos = await octokit.rest.repos.listForAuthenticatedUser({
       username,
+      type: "owner",
     });
     const formattedRepos = repos.data.map(
       ({ name, html_url, visibility, owner }) => ({

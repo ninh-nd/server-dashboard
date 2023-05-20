@@ -17,6 +17,9 @@ export class Artifact extends TimeStamps {
   @prop({ type: String })
   public url?: string;
 
+  @prop({ type: String })
+  public version?: string;
+
   @prop({ type: () => Threat, default: [] })
   public threatList?: ArraySubDocumentType<Threat>[];
 
