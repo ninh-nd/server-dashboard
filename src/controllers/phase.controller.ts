@@ -165,7 +165,7 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       try {
         await axios.get(`${process.env.GRYPE_URL}/image`, {
           params: {
-            image: `${name}:${version}`,
+            name: `${name}:${version}`,
           },
         });
       } catch (error) {
