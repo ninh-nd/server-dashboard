@@ -1,4 +1,5 @@
 import { Result } from "./vulnType";
+import axios from "axios";
 function resolveData(data: Result) {
   if (data.totalResults === 0) return [];
   return data.vulnerabilities.map((v) => {
@@ -20,8 +21,7 @@ function resolveData(data: Result) {
 export async function fetchVulnsFromNVD(cpe: string) {
   const url = `https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=${cpe}`;
   try {
-    const res = await fetch(url);
-    const data = (await res.json()) as Result;
+    const { data } = await axios.get<Result>(url);
     return resolveData(data);
   } catch (error) {
     return [];

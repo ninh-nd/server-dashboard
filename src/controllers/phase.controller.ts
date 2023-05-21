@@ -8,6 +8,7 @@ import {
 } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 import { fetchVulnsFromNVD } from "../utils/vuln";
+import axios from "axios";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
@@ -161,15 +162,11 @@ export async function addArtifactToPhase(req: Request, res: Response) {
   switch (type) {
     case "image":
       // Connect to Grype API to init scan image for vulns
-      await fetch(
-        `${process.env.GRYPE_URL}/image?` +
-          new URLSearchParams({
-            image: `${name}:${version}`,
-          }),
-        {
-          method: "GET",
-        }
-      );
+      await axios.get(`${process.env.GRYPE_URL}/image`, {
+        params: {
+          image: `${name}:${version}`,
+        },
+      });
       break;
     default:
       break;
