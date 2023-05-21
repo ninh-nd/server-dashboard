@@ -162,11 +162,15 @@ export async function addArtifactToPhase(req: Request, res: Response) {
   switch (type) {
     case "image":
       // Connect to Grype API to init scan image for vulns
-      await axios.get(`${process.env.GRYPE_URL}/image`, {
-        params: {
-          image: `${name}:${version}`,
-        },
-      });
+      try {
+        await axios.get(`${process.env.GRYPE_URL}/image`, {
+          params: {
+            image: `${name}:${version}`,
+          },
+        });
+      } catch (error) {
+        return res.json(errorResponse(`Internal server error: ${error}`));
+      }
       break;
     default:
       break;
