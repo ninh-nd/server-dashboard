@@ -139,7 +139,7 @@ export async function getTemplates(req: Request, res: Response) {
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
-  const { cpe, threatList } = data;
+  const { cpe, threatList, type, name, version } = data;
   // Attempt to find CVEs if CPE exists
   if (cpe) {
     try {
@@ -157,6 +157,22 @@ export async function addArtifactToPhase(req: Request, res: Response) {
     } catch (error) {
       data.threatList = [];
     }
+  }
+  switch (type) {
+    case "image":
+      // Connect to Grype API to init scan image for vulns
+      await fetch(
+        `${process.env.GRYPE_URL}/image?` +
+          new URLSearchParams({
+            image: `${name}:${version}`,
+          }),
+        {
+          method: "GET",
+        }
+      );
+      break;
+    default:
+      break;
   }
   try {
     const artifact = await ArtifactModel.create(data);

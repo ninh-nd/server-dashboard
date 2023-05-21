@@ -1,9 +1,19 @@
 import { Request, Response } from "express";
 import { ArtifactModel } from "../models/models";
-import { errorResponse } from "../utils/responseFormat";
+import { errorResponse, successResponse } from "../utils/responseFormat";
 import { Octokit } from "octokit";
+interface RequestBody {
+  eventCode: string;
+  imageName: string;
+  data: Array<{
+    cveId: string;
+    description: string;
+    severity: string;
+    score?: number;
+  }>;
+}
 export async function importVulnToImage(req: Request, res: Response) {
-  const { eventCode, imageName, data } = req.body;
+  const { eventCode, imageName, data }: RequestBody = req.body;
   try {
     // imageName is either in format of {image}:{tag} or {author}/{image}:{tag}. Retrieve the image and tag from it
     const name = imageName.split(":")[0];
@@ -23,9 +33,12 @@ export async function importVulnToImage(req: Request, res: Response) {
       { name, version },
       {
         $set: {
-          vulnerabilitiesList: data,
+          vulnerabilityList: data,
         },
       }
+    );
+    return res.json(
+      successResponse(null, "Successfully imported vulnerabilities")
     );
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
