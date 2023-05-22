@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { ArtifactModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-import { Octokit } from "octokit";
 interface RequestBody {
   eventCode: string;
   imageName: string;
@@ -44,13 +43,3 @@ export async function importVulnToImage(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
-
-export async function triggerGithubScan(req: Request, res: Response) {
-  const { accessToken, url } = req.body;
-  const [owner, repo] = url.split("/").slice(-2);
-  const octokit = new Octokit({
-    auth: accessToken,
-  });
-}
-
-export async function receiveGithubScanResult(req: Request, res: Response) {}

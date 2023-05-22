@@ -12,25 +12,34 @@ import {
 } from "../controllers/account.controller";
 import express from "express";
 import { checkAuth, checkAdmin } from "../middlewares/auth";
-const router = express.Router();
+const accountRoute = express.Router();
 // Get account info using session
-router.get("/", checkAuth, get);
+accountRoute.get("/", checkAuth, get);
 // Get list of account
-router.get("/list", checkAuth, checkAdmin, getAll);
+accountRoute.get("/list", checkAuth, checkAdmin, getAll);
 // Get account by id
-router.get("/:id", checkAuth, checkAdmin, getById);
+accountRoute.get("/:id", checkAuth, checkAdmin, getById);
 // Create an account
-router.post("/reg", create);
+accountRoute.post("/reg", create);
 // Update general account info
-router.patch("/:id", checkAuth, updateAccountInfo);
+accountRoute.patch("/:id", checkAuth, updateAccountInfo);
 // Add a third party to an account
-router.patch("/:id/thirdParty", addThirdPartyToAccount);
+accountRoute.patch("/:id/thirdParty", addThirdPartyToAccount);
 // Change password
-router.patch("/:id/password", changePassword);
+accountRoute.patch("/:id/password", changePassword);
 // Delete account
-router.delete("/:id", checkAuth, checkAdmin, remove);
+accountRoute.delete("/:id", checkAuth, checkAdmin, remove);
 // Update account permission
-router.patch("/:id/permission", checkAuth, checkAdmin, updateAccountPermission);
+accountRoute.patch(
+  "/:id/permission",
+  checkAuth,
+  checkAdmin,
+  updateAccountPermission
+);
 // Update Github's access token
-router.patch("/:id/thirdParty/github", checkAuth, updateGithubAccessToken);
-export default router;
+accountRoute.patch(
+  "/:id/thirdParty/github",
+  checkAuth,
+  updateGithubAccessToken
+);
+export default accountRoute;

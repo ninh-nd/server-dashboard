@@ -8,18 +8,18 @@ import {
   getReposFromGithub,
 } from "../controllers/thirdParty.controller";
 
-const router = express.Router();
+const thirdPartyRoute = express.Router();
 
 // Get all third parties
-router.get("/", getAll);
+thirdPartyRoute.get("/", getAll);
 // Get a third party
-router.get("/:id", get);
+thirdPartyRoute.get("/:id", get);
 // Create a third party
-router.post("/", create);
+thirdPartyRoute.post("/", create);
 // Update a third party
-router.put("/:id", update);
+thirdPartyRoute.put("/:id", update);
 // Remove a third party
-router.delete("/:id", remove);
+thirdPartyRoute.delete("/:id", remove);
 // Get a list of repos from Github
-router.get("/github/repo", getReposFromGithub);
-export default router;
+thirdPartyRoute.get("/github/repo", getReposFromGithub);
+export default thirdPartyRoute;

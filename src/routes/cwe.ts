@@ -1,7 +1,7 @@
 import { get } from "../controllers/cwe.controller";
 import express from "express";
-const router = express.Router();
+const cweRoute = express.Router();
 
 // Get a CWE from ID
-router.get("/:id", get);
-export default router;
+cweRoute.get("/:id", get);
+export default cweRoute;

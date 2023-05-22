@@ -41,7 +41,7 @@ export async function get(req: Request, res: Response) {
     const artifact = await ArtifactModel.findById(id);
     return res.json(successResponse(artifact, "Artifact fetched successfully"));
   } catch (error) {
-    return res.json(`Internal server error: ${error}`);
+    return res.json(error);
   }
 }
 export async function update(req: Request, res: Response) {
@@ -62,6 +62,6 @@ export async function update(req: Request, res: Response) {
     );
     return res.json(successResponse(artifact, "Artifact updated successfully"));
   } catch (error) {
-    return res.json(`Internal server error: ${error}`);
+    return res.json(error);
   }
 }

@@ -2,7 +2,11 @@ import express from "express";
 import { getActivityHistory } from "../controllers/activityHistory.controller";
 import { checkAuth } from "../middlewares/auth";
 
-const router = express.Router();
+const activityHistoryRoute = express.Router();
 // Get activity history of a project
-router.get("/:projectName/activityHistory", checkAuth, getActivityHistory);
-export default router;
+activityHistoryRoute.get(
+  "/:projectName/activityHistory",
+  checkAuth,
+  getActivityHistory
+);
+export default activityHistoryRoute;

@@ -7,7 +7,7 @@ import {
   ThreatModel,
 } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-import { fetchVulnsFromNVD } from "../utils/vuln";
+import { fetchVulnsFromNVD, importGithubScanResult } from "../utils/vuln";
 import axios from "axios";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
@@ -140,7 +140,7 @@ export async function getTemplates(req: Request, res: Response) {
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
-  const { cpe, threatList, type, name, version } = data;
+  const { cpe, threatList, type, name, version, url } = data;
   // Attempt to find CVEs if CPE exists
   if (cpe) {
     try {
@@ -159,22 +159,6 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       data.threatList = [];
     }
   }
-  switch (type) {
-    case "image":
-      // Connect to Grype API to init scan image for vulns
-      try {
-        await axios.get(`${process.env.GRYPE_URL}/image`, {
-          params: {
-            name: `${name}:${version}`,
-          },
-        });
-      } catch (error) {
-        return res.json(errorResponse(`Internal server error: ${error}`));
-      }
-      break;
-    default:
-      break;
-  }
   try {
     const artifact = await ArtifactModel.create(data);
     const updatedPhase = await PhaseModel.findByIdAndUpdate(
@@ -182,6 +166,27 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       { $addToSet: { artifacts: artifact._id } },
       { new: true }
     );
+    switch (type) {
+      case "image":
+        // Connect to Grype API to init scan image for vulns
+        try {
+          axios.get(`${process.env.GRYPE_URL}/image`, {
+            params: {
+              name: `${name}:${version}`,
+            },
+          });
+        } catch (error) {
+          break;
+        }
+        break;
+      case "source code":
+        const accessToken = req.user?.thirdParty.find(
+          (x) => x.name === "Github"
+        )?.accessToken;
+        importGithubScanResult(accessToken, url);
+      default:
+        break;
+    }
     return res.json(successResponse(updatedPhase, "Artifact added to phase"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

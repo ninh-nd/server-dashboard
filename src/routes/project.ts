@@ -9,20 +9,20 @@ import {
   createPhaseModel,
 } from "../controllers/project.controller";
 
-const router = express.Router();
+const projectRoute = express.Router();
 
 // Get a project
-router.get("/:projectName", get);
+projectRoute.get("/:projectName", get);
 // Create a project
-router.post("/", create);
+projectRoute.post("/", create);
 // Create a phase model from a given model
-router.post("/:projectName", createPhaseModel);
+projectRoute.post("/:projectName", createPhaseModel);
 // Update status of project
-router.patch("/:projectName", updateStatus);
+projectRoute.patch("/:projectName", updateStatus);
 // Add phases to a project
-router.patch("/:projectName/phase", addPhaseToProject);
+projectRoute.patch("/:projectName/phase", addPhaseToProject);
 // Remove a project
-router.delete("/:projectName", remove);
+projectRoute.delete("/:projectName", remove);
 // Get project members
-router.get("/:projectName/member", getProjectMembers);
-export default router;
+projectRoute.get("/:projectName/member", getProjectMembers);
+export default projectRoute;

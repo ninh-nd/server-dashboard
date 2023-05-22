@@ -10,19 +10,19 @@ import {
 } from "../controllers/user.controller";
 import { checkAuth } from "../middlewares/auth";
 
-const router = express.Router();
+const userRoute = express.Router();
 // Get a user's projects
-router.get("/project", checkAuth, getProjectIn);
+userRoute.get("/project", checkAuth, getProjectIn);
 // Add a project to a user
-router.patch("/:id/project", addProjectIn);
+userRoute.patch("/:id/project", addProjectIn);
 // Get a user
-router.get("/", get);
+userRoute.get("/", get);
 // Create a user
-router.post("/", create);
+userRoute.post("/", create);
 // Update a user
-router.put("/:id", update);
+userRoute.put("/:id", update);
 // Remove a user
-router.delete("/:id", remove);
+userRoute.delete("/:id", remove);
 // Assign task to a user
-router.patch("/:id/assignTask/:taskId", assignTask);
-export default router;
+userRoute.patch("/:id/assignTask/:taskId", assignTask);
+export default userRoute;

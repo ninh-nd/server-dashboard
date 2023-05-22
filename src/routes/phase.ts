@@ -11,24 +11,24 @@ import {
   getTemplates,
 } from "../controllers/phase.controller";
 
-const router = express.Router();
+const phaseRoute = express.Router();
 
 // Get all phase templates
-router.get("/templates", getTemplates);
+phaseRoute.get("/templates", getTemplates);
 // Get a phase
-router.get("/:id", get);
+phaseRoute.get("/:id", get);
 // Create a phase from a template
-router.post("/templates", createFromTemplate);
+phaseRoute.post("/templates", createFromTemplate);
 // Update a phase
-router.put("/:id", update);
+phaseRoute.put("/:id", update);
 // Remove a phase
-router.delete("/:id", remove);
+phaseRoute.delete("/:id", remove);
 // Add task to a phase
-router.patch("/:id/task/add/:taskId", addTaskToPhase);
+phaseRoute.patch("/:id/task/add/:taskId", addTaskToPhase);
 // Remove task from a phase
-router.patch("/:id/task/delete/:taskId", removeTaskFromPhase);
+phaseRoute.patch("/:id/task/delete/:taskId", removeTaskFromPhase);
 // Create and add artifact to a phase
-router.patch("/:id/artifact/add", addArtifactToPhase);
+phaseRoute.patch("/:id/artifact/add", addArtifactToPhase);
 // Remove and delete artifact from a phase
-router.patch("/:id/artifact/delete/:artifactId", removeArtifactFromPhase);
-export default router;
+phaseRoute.patch("/:id/artifact/delete/:artifactId", removeArtifactFromPhase);
+export default phaseRoute;

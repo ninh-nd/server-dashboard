@@ -12,6 +12,6 @@ export async function get(req: Request, res: Response) {
       return res.json(errorResponse("CWE is not found in the database"));
     return res.json(successResponse(cwe, "CWE found"));
   } catch (error) {
-    return res.json(`Internal server error: ${error}`);
+    return res.json(error);
   }
 }

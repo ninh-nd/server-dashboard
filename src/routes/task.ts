@@ -8,17 +8,17 @@ import {
 } from "../controllers/task.controller";
 import { checkAuth } from "../middlewares/auth";
 
-const router = express.Router();
+const taskRoute = express.Router();
 
 // Get all tasks
-router.get("/", checkAuth, getAll);
+taskRoute.get("/", checkAuth, getAll);
 // Get a task
-router.get("/:id", checkAuth, get);
+taskRoute.get("/:id", checkAuth, get);
 // Create a task
-router.post("/", checkAuth, create);
+taskRoute.post("/", checkAuth, create);
 // Change status of tasks
-router.patch("/:id", checkAuth, update);
+taskRoute.patch("/:id", checkAuth, update);
 // Remove a task
-router.delete("/:id", checkAuth, remove);
+taskRoute.delete("/:id", checkAuth, remove);
 
-export default router;
+export default taskRoute;
