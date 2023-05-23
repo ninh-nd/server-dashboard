@@ -8,6 +8,8 @@ export const envVariables = z.object({
   SESSION_SECRET: z.string(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
+  GITLAB_CLIENT_ID: z.string(),
+  GITLAB_CLIENT_SECRET: z.string(),
   GRYPE_URL: z.string(),
 });
 
