@@ -17,5 +17,18 @@ authRoute.get(
   passport.authenticate("github"),
   redirectToHomePage
 );
+// Gitlab login
+authRoute.get(
+  "/gitlab",
+  passport.authenticate("gitlab", {
+    scope: ["api", "read_user", "read_repository"],
+  })
+);
+// Gitlab login success
+authRoute.get(
+  "/gitlab/callback",
+  passport.authenticate("gitlab"),
+  redirectToHomePage
+);
 
 export default authRoute;
