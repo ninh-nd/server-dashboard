@@ -49,7 +49,7 @@ async function authenticateUserGithub(
       const newThirdParty = await ThirdPartyModel.create({
         name: "Github",
         username: profile.username,
-        url: "http://github.com",
+        url: "https://github.com",
         accessToken,
       });
       const newAccount = await AccountModel.create({
@@ -90,7 +90,7 @@ async function authenticateUserGitlab(
     // First time login
     if (!account) {
       const newThirdParty = await ThirdPartyModel.create({
-        name: "Github",
+        name: "Gitlab",
         username: profile.username,
         url: "https://gitlab.com/",
         accessToken,

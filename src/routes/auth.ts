@@ -21,7 +21,7 @@ authRoute.get(
 authRoute.get(
   "/gitlab",
   passport.authenticate("gitlab", {
-    scope: ["api", "read_user", "read_repository"],
+    scope: ["api"],
   })
 );
 // Gitlab login success
