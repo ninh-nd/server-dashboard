@@ -29,6 +29,14 @@ export async function fetchVulnsFromNVD(cpe: string) {
     return [];
   }
 }
+interface OverrideType {
+  id?: string | null | undefined;
+  name?: string | undefined;
+  tags?: string[] | null | undefined;
+  severity?: "none" | "note" | "warning" | "error" | null | undefined;
+  description?: string | undefined;
+  security_severity_level?: string | undefined;
+}
 export async function importGithubScanResult(
   accessToken: string | undefined,
   url: string
@@ -44,8 +52,11 @@ export async function importGithubScanResult(
     });
     const vulns = data.map((v) => {
       const {
-        // @ts-ignore
         rule: { id, description, tags, security_severity_level: severity },
+      } = v as {
+        rule: OverrideType;
+      };
+      const {
         most_recent_instance: { location },
       } = v;
       // Go through each tags and extract list of CWEs

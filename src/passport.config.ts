@@ -3,7 +3,6 @@ import { AccountModel, ThirdPartyModel } from "./models/models";
 import { PassportStatic } from "passport";
 import Github from "passport-github2";
 import Local from "passport-local";
-// @ts-ignore
 import Gitlab from "passport-gitlab2";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
