@@ -8,7 +8,11 @@ export async function getAll(req: Request, res: Response) {
     return res.json(errorResponse("Project name is required"));
   }
   try {
-    const tickets = await TicketModel.find({ projectName: projectName });
+    const tickets = await TicketModel.find({
+      projectName: projectName,
+    }).populate({
+      path: "assignee assigner",
+    });
     return res.json(successResponse(tickets, "Tickets fetched successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
