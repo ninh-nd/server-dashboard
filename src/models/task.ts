@@ -24,4 +24,7 @@ export class Task extends TimeStamps {
 
   @prop({ required: true, type: String })
   public projectName!: string;
+
+  @prop({ type: Date, required: true })
+  public dueDate!: Date;
 }
