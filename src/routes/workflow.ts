@@ -1,7 +1,7 @@
 import express from "express";
-import { getYaml } from "../controllers/workflow.controller";
+import { getWorkflows } from "../controllers/workflow.controller";
 const workflowRoute = express.Router();
 
-workflowRoute.get("/", getYaml);
+workflowRoute.get("/", getWorkflows);
 
 export default workflowRoute;
