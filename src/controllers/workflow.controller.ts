@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import MyOctokit from "../octokit";
+import MyOctokit, { MyOctokitType } from "../octokit";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getWorkflows(req: Request, res: Response) {
@@ -67,84 +67,177 @@ export async function pushNewWorkflow(req: Request, res: Response) {
       });
       const defaultBranch = repoData.default_branch;
       const targetBranch = branch || defaultBranch;
-      // Get the reference of the branch
-      const branchRef = await getBranchRef(
+      const branchExists = await checkBranchExists(
+        octokit,
+        owner,
+        repo,
+        targetBranch
+      );
+      if (!branchExists) {
+        // Create the branch if it doesn't exist
+        await createBranch(octokit, owner, repo, targetBranch, defaultBranch);
+      }
+      const currentCommit = await getCurrentCommit(
+        octokit,
+        owner,
+        repo,
+        targetBranch
+      );
+      const newFilePath = data.path;
+      const newTree = await createNewTree(
+        octokit,
+        owner,
+        repo,
+        currentCommit.treeSha,
+        newFilePath,
+        data.content
+      );
+      const newCommit = await createNewCommit(
+        octokit,
+        owner,
+        repo,
+        message,
+        newTree.sha,
+        currentCommit.commitSha
+      );
+      await setBranchToCommit(
         octokit,
         owner,
         repo,
         targetBranch,
-        defaultBranch
+        newCommit.sha
       );
-      // Create a new tree for the file
-      const { data: treeData } = await octokit.rest.git.createTree({
-        owner,
-        repo,
-        tree: [
-          {
-            path: data.path,
-            mode: "100644",
-            content: data.content,
-          },
-        ],
-        base_tree: branchRef,
-      });
-      // Create a new commit
-      const { data: commitData } = await octokit.rest.git.createCommit({
-        owner,
-        repo,
-        message,
-        tree: treeData.sha,
-        parents: [branchRef],
-      });
-      // Update the reference of the branch
-      await octokit.rest.git.updateRef({
-        owner,
-        repo,
-        ref: `heads/${targetBranch}`,
-        sha: commitData.sha,
-      });
-      // Push the commit
-      await octokit.rest.git.createRef({
-        owner,
-        repo,
-        ref: `refs/heads/${targetBranch}`,
-        sha: commitData.sha,
-      });
       return res.json(successResponse({}, "Successfully pushed workflow"));
     } catch (error) {
+      console.log(error);
       return res.json(errorResponse("Failed to push workflow"));
     }
   }
 }
-async function getBranchRef(
-  octokit: any,
+const getCurrentCommit = async (
+  octo: MyOctokitType,
+  org: string,
+  repo: string,
+  branch: string
+) => {
+  const { data: refData } = await octo.rest.git.getRef({
+    owner: org,
+    repo,
+    ref: `heads/${branch}`,
+  });
+  const commitSha = refData.object.sha;
+  const { data: commitData } = await octo.rest.git.getCommit({
+    owner: org,
+    repo,
+    commit_sha: commitSha,
+  });
+  return {
+    commitSha,
+    treeSha: commitData.tree.sha,
+  };
+};
+const createNewTree = async (
+  octo: MyOctokitType,
   owner: string,
   repo: string,
-  targetBranch: any,
-  defaultBranch: string
-) {
-  let branchRef;
+  parentTreeSha: string,
+  path: string,
+  content: string
+) => {
+  const {
+    data: { sha: blobSha },
+  } = await octo.rest.git.createBlob({
+    owner,
+    repo,
+    content,
+    encoding: "utf-8",
+  });
+
+  const { data } = await octo.rest.git.createTree({
+    owner,
+    repo,
+    tree: [
+      {
+        path,
+        mode: "100644",
+        type: "blob",
+        sha: blobSha,
+      },
+    ],
+    base_tree: parentTreeSha,
+  });
+  return data;
+};
+const createNewCommit = async (
+  octo: MyOctokitType,
+  org: string,
+  repo: string,
+  message: string,
+  currentTreeSha: string,
+  currentCommitSha: string
+) =>
+  (
+    await octo.rest.git.createCommit({
+      owner: org,
+      repo,
+      message,
+      tree: currentTreeSha,
+      parents: [currentCommitSha],
+    })
+  ).data;
+
+const setBranchToCommit = async (
+  octo: MyOctokitType,
+  org: string,
+  repo: string,
+  branch: string = `master`,
+  commitSha: string
+) =>
+  octo.rest.git.updateRef({
+    owner: org,
+    repo,
+    ref: `heads/${branch}`,
+    sha: commitSha,
+  });
+const checkBranchExists = async (
+  octo: MyOctokitType,
+  org: string,
+  repo: string,
+  branch: string
+) => {
   try {
-    const { data: branchData } = await octokit.request(
-      "GET /repos/{owner}/{repo}/git/ref/{ref}",
-      {
-        owner,
-        repo,
-        ref: `heads/${targetBranch}`,
-      }
-    );
-    const branchRef = branchData.object.sha;
-  } catch (error) {
-    const { data: branchData } = await octokit.request(
-      "POST /repos/{owner}/{repo}/git/refs",
-      {
-        owner,
-        repo,
-        ref: `refs/heads/${targetBranch}`,
-        sha: defaultBranch,
-      }
-    );
-    branchRef = branchData.object.sha;
+    await octo.rest.repos.getBranch({
+      owner: org,
+      repo,
+      branch,
+    });
+    return true; // Branch exists
+  } catch (error: any) {
+    if (error.status === 404) {
+      return false; // Branch doesn't exist
+    }
+    throw error; // Other error occurred
   }
-  return branchRef;
-}
+};
+
+const createBranch = async (
+  octo: MyOctokitType,
+  org: string,
+  repo: string,
+  branch: string,
+  baseBranch: string
+) => {
+  const { data: baseRefData } = await octo.rest.git.getRef({
+    owner: org,
+    repo,
+    ref: `heads/${baseBranch}`,
+  });
+  const baseCommitSha = baseRefData.object.sha;
+
+  await octo.rest.git.createRef({
+    owner: org,
+    repo,
+    ref: `refs/heads/${branch}`,
+    sha: baseCommitSha,
+  });
+};
