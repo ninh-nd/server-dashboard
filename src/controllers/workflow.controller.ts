@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
+import MyOctokit from "../octokit";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-import { Octokit } from "octokit";
 
 export async function getWorkflows(req: Request, res: Response) {
   const { url } = req.query as { url: string };
@@ -14,7 +14,7 @@ export async function getWorkflows(req: Request, res: Response) {
     const accessToken = req.user?.thirdParty.find(
       (x) => x.name === "Github"
     )?.accessToken;
-    const octokit = new Octokit({
+    const octokit = new MyOctokit({
       auth: accessToken,
     });
     try {
@@ -57,7 +57,7 @@ export async function pushNewWorkflow(req: Request, res: Response) {
     const accessToken = req.user?.thirdParty.find(
       (x) => x.name === "Github"
     )?.accessToken;
-    const octokit = new Octokit({
+    const octokit = new MyOctokit({
       auth: accessToken,
     });
     try {

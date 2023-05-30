@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { Octokit } from "octokit";
 import { ThirdPartyModel } from "../models/models";
+import MyOctokit from "../octokit";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   try {
@@ -72,7 +72,7 @@ export async function getReposFromGithub(req: Request, res: Response) {
     if (!accessToken) {
       return res.json(errorResponse("No Github access token"));
     }
-    const octokit = new Octokit({
+    const octokit = new MyOctokit({
       auth: accessToken,
     });
     const repos = await octokit.rest.repos.listForAuthenticatedUser({

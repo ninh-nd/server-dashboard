@@ -1,6 +1,5 @@
 import { Ref } from "@typegoose/typegoose";
 import { Request, Response } from "express";
-import { Octokit } from "octokit";
 import {
   AccountModel,
   ActivityHistoryModel,
@@ -8,8 +7,84 @@ import {
   UserModel,
 } from "../models/models";
 import { Project } from "../models/project";
+import MyOctokit, { MyOctokitType } from "../octokit";
 import redis from "../redis";
 import { errorResponse, successResponse } from "../utils/responseFormat";
+async function getPullRequests(
+  octokit: MyOctokitType,
+  owner: string,
+  repo: string,
+  projectId: Ref<Project>
+) {
+  try {
+    const prData = [];
+    for await (const response of octokit.paginate.iterator(
+      octokit.rest.pulls.list,
+      {
+        owner,
+        repo,
+        per_page: 100,
+        state: "all",
+      }
+    )) {
+      prData.push(response.data);
+    }
+    const processedPrData = prData
+      .flat()
+      .map(({ id, title: content, created_at: createdAt, user }) => {
+        const createdBy = user?.login;
+        return {
+          id,
+          action: "pr",
+          content,
+          createdAt,
+          createdBy,
+          projectId,
+        };
+      });
+    return processedPrData;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+async function getCommits(
+  octokit: MyOctokitType,
+  owner: string,
+  repo: string,
+  projectId: Ref<Project>
+) {
+  try {
+    const commits = [];
+    for await (const response of octokit.paginate.iterator(
+      octokit.rest.repos.listCommits,
+      {
+        owner,
+        repo,
+        per_page: 100,
+      }
+    )) {
+      commits.push(response.data);
+    }
+    const processedCommitData = commits.flat().map(({ sha: id, commit }) => {
+      const content = commit.message;
+      const createdBy = commit.author?.name;
+      const createdAt = commit.author?.date;
+      return {
+        id,
+        action: "commit",
+        content,
+        createdAt,
+        createdBy,
+        projectId,
+      };
+    });
+    return processedCommitData;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
 async function fetchLatestFromGithub(
   owner: string | undefined,
   repo: string | undefined,
@@ -23,43 +98,20 @@ async function fetchLatestFromGithub(
   if (cache) {
     return true;
   }
-  const octokit = new Octokit({
+  const octokit = new MyOctokit({
     auth: accessToken,
   });
-  let prData, commitData;
-  try {
-    prData = await octokit.rest.pulls.list({
-      owner,
-      repo,
-      state: "all",
-    });
-    commitData = await octokit.rest.repos.listCommits({
-      owner,
-      repo,
-    });
-  } catch (error) {
-    return new Error("Error retrieving PRs from Github API");
-  }
   redis.set(`github-${repo}`, Date.now().toString(), "EX", 60);
-  const processedPrData = prData.data.map(
-    ({ id, title: content, created_at: createdAt, user }) => {
-      const createdBy = user?.login;
-      return {
-        id,
-        action: "pr",
-        content,
-        createdAt,
-        createdBy,
-        projectId,
-      };
-    }
+  const processedPrData = await getPullRequests(
+    octokit,
+    owner,
+    repo,
+    projectId
   );
-  const processedCommitData = commitData.data.map(({ sha: id, commit }) => {
-    const content = commit.message;
-    const createdBy = commit.author?.name;
-    const createdAt = commit.author?.date;
-    return { id, action: "commit", content, createdAt, createdBy, projectId };
-  });
+  const processedCommitData = await getCommits(octokit, owner, repo, projectId);
+  if (!processedPrData || !processedCommitData) {
+    return new Error("Error fetching data from Github");
+  }
   try {
     await ActivityHistoryModel.insertMany(
       [...processedPrData, ...processedCommitData],

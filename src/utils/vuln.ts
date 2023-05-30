@@ -1,7 +1,7 @@
-import { Octokit } from "octokit";
-import { Result } from "./vulnType";
 import axios from "axios";
 import { ArtifactModel } from "../models/models";
+import MyOctokit from "../octokit";
+import { Result } from "./vulnType";
 function resolveData(data: Result) {
   if (data.totalResults === 0) return [];
   return data.vulnerabilities.map((v) => {
@@ -42,7 +42,7 @@ export async function importGithubScanResult(
   url: string
 ) {
   const [owner, repo] = url.split("/").slice(-2);
-  const octokit = new Octokit({
+  const octokit = new MyOctokit({
     auth: accessToken,
   });
   try {
