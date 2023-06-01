@@ -4,10 +4,11 @@ import { ProjectModel, TaskModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   const { projectName, filter } = req.query;
+  const decodedProjectName = decodeURIComponent(projectName as string);
   try {
-    const tasks = await TaskModel.find({ projectName });
+    const tasks = await TaskModel.find({ decodedProjectName });
     const project = await ProjectModel.findOne({
-      name: projectName,
+      name: decodedProjectName,
     }).populate("phaseList");
     if (!project) {
       return res.json(errorResponse("Project not found"));

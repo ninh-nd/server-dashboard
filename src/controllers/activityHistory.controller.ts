@@ -205,6 +205,8 @@ async function insertDataToDatabase(
   projectId: Ref<Project>,
   party: "Gitlab" | "Github"
 ) {
+  // To be safe, delete all history for this project first
+  await ActivityHistoryModel.deleteMany({ projectId });
   await ActivityHistoryModel.insertMany(
     [...processedPrData, ...processedCommitData],
     {
@@ -215,9 +217,18 @@ async function insertDataToDatabase(
   const history = await ActivityHistoryModel.find({ projectId });
   const users = await UserModel.find({ projectIn: projectId });
   users.forEach(async (user) => {
+    // Clear each user's history
+    await UserModel.updateMany(
+      { _id: user._id },
+      {
+        $set: {
+          activityHistory: [],
+        },
+      }
+    );
     const account = await AccountModel.findById(user.account);
     if (!account) {
-      return new Error("Can't find account");
+      return;
     }
     const thirdPartyUsername = account.thirdParty.find(
       (x) => x.name === party
