@@ -7,7 +7,8 @@ import Gitlab from "passport-gitlab2";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
 const GitlabStrategy = Gitlab.Strategy;
-async function authenticateUser(
+type GitlabProfile = Github.Profile; // No TypeScript support for passport-gitlab2
+async function authenticateUserLocal(
   username: string,
   password: string,
   done: (error: any, user?: any) => void
@@ -45,22 +46,7 @@ async function authenticateUserGithub(
     });
     // First time login
     if (!account) {
-      const newThirdParty = await ThirdPartyModel.create({
-        name: "Github",
-        username: profile.username,
-        url: "https://github.com",
-        accessToken,
-      });
-      const newAccount = await AccountModel.create({
-        username: `Github_${profile.username}`,
-        password: profile.id,
-        email: profile.emails ? profile.emails[0].value : "",
-        thirdParty: [newThirdParty],
-      });
-      await UserModel.create({
-        name: profile.displayName,
-        account: newAccount._id,
-      });
+      const newAccount = await registeringGithubFirstTime(profile, accessToken);
       return done(null, newAccount);
     }
     await ThirdPartyModel.findOneAndUpdate(
@@ -72,10 +58,33 @@ async function authenticateUserGithub(
     return done(e);
   }
 }
+async function registeringGithubFirstTime(
+  profile: Github.Profile,
+  accessToken: string
+) {
+  const newThirdParty = await ThirdPartyModel.create({
+    name: "Github",
+    username: profile.username,
+    url: "https://github.com",
+    accessToken,
+  });
+  const newAccount = await AccountModel.create({
+    username: `Github_${profile.username}`,
+    password: profile.id,
+    email: profile.emails ? profile.emails[0].value : "",
+    thirdParty: [newThirdParty],
+  });
+  await UserModel.create({
+    name: profile.displayName,
+    account: newAccount._id,
+  });
+  return newAccount;
+}
+
 async function authenticateUserGitlab(
   accessToken: string,
   refreshToken: string,
-  profile: Github.Profile,
+  profile: GitlabProfile,
   done: (error: any, user?: any) => void
 ) {
   try {
@@ -92,22 +101,7 @@ async function authenticateUserGitlab(
     });
     // First time login
     if (!account) {
-      const newThirdParty = await ThirdPartyModel.create({
-        name: "Gitlab",
-        username: profile.username,
-        url: "https://gitlab.com/",
-        accessToken,
-      });
-      const newAccount = await AccountModel.create({
-        username: `Gitlab_${profile.username}`,
-        password: profile.id,
-        email: profile.emails ? profile.emails[0].value : "",
-        thirdParty: [newThirdParty],
-      });
-      await UserModel.create({
-        name: profile.displayName,
-        account: newAccount._id,
-      });
+      const newAccount = await registeringGitlabFirstTime(profile, accessToken);
       return done(null, newAccount);
     }
     await ThirdPartyModel.findOneAndUpdate(
@@ -119,6 +113,29 @@ async function authenticateUserGitlab(
     return done(e);
   }
 }
+async function registeringGitlabFirstTime(
+  profile: GitlabProfile,
+  accessToken: string
+) {
+  const newThirdParty = await ThirdPartyModel.create({
+    name: "Gitlab",
+    username: profile.username,
+    url: "https://gitlab.com/",
+    accessToken,
+  });
+  const newAccount = await AccountModel.create({
+    username: `Gitlab_${profile.username}`,
+    password: profile.id,
+    email: profile.emails ? profile.emails[0].value : "",
+    thirdParty: [newThirdParty],
+  });
+  await UserModel.create({
+    name: profile.displayName,
+    account: newAccount._id,
+  });
+  return newAccount;
+}
+
 function initialize(passport: PassportStatic) {
   useGithubOAuth(passport);
   useGitlabOAuth(passport);
@@ -139,7 +156,7 @@ function initialize(passport: PassportStatic) {
 export default initialize;
 function useLocalAuth(passport: PassportStatic) {
   passport.use(
-    new LocalStrategy({ usernameField: "username" }, authenticateUser)
+    new LocalStrategy({ usernameField: "username" }, authenticateUserLocal)
   );
 }
 
