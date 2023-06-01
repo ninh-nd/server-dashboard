@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ThirdPartyModel } from "../models/models";
 import MyOctokit from "../octokit";
+import { Gitlab } from "@gitbeaker/rest";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function getAll(req: Request, res: Response) {
   try {
@@ -88,6 +89,41 @@ export async function getReposFromGithub(req: Request, res: Response) {
       })
     );
     return res.json(successResponse(formattedRepos, "Github repos found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+export async function getReposFromGitlab(req: Request, res: Response) {
+  const account = req.user;
+  if (!account) {
+    return res.json(errorResponse("You are not authenticated"));
+  }
+  try {
+    const thirdParty = account.thirdParty.find((x) => x.name === "Gitlab");
+    if (!thirdParty) {
+      return res.json(errorResponse("No Gitlab account linked"));
+    }
+    const { username, accessToken } = thirdParty;
+    if (!accessToken) {
+      return res.json(errorResponse("No Gitlab access token"));
+    }
+    const api = new Gitlab({
+      token: accessToken,
+    });
+    const repos = await api.Projects.all({
+      owned: true,
+      orderBy: "name",
+      sort: "asc",
+    });
+    const formattedRepos = repos.map(
+      ({ http_url_to_repo, visibility, owner, name }) => ({
+        name,
+        url: http_url_to_repo,
+        status: visibility,
+        owner: owner.name,
+      })
+    );
+    return res.json(successResponse(formattedRepos, "Gitlab repos found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
