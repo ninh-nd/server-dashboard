@@ -5,31 +5,29 @@ import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
-  // Find all artifacts
+  const decodedProjectName = decodeURIComponent(projectName as string);
   try {
-    if (typeof projectName === "string") {
-      const project = await ProjectModel.findOne({
-        name: projectName,
-      }).populate({
-        path: "phaseList",
-        populate: {
-          path: "artifacts",
-        },
-      });
-      if (!project) {
-        return res.json(errorResponse("Project not found"));
-      }
-      if (isDocumentArray(project.phaseList)) {
-        const artifacts = project.phaseList
-          .map((phase) => phase.artifacts)
-          .flat();
-        return res.json(
-          successResponse(
-            artifacts,
-            "Get all artifacts with respective vulnerabilities"
-          )
-        );
-      }
+    const project = await ProjectModel.findOne({
+      name: decodedProjectName,
+    }).populate({
+      path: "phaseList",
+      populate: {
+        path: "artifacts",
+      },
+    });
+    if (!project) {
+      return res.json(errorResponse("Project not found"));
+    }
+    if (isDocumentArray(project.phaseList)) {
+      const artifacts = project.phaseList
+        .map((phase) => phase.artifacts)
+        .flat();
+      return res.json(
+        successResponse(
+          artifacts,
+          "Get all artifacts with respective vulnerabilities"
+        )
+      );
     }
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

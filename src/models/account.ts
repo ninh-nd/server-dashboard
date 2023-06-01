@@ -3,7 +3,7 @@ import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "../utils/permission";
 import { ThirdParty } from "./thirdParty";
 export interface Account extends Base {}
-@pre<Account>("save", function () {
+@pre<Account>("validate", function () {
   if (this.role === "admin") {
     this.permission = permissions;
   } else if (this.role === "manager") {

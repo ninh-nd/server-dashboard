@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { AccountModel, ThirdPartyModel } from "./models/models";
+import { AccountModel, ThirdPartyModel, UserModel } from "./models/models";
 import { PassportStatic } from "passport";
 import Github from "passport-github2";
 import Local from "passport-local";
@@ -57,6 +57,10 @@ async function authenticateUserGithub(
         email: profile.emails ? profile.emails[0].value : "",
         thirdParty: [newThirdParty],
       });
+      await UserModel.create({
+        name: profile.displayName,
+        account: newAccount._id,
+      });
       return done(null, newAccount);
     }
     await ThirdPartyModel.findOneAndUpdate(
@@ -75,7 +79,7 @@ async function authenticateUserGitlab(
   done: (error: any, user?: any) => void
 ) {
   try {
-    // Check if there is an account that has already linked to this Github account
+    // Check if there is an account that has already linked to this Gitlab account
     const linkedAccount = await AccountModel.findOne({
       "thirdParty.username": profile.username,
       "thirdParty.name": "Gitlab",
@@ -99,6 +103,10 @@ async function authenticateUserGitlab(
         password: profile.id,
         email: profile.emails ? profile.emails[0].value : "",
         thirdParty: [newThirdParty],
+      });
+      await UserModel.create({
+        name: profile.displayName,
+        account: newAccount._id,
       });
       return done(null, newAccount);
     }

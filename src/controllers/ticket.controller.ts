@@ -7,9 +7,11 @@ export async function getAll(req: Request, res: Response) {
   if (!projectName) {
     return res.json(errorResponse("Project name is required"));
   }
+  // Parse projectName as it's an encoded URI
+  const decodedProjectName = decodeURIComponent(projectName as string);
   try {
     const tickets = await TicketModel.find({
-      projectName: projectName,
+      projectName: decodedProjectName,
     }).populate({
       path: "assignee assigner",
     });

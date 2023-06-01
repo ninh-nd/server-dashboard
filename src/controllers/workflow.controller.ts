@@ -1,12 +1,16 @@
 import { Request, Response } from "express";
-import MyOctokit, { MyOctokitType } from "../octokit";
+import MyOctokit from "../octokit";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-
+import { Gitlab } from "@gitbeaker/rest";
+import { ProjectModel } from "../models/models";
+import { GitlabType, OctokitType } from "..";
 export async function getWorkflows(req: Request, res: Response) {
-  const { url } = req.query as { url: string };
-  if (!url) {
-    return res.json(errorResponse("Missing project's url"));
+  const { projectName } = req.query;
+  const project = await ProjectModel.findOne({ name: projectName });
+  if (!project) {
+    return res.json(errorResponse("Project not found"));
   }
+  const { url } = project;
   const urlObject = new URL(url);
   const { hostname } = urlObject;
   const [owner, repo] = urlObject.pathname.split("/").slice(1);
@@ -18,27 +22,22 @@ export async function getWorkflows(req: Request, res: Response) {
       auth: accessToken,
     });
     try {
-      const { data } = await octokit.rest.actions.listRepoWorkflows({
-        owner,
-        repo,
-      });
-      let workflows = [];
-      for (const workflow of data.workflows) {
-        if (workflow.path.endsWith(".yml")) {
-          const { data } = await octokit.rest.repos.getContent({
-            owner,
-            repo,
-            path: workflow.path,
-          });
-          const fileName = workflow.path.split("/").pop();
-          workflows.push({
-            name: fileName,
-            path: workflow.path,
-            // @ts-ignore
-            content: Buffer.from(data.content, "base64").toString("utf-8"),
-          });
-        }
-      }
+      let workflows = await getGithubWorkflows(octokit, owner, repo);
+      return res.json(
+        successResponse(workflows, "Successfully fetched workflows")
+      );
+    } catch (error) {
+      return res.json(errorResponse("Failed to fetch workflows"));
+    }
+  } else if (hostname.includes("gitlab.com")) {
+    const accessToken = req.user?.thirdParty.find(
+      (x) => x.name === "Gitlab"
+    )?.accessToken;
+    const api = new Gitlab({
+      token: accessToken,
+    });
+    try {
+      let workflows = await getGitlabWorkflows(api, owner, repo);
       return res.json(
         successResponse(workflows, "Successfully fetched workflows")
       );
@@ -48,8 +47,66 @@ export async function getWorkflows(req: Request, res: Response) {
   }
 }
 
+async function getGithubWorkflows(
+  octokit: OctokitType,
+  owner: string,
+  repo: string
+) {
+  const { data } = await octokit.rest.actions.listRepoWorkflows({
+    owner,
+    repo,
+  });
+  let workflows = [];
+  for (const workflow of data.workflows) {
+    if (workflow.path.endsWith(".yml")) {
+      const { data } = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: workflow.path,
+      });
+      const fileName = workflow.path.split("/").pop();
+      workflows.push({
+        name: fileName,
+        path: workflow.path,
+        // @ts-ignore
+        content: Buffer.from(data.content, "base64").toString("utf-8"),
+      });
+    }
+  }
+  return workflows;
+}
+
+// Only support gitlab-ci.yml for now
+async function getGitlabWorkflows(
+  api: GitlabType,
+  owner: string,
+  repo: string
+) {
+  // Create an URL encoded path for the project to use for requests
+  const encodedPath = encodeURIComponent(`${owner}/${repo}`);
+  const projectData = await api.Projects.show(encodedPath);
+  const defaultBranch = projectData.defaultBranch;
+  const data = await api.RepositoryFiles.showRaw(
+    encodedPath,
+    ".gitlab-ci.yml",
+    defaultBranch as string
+  );
+  return [
+    {
+      name: ".gitlab-ci.yml",
+      path: ".gitlab-ci.yml",
+      content: data,
+    },
+  ];
+}
+
 export async function pushNewWorkflow(req: Request, res: Response) {
-  const { url, branch, data, message } = req.body;
+  const { projectName, branch, data, message } = req.body;
+  const project = await ProjectModel.findOne({ name: projectName });
+  if (!project) {
+    return res.json(errorResponse("Project not found"));
+  }
+  const { url } = project;
   const urlObject = new URL(url);
   const { hostname } = urlObject;
   const [owner, repo] = urlObject.pathname.split("/").slice(1);
@@ -115,7 +172,7 @@ export async function pushNewWorkflow(req: Request, res: Response) {
   }
 }
 const getCurrentCommit = async (
-  octo: MyOctokitType,
+  octo: OctokitType,
   org: string,
   repo: string,
   branch: string
@@ -137,7 +194,7 @@ const getCurrentCommit = async (
   };
 };
 const createNewTree = async (
-  octo: MyOctokitType,
+  octo: OctokitType,
   owner: string,
   repo: string,
   parentTreeSha: string,
@@ -169,7 +226,7 @@ const createNewTree = async (
   return data;
 };
 const createNewCommit = async (
-  octo: MyOctokitType,
+  octo: OctokitType,
   org: string,
   repo: string,
   message: string,
@@ -187,7 +244,7 @@ const createNewCommit = async (
   ).data;
 
 const setBranchToCommit = async (
-  octo: MyOctokitType,
+  octo: OctokitType,
   org: string,
   repo: string,
   branch: string = `master`,
@@ -200,7 +257,7 @@ const setBranchToCommit = async (
     sha: commitSha,
   });
 const checkBranchExists = async (
-  octo: MyOctokitType,
+  octo: OctokitType,
   org: string,
   repo: string,
   branch: string
@@ -221,7 +278,7 @@ const checkBranchExists = async (
 };
 
 const createBranch = async (
-  octo: MyOctokitType,
+  octo: OctokitType,
   org: string,
   repo: string,
   branch: string,

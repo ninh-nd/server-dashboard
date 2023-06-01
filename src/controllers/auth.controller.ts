@@ -13,18 +13,18 @@ export async function logout(req: Request, res: Response) {
 export async function redirectToHomePage(req: Request, res: Response) {
   const account = req.user;
   if (!account) return;
-  const { username } = account;
   try {
     const user = await UserModel.findOne({ account: account._id });
     const firstProject = user?.projectIn[0];
     if (firstProject) {
       const project = await ProjectModel.findById(firstProject);
       if (project) {
-        return res.redirect(`${process.env.CLIENT_URL}/${project.name}/`);
+        const urlEncodedName = encodeURIComponent(project.name);
+        return res.redirect(`${process.env.CLIENT_URL}/${urlEncodedName}/`);
       }
     }
   } catch (err) {
     return res.json(errorResponse("Error redirecting to home page"));
   }
-  return res.redirect(`${process.env.CLIENT_URL}/user/${username}/`);
+  return res.redirect(`${process.env.CLIENT_URL}/new-project/`);
 }

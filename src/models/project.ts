@@ -6,8 +6,8 @@ export class Project extends TimeStamps {
   @prop({ required: true, type: String })
   public name!: string;
 
-  @prop({ type: String })
-  public url?: string;
+  @prop({ type: String, required: true })
+  public url!: string;
 
   @prop({
     required: true,

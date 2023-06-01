@@ -7,11 +7,42 @@ import {
   UserModel,
 } from "../models/models";
 import { Project } from "../models/project";
-import MyOctokit, { MyOctokitType } from "../octokit";
+import MyOctokit from "../octokit";
 import redis from "../redis";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-async function getPullRequests(
-  octokit: MyOctokitType,
+import { GitlabType, OctokitType } from "..";
+import { Gitlab } from "@gitbeaker/rest";
+async function getPullRequestsGitlab(
+  api: GitlabType,
+  encodedUrl: string,
+  projectId: Ref<Project>
+) {
+  try {
+    const prData = await api.MergeRequests.all({
+      projectId: encodedUrl,
+    });
+    const processedPrData = prData.map(
+      ({ id, title: content, created_at, author }) => {
+        const createdAt = created_at as string;
+        const createdBy = author?.username as string;
+        return {
+          id,
+          action: "pr",
+          content,
+          createdAt,
+          createdBy,
+          projectId,
+        };
+      }
+    );
+    return processedPrData;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+async function getPullRequestsGithub(
+  octokit: OctokitType,
   owner: string,
   repo: string,
   projectId: Ref<Project>
@@ -48,8 +79,8 @@ async function getPullRequests(
     return [];
   }
 }
-async function getCommits(
-  octokit: MyOctokitType,
+async function getCommitsGithub(
+  octokit: OctokitType,
   owner: string,
   repo: string,
   projectId: Ref<Project>
@@ -85,6 +116,33 @@ async function getCommits(
     return [];
   }
 }
+async function getCommitsGitlab(
+  api: GitlabType,
+  encodedUrl: string,
+  projectId: Ref<Project>
+) {
+  try {
+    const commits = await api.Commits.all(encodedUrl);
+    const processedCommitData = commits.map(
+      ({ id, title: content, created_at, author_name }) => {
+        const createdAt = created_at as string;
+        const createdBy = author_name as string;
+        return {
+          id,
+          action: "commit",
+          content,
+          createdAt,
+          createdBy,
+          projectId,
+        };
+      }
+    );
+    return processedCommitData;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
 async function fetchLatestFromGithub(
   owner: string | undefined,
   repo: string | undefined,
@@ -95,73 +153,141 @@ async function fetchLatestFromGithub(
     return new Error("Missing owner, repo or access token");
   }
   const cache = await redis.get(`github-${repo}`);
-  if (cache) {
-    return true;
-  }
+  if (cache) return;
   const octokit = new MyOctokit({
     auth: accessToken,
   });
   redis.set(`github-${repo}`, Date.now().toString(), "EX", 60);
-  const processedPrData = await getPullRequests(
+  const processedPrData = await getPullRequestsGithub(
     octokit,
     owner,
     repo,
     projectId
   );
-  const processedCommitData = await getCommits(octokit, owner, repo, projectId);
+  const processedCommitData = await getCommitsGithub(
+    octokit,
+    owner,
+    repo,
+    projectId
+  );
   if (!processedPrData || !processedCommitData) {
     return new Error("Error fetching data from Github");
   }
   try {
-    await ActivityHistoryModel.insertMany(
-      [...processedPrData, ...processedCommitData],
-      {
-        ordered: false,
-      }
+    await insertDataToDatabase(
+      processedPrData,
+      processedCommitData,
+      projectId,
+      "Github"
     );
-    // Add history to each user in the project
-    const history = await ActivityHistoryModel.find({ projectId });
-    const users = await UserModel.find({ projectIn: projectId });
-    users.forEach(async (user) => {
-      const account = await AccountModel.findById(user.account);
-      if (!account) {
-        return new Error("Can't find account");
-      }
-      const thirdPartyUsername = account.thirdParty.find(
-        (x) => x.name === "Github"
-      )?.username;
-      const userHistory = history.filter(
-        ({ createdBy }) => createdBy === thirdPartyUsername
-      );
-      await UserModel.findByIdAndUpdate(
-        user._id,
-        { $addToSet: { activityHistory: userHistory } },
-        { new: true }
-      );
-    });
-    return true;
+    return;
   } catch (error) {
-    return false;
+    return;
   }
 }
-
+async function insertDataToDatabase(
+  processedPrData: {
+    id: number;
+    action: string;
+    content: string;
+    createdAt: string;
+    createdBy: string | undefined;
+    projectId: Ref<Project>;
+  }[],
+  processedCommitData: {
+    id: string;
+    action: string;
+    content: string;
+    createdAt: string | undefined;
+    createdBy: string | undefined;
+    projectId: Ref<Project>;
+  }[],
+  projectId: Ref<Project>,
+  party: "Gitlab" | "Github"
+) {
+  await ActivityHistoryModel.insertMany(
+    [...processedPrData, ...processedCommitData],
+    {
+      ordered: false,
+    }
+  );
+  // Add history to each user in the project
+  const history = await ActivityHistoryModel.find({ projectId });
+  const users = await UserModel.find({ projectIn: projectId });
+  users.forEach(async (user) => {
+    const account = await AccountModel.findById(user.account);
+    if (!account) {
+      return new Error("Can't find account");
+    }
+    const thirdPartyUsername = account.thirdParty.find(
+      (x) => x.name === party
+    )?.username;
+    const userHistory = history.filter(
+      ({ createdBy }) => createdBy === thirdPartyUsername
+    );
+    await UserModel.findByIdAndUpdate(
+      user._id,
+      { $addToSet: { activityHistory: userHistory } },
+      { new: true }
+    );
+  });
+}
+async function fetchLatestFromGitlab(
+  encodedUrl: string,
+  accessToken: string | undefined,
+  projectId: Ref<Project>
+) {
+  if (!encodedUrl || !accessToken) {
+    return new Error("Missing encodedUrl or access token");
+  }
+  const cache = await redis.get(`gitlab-${encodedUrl}`);
+  if (cache) return;
+  const api = new Gitlab({
+    token: accessToken,
+  });
+  redis.set(`gitlab-${encodedUrl}`, Date.now().toString(), "EX", 60);
+  const processedCommitData = await getCommitsGitlab(
+    api,
+    encodedUrl,
+    projectId
+  );
+  const processedPrData = await getPullRequestsGitlab(
+    api,
+    encodedUrl,
+    projectId
+  );
+  if (!processedPrData || !processedCommitData) {
+    return new Error("Error fetching data from Gitlab");
+  }
+  try {
+    await insertDataToDatabase(
+      processedPrData,
+      processedCommitData,
+      projectId,
+      "Gitlab"
+    );
+    return;
+  } catch (error) {
+    return;
+  }
+}
 export async function getActivityHistory(req: Request, res: Response) {
   const { projectName } = req.params;
   const { username } = req.query;
   try {
     const user = await AccountModel.findOne({ username });
     const project = await ProjectModel.findOne({ name: projectName });
-    const accessToken = req.user?.thirdParty.find(
-      (x) => x.name === "Github"
-    )?.accessToken;
-    if (project) {
-      const { url, _id } = project;
-      if (!url) {
-        return res.json(errorResponse("Missing url of the repository"));
-      }
-      const urlObject = new URL(url);
-      const owner = urlObject.pathname.split("/")[1];
-      const repo = urlObject.pathname.split("/")[2];
+    if (!project) {
+      return res.json(errorResponse("Project not found"));
+    }
+    const { url, _id } = project;
+    const urlObject = new URL(url);
+    if (urlObject.hostname === "github.com") {
+      const accessToken = req.user?.thirdParty.find(
+        (x) => x.name === "Github"
+      )?.accessToken;
+      const owner = projectName.split("/")[0];
+      const repo = projectName.split("/")[1];
       const result = await fetchLatestFromGithub(owner, repo, accessToken, _id);
       if (result instanceof Error) {
         return res.json(
@@ -175,6 +301,36 @@ export async function getActivityHistory(req: Request, res: Response) {
         const actHist = await ActivityHistoryModel.find({
           projectId: _id,
           createdBy: user.thirdParty.find((x) => x.name === "Github")?.username,
+        });
+        return res.json(
+          successResponse(actHist, "Successfully retrieved activity history")
+        );
+      }
+      // Query all
+      const actHist = await ActivityHistoryModel.find({
+        projectId: _id,
+      });
+      return res.json(
+        successResponse(actHist, "Successfully retrieved activity history")
+      );
+    } else if (urlObject.hostname === "gitlab.com") {
+      const encodedUrl = encodeURIComponent(`${projectName}`);
+      const accessToken = req.user?.thirdParty.find(
+        (x) => x.name === "Gitlab"
+      )?.accessToken;
+      const result = await fetchLatestFromGitlab(encodedUrl, accessToken, _id);
+      if (result instanceof Error) {
+        return res.json(
+          errorResponse(
+            `Error updating latest activity history: ${result.message}`
+          )
+        );
+      }
+      // Query by username
+      if (user) {
+        const actHist = await ActivityHistoryModel.find({
+          projectId: _id,
+          createdBy: user.thirdParty.find((x) => x.name === "Gitlab")?.username,
         });
         return res.json(
           successResponse(actHist, "Successfully retrieved activity history")

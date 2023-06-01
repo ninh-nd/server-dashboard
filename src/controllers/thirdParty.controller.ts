@@ -81,8 +81,8 @@ export async function getReposFromGithub(req: Request, res: Response) {
       type: "owner",
     });
     const formattedRepos = repos.data.map(
-      ({ name, html_url, visibility, owner }) => ({
-        name,
+      ({ html_url, visibility, owner, full_name }) => ({
+        name: full_name,
         url: html_url,
         status: visibility,
         owner: owner.login,
@@ -116,8 +116,8 @@ export async function getReposFromGitlab(req: Request, res: Response) {
       sort: "asc",
     });
     const formattedRepos = repos.map(
-      ({ http_url_to_repo, visibility, owner, name }) => ({
-        name,
+      ({ http_url_to_repo, visibility, owner, path_with_namespace }) => ({
+        name: path_with_namespace,
         url: http_url_to_repo,
         status: visibility,
         owner: owner.name,
