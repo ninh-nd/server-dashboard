@@ -116,9 +116,9 @@ export async function getReposFromGitlab(req: Request, res: Response) {
       sort: "asc",
     });
     const formattedRepos = repos.map(
-      ({ http_url_to_repo, visibility, owner, path_with_namespace }) => ({
+      ({ visibility, owner, path_with_namespace, web_url }) => ({
         name: path_with_namespace,
-        url: http_url_to_repo,
+        url: web_url,
         status: visibility,
         owner: owner.name,
       })
