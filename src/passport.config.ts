@@ -58,9 +58,10 @@ async function registeringGithubFirstTime(
   profile: Github.Profile,
   accessToken: string
 ) {
+  const password = await bcrypt.hash(`Github_${profile.username}`, 10);
   const newAccount = await AccountModel.create({
     username: `Github_${profile.username}`,
-    password: profile.id,
+    password,
     email: profile.emails ? profile.emails[0].value : "",
     thirdParty: [
       {
@@ -110,9 +111,10 @@ async function registeringGitlabFirstTime(
   profile: GitlabProfile,
   accessToken: string
 ) {
+  const password = await bcrypt.hash(`Gitlab${profile.username}`, 10);
   const newAccount = await AccountModel.create({
     username: `Gitlab_${profile.username}`,
-    password: profile.id,
+    password,
     email: profile.emails ? profile.emails[0].value : "",
     thirdParty: [
       {
