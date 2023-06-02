@@ -75,25 +75,6 @@ export async function create(req: Request, res: Response) {
   }
 }
 
-export async function addThirdPartyToAccount(req: Request, res: Response) {
-  // Check if account exists
-  const { id } = req.params;
-  try {
-    const { name, username, url } = req.body;
-    const document = await ThirdPartyModel.create({
-      name,
-      username,
-      url,
-    });
-    const account = await AccountModel.findByIdAndUpdate(id, {
-      $push: { thirdParty: document._id },
-    });
-    return res.json(successResponse(account, "Third party account added"));
-  } catch (error) {
-    return res.json(errorResponse(`Internal server error: ${error}`));
-  }
-}
-
 export async function changePassword(req: Request, res: Response) {
   const { id } = req.params;
   const { oldPassword, newPassword } = req.body;

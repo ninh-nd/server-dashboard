@@ -1,5 +1,4 @@
 import {
-  addThirdPartyToAccount,
   changePassword,
   create,
   get,
@@ -18,7 +17,6 @@ accountRoute.get("/list", checkAuth, checkAdmin, getAll);
 accountRoute.get("/:id", checkAuth, checkAdmin, getById);
 accountRoute.post("/reg", create);
 accountRoute.patch("/:id", checkAuth, updateAccountInfo);
-accountRoute.patch("/:id/thirdParty", addThirdPartyToAccount);
 accountRoute.patch("/:id/password", changePassword);
 accountRoute.delete("/:id", checkAuth, checkAdmin, remove);
 accountRoute.patch(

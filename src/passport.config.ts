@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
-import { AccountModel, ThirdPartyModel, UserModel } from "./models/models";
 import { PassportStatic } from "passport";
 import Github from "passport-github2";
-import Local from "passport-local";
 import Gitlab from "passport-gitlab2";
+import Local from "passport-local";
+import { AccountModel, UserModel } from "./models/models";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
 const GitlabStrategy = Gitlab.Strategy;
@@ -49,10 +49,6 @@ async function authenticateUserGithub(
       const newAccount = await registeringGithubFirstTime(profile, accessToken);
       return done(null, newAccount);
     }
-    await ThirdPartyModel.findOneAndUpdate(
-      { username: profile.username },
-      { accessToken }
-    );
     return done(null, account);
   } catch (e) {
     return done(e);
@@ -62,17 +58,18 @@ async function registeringGithubFirstTime(
   profile: Github.Profile,
   accessToken: string
 ) {
-  const newThirdParty = await ThirdPartyModel.create({
-    name: "Github",
-    username: profile.username,
-    url: "https://github.com",
-    accessToken,
-  });
   const newAccount = await AccountModel.create({
     username: `Github_${profile.username}`,
     password: profile.id,
     email: profile.emails ? profile.emails[0].value : "",
-    thirdParty: [newThirdParty],
+    thirdParty: [
+      {
+        name: "Github",
+        username: profile.username,
+        url: "https://github.com",
+        accessToken,
+      },
+    ],
   });
   await UserModel.create({
     name: profile.displayName,
@@ -104,10 +101,6 @@ async function authenticateUserGitlab(
       const newAccount = await registeringGitlabFirstTime(profile, accessToken);
       return done(null, newAccount);
     }
-    await ThirdPartyModel.findOneAndUpdate(
-      { username: profile.username },
-      { accessToken }
-    );
     return done(null, account);
   } catch (e) {
     return done(e);
@@ -117,17 +110,18 @@ async function registeringGitlabFirstTime(
   profile: GitlabProfile,
   accessToken: string
 ) {
-  const newThirdParty = await ThirdPartyModel.create({
-    name: "Gitlab",
-    username: profile.username,
-    url: "https://gitlab.com/",
-    accessToken,
-  });
   const newAccount = await AccountModel.create({
     username: `Gitlab_${profile.username}`,
     password: profile.id,
     email: profile.emails ? profile.emails[0].value : "",
-    thirdParty: [newThirdParty],
+    thirdParty: [
+      {
+        name: "Gitlab",
+        username: profile.username,
+        url: "https://gitlab.com/",
+        accessToken,
+      },
+    ],
   });
   await UserModel.create({
     name: profile.displayName,
