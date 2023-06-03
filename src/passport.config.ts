@@ -39,6 +39,7 @@ async function authenticateUserGithub(
       "thirdParty.name": "Github",
     });
     if (linkedAccount) {
+      await updateAccessToken(linkedAccount, accessToken, "Github");
       return done(null, linkedAccount);
     }
     const account = await AccountModel.findOne({
@@ -54,6 +55,25 @@ async function authenticateUserGithub(
     return done(e);
   }
 }
+async function updateAccessToken(
+  linkedAccount: any,
+  accessToken: string,
+  vendor: "Github" | "Gitlab"
+) {
+  const filter = {
+    _id: linkedAccount._id,
+    "thirdParty.name": vendor,
+  };
+  const update = {
+    $set: {
+      "thirdParty.$.accessToken": accessToken,
+    },
+  };
+  await AccountModel.findOneAndUpdate(filter, update, {
+    new: true,
+  });
+}
+
 async function registeringGithubFirstTime(
   profile: Github.Profile,
   accessToken: string
@@ -92,6 +112,7 @@ async function authenticateUserGitlab(
       "thirdParty.name": "Gitlab",
     });
     if (linkedAccount) {
+      await updateAccessToken(linkedAccount, accessToken, "Gitlab");
       return done(null, linkedAccount);
     }
     const account = await AccountModel.findOne({
