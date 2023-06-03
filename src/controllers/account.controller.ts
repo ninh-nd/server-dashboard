@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import { Request, Response } from "express";
-import { AccountModel, ThirdPartyModel } from "../models/models";
+import { AccountModel, ThirdPartyModel, UserModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
+import generateRandomName from "../utils/generateName";
 
 export async function get(req: Request, res: Response) {
   try {
@@ -69,6 +70,9 @@ export async function create(req: Request, res: Response) {
       password: hashedPassword,
       email,
     });
+    // Create user
+    const name = generateRandomName();
+    UserModel.create({ account: newAccount._id, name });
     return res.json(successResponse(newAccount, "Account created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
