@@ -14,12 +14,12 @@ import { GitlabType, OctokitType } from "..";
 import { Gitlab } from "@gitbeaker/rest";
 async function getPullRequestsGitlab(
   api: GitlabType,
-  encodedUrl: string,
+  projectName: string,
   projectId: Ref<Project>
 ) {
   try {
     const prData = await api.MergeRequests.all({
-      projectId: encodedUrl,
+      projectId: projectName,
     });
     const processedPrData = prData.map(
       ({ id, title: content, created_at, author }) => {
@@ -118,11 +118,11 @@ async function getCommitsGithub(
 }
 async function getCommitsGitlab(
   api: GitlabType,
-  encodedUrl: string,
+  projectName: string,
   projectId: Ref<Project>
 ) {
   try {
-    const commits = await api.Commits.all(encodedUrl);
+    const commits = await api.Commits.all(projectName);
     const processedCommitData = commits.map(
       ({ id, title: content, created_at, author_name }) => {
         const createdAt = created_at as string;
@@ -244,27 +244,27 @@ async function insertDataToDatabase(
   });
 }
 async function fetchLatestFromGitlab(
-  encodedUrl: string,
+  projectName: string,
   accessToken: string | undefined,
   projectId: Ref<Project>
 ) {
-  if (!encodedUrl || !accessToken) {
+  if (!projectName || !accessToken) {
     return new Error("Missing encodedUrl or access token");
   }
-  const cache = await redis.get(`gitlab-${encodedUrl}`);
+  const cache = await redis.get(`gitlab-${projectName}`);
   if (cache) return;
   const api = new Gitlab({
     token: accessToken,
   });
-  redis.set(`gitlab-${encodedUrl}`, Date.now().toString(), "EX", 60);
+  redis.set(`gitlab-${projectName}`, Date.now().toString(), "EX", 60);
   const processedCommitData = await getCommitsGitlab(
     api,
-    encodedUrl,
+    projectName,
     projectId
   );
   const processedPrData = await getPullRequestsGitlab(
     api,
-    encodedUrl,
+    projectName,
     projectId
   );
   if (!processedPrData || !processedCommitData) {
@@ -325,11 +325,10 @@ export async function getActivityHistory(req: Request, res: Response) {
         successResponse(actHist, "Successfully retrieved activity history")
       );
     } else if (urlObject.hostname === "gitlab.com") {
-      const encodedUrl = encodeURIComponent(`${projectName}`);
       const accessToken = req.user?.thirdParty.find(
         (x) => x.name === "Gitlab"
       )?.accessToken;
-      const result = await fetchLatestFromGitlab(encodedUrl, accessToken, _id);
+      const result = await fetchLatestFromGitlab(projectName, accessToken, _id);
       if (result instanceof Error) {
         return res.json(
           errorResponse(
