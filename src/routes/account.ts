@@ -11,6 +11,7 @@ import {
 } from "../controllers/account.controller";
 import express from "express";
 import { checkAuth, checkAdmin } from "../middlewares/auth";
+import passport from "passport";
 const accountRoute = express.Router();
 accountRoute.get("/", checkAuth, get);
 accountRoute.get("/list", checkAuth, checkAdmin, getAll);
@@ -30,4 +31,5 @@ accountRoute.patch(
   checkAuth,
   updateGithubAccessToken
 );
+accountRoute.get("/connect/github", passport.authenticate("github"));
 export default accountRoute;

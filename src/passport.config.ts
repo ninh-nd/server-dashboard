@@ -4,6 +4,7 @@ import Github from "passport-github2";
 import Gitlab from "passport-gitlab2";
 import Local from "passport-local";
 import { AccountModel, UserModel } from "./models/models";
+import { Request } from "express";
 const LocalStrategy = Local.Strategy;
 const GithubStrategy = Github.Strategy;
 const GitlabStrategy = Gitlab.Strategy;
@@ -27,32 +28,50 @@ async function authenticateUserLocal(
   }
 }
 async function authenticateUserGithub(
+  req: Request,
   accessToken: string,
   refreshToken: string,
   profile: Github.Profile,
   done: (error: any, user?: any) => void
 ) {
-  try {
-    // Check if there is an account that has already linked to this Github account
-    const linkedAccount = await AccountModel.findOne({
-      "thirdParty.username": profile.username,
-      "thirdParty.name": "Github",
+  // User is already login with local instance. Link the Github account to the local account
+  if (req.user) {
+    await AccountModel.findByIdAndUpdate(req.user._id, {
+      $push: {
+        thirdParty: {
+          name: "Github",
+          username: profile.username,
+          accessToken,
+        },
+      },
     });
-    if (linkedAccount) {
-      await updateAccessToken(linkedAccount, accessToken, "Github");
-      return done(null, linkedAccount);
+    return done(null, req.user);
+  } else {
+    try {
+      // Check if there is an account that has already linked to this Github account
+      const linkedAccount = await AccountModel.findOne({
+        "thirdParty.username": profile.username,
+        "thirdParty.name": "Github",
+      });
+      if (linkedAccount) {
+        await updateAccessToken(linkedAccount, accessToken, "Github");
+        return done(null, linkedAccount);
+      }
+      const account = await AccountModel.findOne({
+        username: `Github_${profile.username}`,
+      });
+      // First time login
+      if (!account) {
+        const newAccount = await registeringGithubFirstTime(
+          profile,
+          accessToken
+        );
+        return done(null, newAccount);
+      }
+      return done(null, account);
+    } catch (e) {
+      return done(e);
     }
-    const account = await AccountModel.findOne({
-      username: `Github_${profile.username}`,
-    });
-    // First time login
-    if (!account) {
-      const newAccount = await registeringGithubFirstTime(profile, accessToken);
-      return done(null, newAccount);
-    }
-    return done(null, account);
-  } catch (e) {
-    return done(e);
   }
 }
 async function updateAccessToken(
@@ -87,7 +106,6 @@ async function registeringGithubFirstTime(
       {
         name: "Github",
         username: profile.username,
-        url: "https://github.com",
         accessToken,
       },
     ],
@@ -100,32 +118,49 @@ async function registeringGithubFirstTime(
 }
 
 async function authenticateUserGitlab(
+  req: Request,
   accessToken: string,
   refreshToken: string,
   profile: GitlabProfile,
   done: (error: any, user?: any) => void
 ) {
-  try {
-    // Check if there is an account that has already linked to this Gitlab account
-    const linkedAccount = await AccountModel.findOne({
-      "thirdParty.username": profile.username,
-      "thirdParty.name": "Gitlab",
+  if (req.user) {
+    await AccountModel.findByIdAndUpdate(req.user._id, {
+      $push: {
+        thirdParty: {
+          name: "Gitlab",
+          username: profile.username,
+          accessToken,
+        },
+      },
     });
-    if (linkedAccount) {
-      await updateAccessToken(linkedAccount, accessToken, "Gitlab");
-      return done(null, linkedAccount);
+    return done(null, req.user);
+  } else {
+    try {
+      // Check if there is an account that has already linked to this Gitlab account
+      const linkedAccount = await AccountModel.findOne({
+        "thirdParty.username": profile.username,
+        "thirdParty.name": "Gitlab",
+      });
+      if (linkedAccount) {
+        await updateAccessToken(linkedAccount, accessToken, "Gitlab");
+        return done(null, linkedAccount);
+      }
+      const account = await AccountModel.findOne({
+        username: `Gitlab_${profile.username}`,
+      });
+      // First time login
+      if (!account) {
+        const newAccount = await registeringGitlabFirstTime(
+          profile,
+          accessToken
+        );
+        return done(null, newAccount);
+      }
+      return done(null, account);
+    } catch (e) {
+      return done(e);
     }
-    const account = await AccountModel.findOne({
-      username: `Gitlab_${profile.username}`,
-    });
-    // First time login
-    if (!account) {
-      const newAccount = await registeringGitlabFirstTime(profile, accessToken);
-      return done(null, newAccount);
-    }
-    return done(null, account);
-  } catch (e) {
-    return done(e);
   }
 }
 async function registeringGitlabFirstTime(
@@ -141,7 +176,6 @@ async function registeringGitlabFirstTime(
       {
         name: "Gitlab",
         username: profile.username,
-        url: "https://gitlab.com/",
         accessToken,
       },
     ],
@@ -184,6 +218,7 @@ function useGithubOAuth(passport: PassportStatic) {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
         callbackURL: `${process.env.SERVER_URL}/auth/github/callback`,
+        passReqToCallback: true,
       },
       authenticateUserGithub
     )
@@ -196,6 +231,7 @@ function useGitlabOAuth(passport: PassportStatic) {
         clientID: process.env.GITLAB_CLIENT_ID,
         clientSecret: process.env.GITLAB_CLIENT_SECRET,
         callbackURL: `${process.env.SERVER_URL}/auth/gitlab/callback`,
+        passReqToCallback: true,
       },
       authenticateUserGitlab
     )

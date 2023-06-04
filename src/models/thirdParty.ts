@@ -8,9 +8,6 @@ export class ThirdParty {
   @prop({ required: true, type: String })
   public username!: string;
 
-  @prop({ required: true, type: String })
-  public url!: string;
-
   @prop({ type: String })
   public accessToken?: string;
 }
