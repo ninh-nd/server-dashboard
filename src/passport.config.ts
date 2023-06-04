@@ -36,15 +36,18 @@ async function authenticateUserGithub(
 ) {
   // User is already login with local instance. Link the Github account to the local account
   if (req.user) {
-    await AccountModel.findByIdAndUpdate(req.user._id, {
-      $push: {
-        thirdParty: {
-          name: "Github",
-          username: profile.username,
-          accessToken,
+    Promise.all([
+      AccountModel.findByIdAndUpdate(req.user._id, {
+        $push: {
+          thirdParty: {
+            name: "Github",
+            username: profile.username,
+            accessToken,
+          },
         },
-      },
-    });
+      }),
+      AccountModel.findOneAndDelete({ username: `Github_${profile.username}` }),
+    ]);
     return done(null, req.user);
   } else {
     try {
@@ -125,15 +128,19 @@ async function authenticateUserGitlab(
   done: (error: any, user?: any) => void
 ) {
   if (req.user) {
-    await AccountModel.findByIdAndUpdate(req.user._id, {
-      $push: {
-        thirdParty: {
-          name: "Gitlab",
-          username: profile.username,
-          accessToken,
+    Promise.all([
+      AccountModel.findByIdAndUpdate(req.user._id, {
+        $push: {
+          thirdParty: {
+            name: "Gitlab",
+            username: profile.username,
+            accessToken,
+          },
         },
-      },
-    });
+      }),
+      AccountModel.findOneAndDelete({ username: `Gitlab_${profile.username}` }),
+    ]);
+
     return done(null, req.user);
   } else {
     try {
