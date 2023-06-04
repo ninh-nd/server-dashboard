@@ -52,7 +52,7 @@ export async function create(req: Request, res: Response) {
           },
         }
       );
-      return res.json(successResponse(null, "Project created"));
+      return res.json(successResponse(project, "Project created"));
     }
     if (type === "create") {
       // TODO
