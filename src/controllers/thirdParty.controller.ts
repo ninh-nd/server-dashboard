@@ -26,7 +26,7 @@ export async function create(req: Request, res: Response) {
   const { data } = req.body;
   try {
     const newThirdParty = await ThirdPartyModel.create(data);
-    return res.json(successResponse(newThirdParty, "Third party created"));
+    return res.json(successResponse(null, "Third party created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -43,7 +43,7 @@ export async function update(req: Request, res: Response) {
         new: true,
       }
     );
-    return res.json(successResponse(updatedThirdParty, "Third party updated"));
+    return res.json(successResponse(null, "Third party updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -53,7 +53,7 @@ export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const deletedThirdParty = await ThirdPartyModel.findByIdAndDelete(id);
-    return res.json(successResponse(deletedThirdParty, "Third party deleted"));
+    return res.json(successResponse(null, "Third party deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

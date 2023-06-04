@@ -8,6 +8,8 @@ import {
   remove,
   updateAccountPermission,
   updateGithubAccessToken,
+  disconnectFromGithub,
+  disconnectFromGitlab,
 } from "../controllers/account.controller";
 import express from "express";
 import { checkAuth, checkAdmin } from "../middlewares/auth";
@@ -32,4 +34,7 @@ accountRoute.patch(
   updateGithubAccessToken
 );
 accountRoute.get("/connect/github", passport.authenticate("github"));
+accountRoute.get("/connect/gitlab", passport.authenticate("gitlab"));
+accountRoute.patch("/disconnect/github", checkAuth, disconnectFromGithub);
+accountRoute.patch("/disconnect/gitlab", checkAuth, disconnectFromGitlab);
 export default accountRoute;

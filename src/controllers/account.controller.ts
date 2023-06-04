@@ -73,7 +73,7 @@ export async function create(req: Request, res: Response) {
     // Create user
     const name = generateRandomName();
     UserModel.create({ account: newAccount._id, name });
-    return res.json(successResponse(newAccount, "Account created"));
+    return res.json(successResponse(null, "Account created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -99,7 +99,7 @@ export async function changePassword(req: Request, res: Response) {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   // Change password
   await AccountModel.findByIdAndUpdate(id, { password: hashedPassword });
-  return res.json(successResponse(account, "Password changed"));
+  return res.json(successResponse(null, "Password changed"));
 }
 
 export async function updateAccountInfo(req: Request, res: Response) {
@@ -112,7 +112,7 @@ export async function updateAccountInfo(req: Request, res: Response) {
       new: true,
     });
     if (!account) return res.json(errorResponse("Account not found"));
-    return res.json(successResponse(account, "Account info updated"));
+    return res.json(successResponse(null, "Account info updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -125,7 +125,7 @@ export async function remove(req: Request, res: Response) {
     if (!account) {
       return res.json(errorResponse("Account not found"));
     }
-    return res.json(successResponse(account, "Account deleted"));
+    return res.json(successResponse(null, "Account deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -140,7 +140,7 @@ export async function updateAccountPermission(req: Request, res: Response) {
       permission: data,
     });
     if (!account) return res.json(errorResponse("Account not found"));
-    return res.json(successResponse(account, "Account permission updated"));
+    return res.json(successResponse(null, "Account permission updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -164,9 +164,37 @@ export async function updateGithubAccessToken(req: Request, res: Response) {
     const accountUpdated = await AccountModel.findOneAndUpdate(filter, update, {
       new: true,
     });
-    return res.json(
-      successResponse(accountUpdated, "Github access token updated")
-    );
+    return res.json(successResponse(null, "Github access token updated"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+export async function disconnectFromGithub(req: Request, res: Response) {
+  const account = req.user;
+  try {
+    await AccountModel.findByIdAndUpdate(account?._id, {
+      $pull: {
+        thirdParty: {
+          name: "Github",
+        },
+      },
+    });
+    return res.json(successResponse(null, "Github disconnected"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+export async function disconnectFromGitlab(req: Request, res: Response) {
+  const account = req.user;
+  try {
+    await AccountModel.findByIdAndUpdate(account?._id, {
+      $pull: {
+        thirdParty: {
+          name: "Gitlab",
+        },
+      },
+    });
+    return res.json(successResponse(null, "Gitlab disconnected"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

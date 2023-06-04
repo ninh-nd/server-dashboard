@@ -164,7 +164,7 @@ export async function pushNewWorkflow(req: Request, res: Response) {
         targetBranch,
         newCommit.sha
       );
-      return res.json(successResponse({}, "Successfully pushed workflow"));
+      return res.json(successResponse(null, "Successfully pushed workflow"));
     } catch (error) {
       console.log(error);
       return res.json(errorResponse("Failed to push workflow"));

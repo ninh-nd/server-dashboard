@@ -52,7 +52,7 @@ export async function create(req: Request, res: Response) {
           },
         }
       );
-      return res.json(successResponse(project, "Project created"));
+      return res.json(successResponse(null, "Project created"));
     }
     if (type === "create") {
       // TODO
@@ -72,7 +72,7 @@ export async function updateStatus(req: Request, res: Response) {
 
       { new: true }
     );
-    return res.json(successResponse(project, "Project status updated"));
+    return res.json(successResponse(null, "Project status updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -91,7 +91,7 @@ export async function addPhaseToProject(req: Request, res: Response) {
       },
       { new: true }
     );
-    return res.json(successResponse(project, "Phase added to project"));
+    return res.json(successResponse(null, "Phase added to project"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -106,7 +106,7 @@ export async function remove(req: Request, res: Response) {
       return res.json(errorResponse("Project not found"));
     }
     await ProjectModel.findByIdAndDelete(id);
-    return res.json(successResponse(project, "Project deleted"));
+    return res.json(successResponse(null, "Project deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -131,7 +131,7 @@ export async function getProjectMembers(req: Request, res: Response) {
       .populate({
         path: "account",
       });
-    return res.json(successResponse(users, "Users found"));
+    return res.json(successResponse(null, "Users found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -152,7 +152,7 @@ export async function createPhaseModel(req: Request, res: Response) {
         { $addToSet: { phaseList: newPhase._id } }
       );
     });
-    return res.json(successResponse(project, "Phase added to project"));
+    return res.json(successResponse(null, "Phase added to project"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

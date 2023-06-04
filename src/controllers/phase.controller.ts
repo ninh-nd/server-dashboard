@@ -63,9 +63,7 @@ export async function createFromTemplate(req: Request, res: Response) {
       { name: projectName },
       { phaseList: phasesCreated.map((phase) => phase._id) }
     );
-    return res.json(
-      successResponse(phasesCreated, "Phases and template created")
-    );
+    return res.json(successResponse(null, "Phases and template created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -78,7 +76,7 @@ export async function update(req: Request, res: Response) {
     const updatedPhase = await PhaseModel.findByIdAndUpdate(id, data, {
       new: true,
     });
-    return res.json(successResponse(updatedPhase, "Phase updated"));
+    return res.json(successResponse(null, "Phase updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -88,7 +86,7 @@ export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const deletedPhase = await PhaseModel.findByIdAndDelete(id);
-    return res.json(successResponse(deletedPhase, "Phase deleted"));
+    return res.json(successResponse(null, "Phase deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -103,7 +101,7 @@ export async function addTaskToPhase(req: Request, res: Response) {
 
       { new: true }
     );
-    return res.json(successResponse(updatedPhase, "Task added to phase"));
+    return res.json(successResponse(null, "Task added to phase"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -118,7 +116,7 @@ export async function removeTaskFromPhase(req: Request, res: Response) {
 
       { new: true }
     );
-    return res.json(successResponse(updatedPhase, "Task removed from phase"));
+    return res.json(successResponse(null, "Task removed from phase"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -187,7 +185,7 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       default:
         break;
     }
-    return res.json(successResponse(updatedPhase, "Artifact added to phase"));
+    return res.json(successResponse(null, "Artifact added to phase"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -200,9 +198,7 @@ export async function removeArtifactFromPhase(req: Request, res: Response) {
       $pull: { artifacts: artifactId },
     });
     await ArtifactModel.deleteOne({ _id: artifactId });
-    return res.json(
-      successResponse(updatedPhase, "Artifact removed from phase")
-    );
+    return res.json(successResponse(null, "Artifact removed from phase"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

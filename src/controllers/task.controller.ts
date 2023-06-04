@@ -61,7 +61,7 @@ export async function create(req: Request, res: Response) {
   const { data } = req.body;
   try {
     const newTask = await TaskModel.create(data);
-    return res.json(successResponse(newTask, "Task created"));
+    return res.json(successResponse(null, "Task created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -72,7 +72,7 @@ export async function update(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const task = await TaskModel.findByIdAndUpdate(id, data, { new: true });
-    return res.json(successResponse(task, "Task updated"));
+    return res.json(successResponse(null, "Task updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -82,7 +82,7 @@ export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const results = await TaskModel.findByIdAndDelete(id);
-    return res.json(successResponse(results, "Task deleted"));
+    return res.json(successResponse(null, "Task deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

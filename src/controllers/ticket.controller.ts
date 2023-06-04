@@ -50,7 +50,7 @@ export async function create(req: Request, res: Response) {
       const ticket = await TicketModel.create(o);
       // Add ticket to ticketAssigned of User
       user.ticketAssigned.push(ticket._id);
-      return res.json(successResponse(ticket, "Ticket created successfully"));
+      return res.json(successResponse(null, "Ticket created successfully"));
     } else {
       return res.json(errorResponse("Assigner does not exist"));
     }
@@ -65,7 +65,7 @@ export async function update(req: Request, res: Response) {
   try {
     const ticket = await TicketModel.findByIdAndUpdate(id, data, { new: true });
     if (ticket) {
-      return res.json(successResponse(ticket, "Ticket updated successfully"));
+      return res.json(successResponse(null, "Ticket updated successfully"));
     }
     return res.json(errorResponse("Ticket does not exist"));
   } catch (error) {

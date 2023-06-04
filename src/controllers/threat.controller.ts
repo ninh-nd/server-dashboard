@@ -20,7 +20,7 @@ export async function create(req: Request, res: Response) {
     const newThreat = await ThreatModel.create(data);
     return res.json(
       successResponse(
-        newThreat,
+        null,
         "Registered a new threat successfully. Threat is now available in the database"
       )
     );

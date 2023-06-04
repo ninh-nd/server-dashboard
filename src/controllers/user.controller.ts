@@ -25,7 +25,7 @@ export async function get(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   try {
     const user = await UserModel.create(req.body);
-    return res.json(successResponse(user, "User created"));
+    return res.json(successResponse(null, "User created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -38,7 +38,7 @@ export async function update(req: Request, res: Response) {
     const user = await UserModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    return res.json(successResponse(user, "User updated"));
+    return res.json(successResponse(null, "User updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -48,7 +48,7 @@ export async function remove(req: Request, res: Response) {
   const { id } = req.params;
   try {
     const user = await UserModel.findByIdAndDelete(id);
-    return res.json(successResponse(user, "User deleted"));
+    return res.json(successResponse(null, "User deleted"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -64,7 +64,7 @@ export async function assignTask(req: Request, res: Response) {
 
       { new: true }
     );
-    return res.json(successResponse(user, "Task assigned"));
+    return res.json(successResponse(null, "Task assigned"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
@@ -79,7 +79,7 @@ export async function addProjectIn(req: Request, res: Response) {
       { $addToSet: { projectIn: projectId } },
       { new: true }
     );
-    return res.json(successResponse(user, "Project added to user"));
+    return res.json(successResponse(null, "Project added to user"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
