@@ -1,7 +1,8 @@
-import { ArraySubDocumentType, pre, prop } from "@typegoose/typegoose";
+import { ArraySubDocumentType, post, pre, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "../utils/permission";
 import { ThirdParty } from "./thirdParty";
+import { ProjectModel, TaskModel, UserModel } from "./models";
 export interface Account extends Base {}
 @pre<Account>("validate", function () {
   if (this.role === "admin") {
@@ -23,6 +24,18 @@ export interface Account extends Base {}
     });
     this.permission = perm;
   }
+})
+// Cascade delete on linking account
+@post<Account>("findOneAndDelete", function (this, doc) {
+  if (!doc) return;
+  const deleteUser = UserModel.findOneAndDelete({
+    username: `Github_${doc.username}`,
+  });
+  const deleteProject = ProjectModel.findOneAndDelete({
+    createdBy: `Github_${doc.username}`,
+  });
+  // Optionally, delete tasks, tickets and history (TODO?)
+  Promise.all([deleteUser, deleteProject]);
 })
 export class Account {
   @prop({ required: true, type: String })
