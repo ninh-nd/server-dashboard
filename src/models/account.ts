@@ -26,7 +26,7 @@ export interface Account extends Base {}
   }
 })
 // Cascade delete on linking account
-@post<Account>("findOneAndDelete", function (this, doc) {
+@post<Account>("findOneAndDelete", async function (this, doc) {
   if (!doc) return;
   const deleteUser = UserModel.findOneAndDelete({
     username: `Github_${doc.username}`,
@@ -35,7 +35,7 @@ export interface Account extends Base {}
     createdBy: `Github_${doc.username}`,
   });
   // Optionally, delete tasks, tickets and history (TODO?)
-  Promise.all([deleteUser, deleteProject]);
+  await Promise.all([deleteUser, deleteProject]);
 })
 export class Account {
   @prop({ required: true, type: String })

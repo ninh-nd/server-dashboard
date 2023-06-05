@@ -36,7 +36,7 @@ async function authenticateUserGithub(
 ) {
   // User is already login with local instance. Link the Github account to the local account
   if (req.user) {
-    Promise.all([
+    await Promise.all([
       AccountModel.findByIdAndUpdate(req.user._id, {
         $push: {
           thirdParty: {
@@ -128,7 +128,7 @@ async function authenticateUserGitlab(
   done: (error: any, user?: any) => void
 ) {
   if (req.user) {
-    Promise.all([
+    await Promise.all([
       AccountModel.findByIdAndUpdate(req.user._id, {
         $push: {
           thirdParty: {
