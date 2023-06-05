@@ -131,7 +131,7 @@ export async function getProjectMembers(req: Request, res: Response) {
       .populate({
         path: "account",
       });
-    return res.json(successResponse(null, "Users found"));
+    return res.json(successResponse(users, "Users found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
