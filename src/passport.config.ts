@@ -36,19 +36,27 @@ async function authenticateUserGithub(
 ) {
   // User is already login with local instance. Link the Github account to the local account
   if (req.user) {
-    Promise.all([
-      AccountModel.findByIdAndUpdate(req.user._id, {
-        $push: {
-          thirdParty: {
-            name: "Github",
-            username: profile.username,
-            accessToken,
+    const githubAccount = await AccountModel.findOne({
+      username: `Github_${profile.username}`,
+    });
+    if (githubAccount) {
+      Promise.all([
+        AccountModel.findByIdAndUpdate(req.user._id, {
+          $push: {
+            thirdParty: {
+              name: "Github",
+              username: profile.username,
+              accessToken,
+            },
           },
-        },
-      }),
-      AccountModel.findOneAndDelete({ username: `Github_${profile.username}` }),
-    ]);
-    return done(null, req.user);
+        }),
+        UserModel.findOneAndDelete({ account: githubAccount._id }),
+        AccountModel.findOneAndDelete({
+          username: `Github_${profile.username}`,
+        }),
+      ]);
+      return done(null, req.user);
+    }
   } else {
     try {
       // Check if there is an account that has already linked to this Github account
@@ -128,20 +136,27 @@ async function authenticateUserGitlab(
   done: (error: any, user?: any) => void
 ) {
   if (req.user) {
-    Promise.all([
-      AccountModel.findByIdAndUpdate(req.user._id, {
-        $push: {
-          thirdParty: {
-            name: "Gitlab",
-            username: profile.username,
-            accessToken,
+    const gitlabAccount = await AccountModel.findOne({
+      username: `Gitlab_${profile.username}`,
+    });
+    if (gitlabAccount) {
+      Promise.all([
+        AccountModel.findByIdAndUpdate(req.user._id, {
+          $push: {
+            thirdParty: {
+              name: "Gitlab",
+              username: profile.username,
+              accessToken,
+            },
           },
-        },
-      }),
-      AccountModel.findOneAndDelete({ username: `Gitlab_${profile.username}` }),
-    ]);
-
-    return done(null, req.user);
+        }),
+        UserModel.findOneAndDelete({ account: gitlabAccount._id }),
+        AccountModel.findOneAndDelete({
+          username: `Gitlab_${profile.username}`,
+        }),
+      ]);
+      return done(null, req.user);
+    }
   } else {
     try {
       // Check if there is an account that has already linked to this Gitlab account
