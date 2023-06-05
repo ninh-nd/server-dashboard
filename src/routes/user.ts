@@ -15,7 +15,7 @@ userRoute.get("/project", checkAuth, getProjectIn);
 userRoute.patch("/:id/project", addProjectIn);
 userRoute.get("/", get);
 userRoute.post("/", create);
-userRoute.put("/:id", update);
+userRoute.put("/", update);
 userRoute.delete("/:id", remove);
 userRoute.patch("/:id/assignTask/:taskId", assignTask);
 export default userRoute;

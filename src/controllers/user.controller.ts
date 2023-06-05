@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserModel } from "../models/models";
+import { AccountModel, UserModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 export async function get(req: Request, res: Response) {
   // Allows to get a user by memberId or accountId
@@ -32,12 +32,17 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function update(req: Request, res: Response) {
-  const { id } = req.params;
-
+  const account = req.user;
+  const { name, email } = req.body;
+  if (!account) return res.json(errorResponse("You are not authenticated"));
   try {
-    const user = await UserModel.findByIdAndUpdate(id, req.body, {
+    const accountUpdate = AccountModel.findByIdAndUpdate(account._id, {
+      email,
+    });
+    const userUpdate = UserModel.findOneAndUpdate(account._id, name, {
       new: true,
     });
+    await Promise.all([accountUpdate, userUpdate]);
     return res.json(successResponse(null, "User updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
