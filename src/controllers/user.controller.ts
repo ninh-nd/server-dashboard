@@ -36,14 +36,14 @@ export async function update(req: Request, res: Response) {
   const { name, email } = req.body;
   if (!account) return res.json(errorResponse("You are not authenticated"));
   try {
-    const accountUpdate = AccountModel.findByIdAndUpdate(account._id, {
+    const accountUpdate = await AccountModel.findByIdAndUpdate(account._id, {
       email,
     });
-    const userUpdate = UserModel.findOneAndUpdate(account._id, name, {
-      new: true,
-    });
-    await Promise.all([accountUpdate, userUpdate]);
-    return res.json(successResponse(null, "User updated"));
+    const userUpdate = await UserModel.findOneAndUpdate(
+      { account: account._id },
+      { name }
+    );
+    return res.json(successResponse(null, "Info updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
