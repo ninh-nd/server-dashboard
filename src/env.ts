@@ -10,7 +10,7 @@ export const envVariables = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
   GITLAB_CLIENT_ID: z.string(),
   GITLAB_CLIENT_SECRET: z.string(),
-  GRYPE_URL: z.string(),
+  IMAGE_SCANNING_URL: z.string(),
 });
 
 declare global {

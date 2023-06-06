@@ -168,7 +168,7 @@ export async function addArtifactToPhase(req: Request, res: Response) {
       case "image":
         // Connect to Grype API to init scan image for vulns
         try {
-          axios.get(`${process.env.GRYPE_URL}/image`, {
+          axios.get(`${process.env.IMAGE_SCANNING_URL}/image`, {
             params: {
               name: `${name}:${version}`,
             },
