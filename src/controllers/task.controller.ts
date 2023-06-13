@@ -6,7 +6,7 @@ export async function getAll(req: Request, res: Response) {
   const { projectName, filter } = req.query;
   const decodedProjectName = decodeURIComponent(projectName as string);
   try {
-    const tasks = await TaskModel.find({ decodedProjectName });
+    const tasks = await TaskModel.find({ projectName: decodedProjectName });
     const project = await ProjectModel.findOne({
       name: decodedProjectName,
     }).populate("phaseList");
