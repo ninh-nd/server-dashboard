@@ -3,6 +3,7 @@ import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "../utils/permission";
 import { ThirdParty } from "./thirdParty";
 import { ProjectModel, TaskModel, UserModel } from "./models";
+import { Scanner } from "./scanner";
 export interface Account extends Base {}
 @pre<Account>("validate", function () {
   if (this.role === "admin") {
@@ -37,6 +38,14 @@ export interface Account extends Base {}
   // Optionally, delete tasks, tickets and history (TODO?)
   await Promise.all([deleteUser, deleteProject]);
 })
+class AccountScanner {
+  @prop()
+  public endpoint?: string;
+
+  @prop({ type: () => Scanner, required: true })
+  public details!: Scanner;
+}
+
 export class Account {
   @prop({ required: true, type: String })
   public username!: string;
@@ -49,6 +58,9 @@ export class Account {
 
   @prop({ type: () => ThirdParty, default: [], required: true })
   public thirdParty!: ArraySubDocumentType<ThirdParty>[];
+
+  @prop({ type: () => AccountScanner, required: true })
+  public scanner!: AccountScanner;
 
   @prop({
     enum: ["admin", "manager", "member"],

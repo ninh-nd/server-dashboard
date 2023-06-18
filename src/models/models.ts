@@ -12,6 +12,7 @@ import { Ticket } from "./ticket";
 import { User } from "./user";
 import { Vulnerability } from "./vulnerability";
 import { PhaseTemplate } from "./phaseTemplate";
+import { Scanner } from "./scanner";
 
 const AccountModel = getModelForClass(Account);
 const ActivityHistoryModel = getModelForClass(ActivityHistory);
@@ -26,6 +27,7 @@ const ThreatModel = getModelForClass(Threat);
 const TicketModel = getModelForClass(Ticket);
 const UserModel = getModelForClass(User);
 const VulnerabilityModel = getModelForClass(Vulnerability);
+const ScannerModel = getModelForClass(Scanner);
 
 export {
   AccountModel,
@@ -41,4 +43,5 @@ export {
   TicketModel,
   UserModel,
   VulnerabilityModel,
+  ScannerModel,
 };
