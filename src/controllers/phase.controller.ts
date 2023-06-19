@@ -138,7 +138,7 @@ export async function getTemplates(req: Request, res: Response) {
 export async function addArtifactToPhase(req: Request, res: Response) {
   const { id } = req.params;
   const { data } = req.body;
-  const { cpe, threatList, type, name, version, url } = data;
+  const { cpe, threatList, type, name, version, url: artifactUrl } = data;
   // Attempt to find CVEs if CPE exists
   if (cpe) {
     try {
@@ -166,9 +166,18 @@ export async function addArtifactToPhase(req: Request, res: Response) {
     );
     switch (type) {
       case "image":
-        // Connect to Grype API to init scan image for vulns
+        let url = `${process.env.IMAGE_SCANNING_URL}/image`;
+        // Connect to scanner to init image scanning
+        const account = req.user;
+        if (account) {
+          // Check for scanner preference
+          const someEndpoint = account.scanner.endpoint;
+          if (someEndpoint) {
+            url = `${someEndpoint}/image`;
+          }
+        }
         try {
-          axios.get(`${process.env.IMAGE_SCANNING_URL}/image`, {
+          axios.get(url, {
             params: {
               name: `${name}:${version}`,
             },
@@ -181,7 +190,7 @@ export async function addArtifactToPhase(req: Request, res: Response) {
         const accessToken = req.user?.thirdParty.find(
           (x) => x.name === "Github"
         )?.accessToken;
-        importGithubScanResult(accessToken, url);
+        importGithubScanResult(accessToken, artifactUrl);
       default:
         break;
     }

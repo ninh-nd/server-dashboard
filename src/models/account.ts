@@ -2,10 +2,11 @@ import { ArraySubDocumentType, post, pre, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "../utils/permission";
 import { ThirdParty } from "./thirdParty";
-import { ProjectModel, TaskModel, UserModel } from "./models";
+import { ProjectModel, ScannerModel, TaskModel, UserModel } from "./models";
 import { Scanner } from "./scanner";
 export interface Account extends Base {}
-@pre<Account>("validate", function () {
+@pre<Account>("validate", async function () {
+  // Set permission based on role
   if (this.role === "admin") {
     this.permission = permissions;
   } else if (this.role === "manager") {
@@ -24,6 +25,13 @@ export interface Account extends Base {}
         return false;
     });
     this.permission = perm;
+  }
+  // Set scanner preference
+  const scanner = await ScannerModel.findOne({ name: "Grype" });
+  if (scanner) {
+    this.scanner = {
+      details: scanner,
+    };
   }
 })
 // Cascade delete on linking account

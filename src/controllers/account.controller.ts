@@ -1,7 +1,12 @@
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import { Request, Response } from "express";
-import { AccountModel, ThirdPartyModel, UserModel } from "../models/models";
+import {
+  AccountModel,
+  ScannerModel,
+  ThirdPartyModel,
+  UserModel,
+} from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 import generateRandomName from "../utils/generateName";
 
@@ -146,7 +151,7 @@ export async function updateAccountPermission(req: Request, res: Response) {
   }
 }
 export async function updateGithubAccessToken(req: Request, res: Response) {
-  const { id } = req.params;
+  const id = req.user?._id;
   const { data } = req.body;
   try {
     const account = await AccountModel.findById(id);
@@ -195,6 +200,23 @@ export async function disconnectFromGitlab(req: Request, res: Response) {
       },
     });
     return res.json(successResponse(null, "Gitlab disconnected"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+export async function updateScannerPreference(req: Request, res: Response) {
+  const id = req.user?._id;
+  const { data } = req.body;
+  const { scanner: scannerName, endpoint } = data;
+  try {
+    const scanner = await ScannerModel.findOne({ name: scannerName });
+    await AccountModel.findByIdAndUpdate(id, {
+      scanner: {
+        endpoint,
+        details: scanner,
+      },
+    });
+    return res.json(successResponse(null, "Scanner preference updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
