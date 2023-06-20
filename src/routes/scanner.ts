@@ -1,6 +1,7 @@
 import express from "express";
 import {
   create,
+  get,
   getAll,
   getSampleCode,
 } from "../controllers/scanner.controller";
@@ -12,4 +13,5 @@ scannerRoute.post("/", create);
 
 scannerRoute.get("/sample", getSampleCode);
 
+scannerRoute.get("/:id", get);
 export default scannerRoute;

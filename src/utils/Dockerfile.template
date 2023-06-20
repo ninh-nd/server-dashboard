@@ -17,6 +17,12 @@ RUN npm install
 # Replace content in index.js
 RUN sed -i 's@<code_placeholder>@<code_content>@' index.js
 
+# Install Prettier to format the code
+RUN npm install -g prettier
+
+# Format the code
+RUN prettier --write .
+
 EXPOSE 3000
 
 # Start the server when the container is run

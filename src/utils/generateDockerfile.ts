@@ -24,7 +24,7 @@ const vulnInterface = `interface Vulnerability {
 }`;
 const sampleCode = `async function processImageScan(name) {
   // TODO: Replace the command with the your scanner command
-  const cmd = \`trivy image docker.io/\${name} --scanners vuln --format json --quiet\`
+  const cmd = \`trivy image docker.io/\${name} --scanners vuln --format json --quiet\`;
   const command = spawnSync(cmd, { shell: true });
   const data = command.stdout.toString();
   const validJson = replaceUnicodeEscapeSequences(data);
