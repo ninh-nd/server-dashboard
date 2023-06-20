@@ -292,13 +292,11 @@ export async function getActivityHistory(req: Request, res: Response) {
       return res.json(errorResponse("Project not found"));
     }
     const { url, _id } = project;
-    const urlObject = new URL(url);
-    if (urlObject.hostname === "github.com") {
+    if (url.includes("github")) {
       const accessToken = req.user?.thirdParty.find(
         (x) => x.name === "Github"
       )?.accessToken;
-      const owner = projectName.split("/")[0];
-      const repo = projectName.split("/")[1];
+      const [owner, repo] = projectName.split("/");
       const result = await fetchLatestFromGithub(owner, repo, accessToken, _id);
       if (result instanceof Error) {
         return res.json(
@@ -324,7 +322,7 @@ export async function getActivityHistory(req: Request, res: Response) {
       return res.json(
         successResponse(actHist, "Successfully retrieved activity history")
       );
-    } else if (urlObject.hostname === "gitlab.com") {
+    } else if (url.includes("gitlab")) {
       const accessToken = req.user?.thirdParty.find(
         (x) => x.name === "Gitlab"
       )?.accessToken;

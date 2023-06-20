@@ -7,7 +7,10 @@ authRoute.post("/login", passport.authenticate("local"), (req, res: Response) =>
   res.sendStatus(201)
 );
 authRoute.get("/logout", logout);
-authRoute.get("/github", passport.authenticate("github", { scope: ["repo"] }));
+authRoute.get(
+  "/github",
+  passport.authenticate("github", { scope: ["repo", "workflow"] })
+);
 authRoute.get(
   "/github/callback",
   passport.authenticate("github"),
