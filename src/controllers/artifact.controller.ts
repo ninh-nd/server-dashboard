@@ -5,10 +5,10 @@ import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
-  const decodedProjectName = decodeURIComponent(projectName as string);
+  console.log("projectName", projectName);
   try {
     const project = await ProjectModel.findOne({
-      name: decodedProjectName,
+      name: projectName,
     }).populate({
       path: "phaseList",
       populate: {

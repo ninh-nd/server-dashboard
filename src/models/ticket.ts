@@ -32,8 +32,8 @@ export class Ticket extends TimeStamps {
   })
   public priority!: string;
 
-  @prop({ type: () => Vulnerability, default: [] })
-  public targetedVulnerability?: ArraySubDocumentType<Vulnerability>[];
+  @prop({ type: () => Vulnerability, default: [], required: true })
+  public targetedVulnerability!: ArraySubDocumentType<Vulnerability>[];
 
   @prop({ required: true, type: String })
   public projectName!: string;
