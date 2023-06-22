@@ -1,19 +1,31 @@
-import { ArraySubDocumentType, post, pre, prop } from "@typegoose/typegoose";
+import { ArraySubDocumentType, post, prop } from "@typegoose/typegoose";
 import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 import permissions from "../utils/permission";
-import { ThirdParty } from "./thirdParty";
-import { ProjectModel, ScannerModel, TaskModel, UserModel } from "./models";
+import { AccountModel, ProjectModel, ScannerModel, UserModel } from "./models";
 import { Scanner } from "./scanner";
+import { ThirdParty } from "./thirdParty";
+class AccountScanner {
+  @prop()
+  public endpoint?: string;
+
+  @prop({ type: () => Scanner, required: true })
+  public details!: Scanner;
+}
 export interface Account extends Base {}
-@pre<Account>("validate", async function () {
+@post<Account>("save", async function () {
+  const account = await AccountModel.findOne({ username: this.username });
   // Set permission based on role
   if (this.role === "admin") {
-    this.permission = permissions;
+    await AccountModel.findByIdAndUpdate(account?._id, {
+      permission: permissions,
+    });
   } else if (this.role === "manager") {
     const perm = permissions.filter((p) => {
-      if (p.includes("user") || p.includes("account")) return false;
+      if (p.includes("user") || p.includes("account")) return true;
     });
-    this.permission = perm;
+    await AccountModel.findByIdAndUpdate(account?._id, {
+      permission: perm,
+    });
   } else {
     const perm = permissions.filter((p) => {
       if (
@@ -22,16 +34,20 @@ export interface Account extends Base {}
         p.includes("phase") ||
         p.includes("project")
       )
-        return false;
+        return true;
     });
-    this.permission = perm;
+    await AccountModel.findByIdAndUpdate(account?._id, {
+      permission: perm,
+    });
   }
   // Set scanner preference
   const scanner = await ScannerModel.findOne({ name: "Grype" });
   if (scanner) {
-    this.scanner = {
-      details: scanner,
-    };
+    await AccountModel.findByIdAndUpdate(account?._id, {
+      scanner: {
+        details: scanner,
+      },
+    });
   }
 })
 // Cascade delete on linking account
@@ -46,14 +62,6 @@ export interface Account extends Base {}
   // Optionally, delete tasks, tickets and history (TODO?)
   await Promise.all([deleteUser, deleteProject]);
 })
-class AccountScanner {
-  @prop()
-  public endpoint?: string;
-
-  @prop({ type: () => Scanner, required: true })
-  public details!: Scanner;
-}
-
 export class Account {
   @prop({ required: true, type: String })
   public username!: string;
@@ -67,7 +75,7 @@ export class Account {
   @prop({ type: () => ThirdParty, default: [], required: true })
   public thirdParty!: ArraySubDocumentType<ThirdParty>[];
 
-  @prop({ type: () => AccountScanner, required: true })
+  @prop({ type: () => AccountScanner })
   public scanner!: AccountScanner;
 
   @prop({
