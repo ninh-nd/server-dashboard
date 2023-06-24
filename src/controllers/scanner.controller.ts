@@ -8,8 +8,10 @@ import {
 } from "../utils/generateDockerfile";
 
 export async function getAll(req: Request, res: Response) {
+  const { createdBy } = req.query;
+  console.log(createdBy);
   try {
-    const scanners = await ScannerModel.find();
+    const scanners = await ScannerModel.find({ createdBy });
     return res.json(successResponse(scanners, "Scanners found"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -52,6 +54,29 @@ export async function get(req: Request, res: Response) {
   try {
     const scanner = await ScannerModel.findById(id);
     return res.json(successResponse(scanner, "Scanner found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function update(req: Request, res: Response) {
+  const { data } = req.body;
+  try {
+    await ScannerModel.findOneAndUpdate(
+      {
+        name: data.name,
+      },
+      {
+        data,
+      }
+    );
+    const dockerfile = await generateDockerfile(data.config);
+    return res.json(
+      successResponse(
+        dockerfile,
+        "Scanner updated. New Dockerfile content is copied to your clipboard!"
+      )
+    );
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

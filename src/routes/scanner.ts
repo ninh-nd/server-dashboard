@@ -4,6 +4,7 @@ import {
   get,
   getAll,
   getSampleCode,
+  update,
 } from "../controllers/scanner.controller";
 const scannerRoute = express.Router();
 
@@ -14,4 +15,6 @@ scannerRoute.post("/", create);
 scannerRoute.get("/sample", getSampleCode);
 
 scannerRoute.get("/:id", get);
+
+scannerRoute.put("/", update);
 export default scannerRoute;
