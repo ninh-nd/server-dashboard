@@ -10,6 +10,10 @@ import {
 export async function getAll(req: Request, res: Response) {
   const { createdBy } = req.query;
   try {
+    if (!createdBy) {
+      const scanners = await ScannerModel.find();
+      return res.json(successResponse(scanners, "Scanners found"));
+    }
     const scanners = await ScannerModel.find({ createdBy });
     return res.json(successResponse(scanners, "Scanners found"));
   } catch (error) {
