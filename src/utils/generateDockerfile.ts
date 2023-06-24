@@ -6,7 +6,6 @@ export async function generateDockerfile(config: Configuration) {
     "./src/utils/Dockerfile.template",
     "utf-8"
   );
-  console.log(dockerfile);
   const { installCommand, code } = config;
   // Replace install command
   dockerfile = dockerfile.replace(/<install_command>/g, installCommand);

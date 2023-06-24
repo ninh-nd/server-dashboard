@@ -5,7 +5,6 @@ import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
-  console.log("projectName", projectName);
   try {
     const project = await ProjectModel.findOne({
       name: projectName,
