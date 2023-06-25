@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ThreatModel } from "../models/models";
+import { ArtifactModel, ThreatModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getAll(req: Request, res: Response) {
@@ -28,14 +28,38 @@ export async function create(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
+// Sub-document of Artifact
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const threat = await ThreatModel.findById(id);
+    const artifact = await ArtifactModel.findOne({
+      threatList: { $elemMatch: { _id: id } },
+    });
+    const threat = artifact?.threatList?.find((threat) => threat._id == id);
     if (!threat) {
       return res.json(errorResponse(`Threat not found`));
     }
     return res.json(successResponse(threat, "Threat retrieved successfully"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+// Sub-document of Artifact
+export async function update(req: Request, res: Response) {
+  const { data } = req.body;
+  const { status, mitigation } = data;
+  const { id } = req.params;
+  try {
+    await ArtifactModel.updateMany(
+      { threatList: { $elemMatch: { _id: id } } },
+      {
+        $set: {
+          "threatList.$.status": status,
+          "threatList.$.mitigation": mitigation,
+        },
+      }
+    );
+    return res.json(successResponse(null, "Threat updated successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
