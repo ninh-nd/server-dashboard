@@ -13,6 +13,7 @@ import { User } from "./user";
 import { Vulnerability } from "./vulnerability";
 import { PhaseTemplate } from "./phaseTemplate";
 import { Scanner } from "./scanner";
+import { ResolutionHistory } from "./resolutionHistory";
 
 const AccountModel = getModelForClass(Account);
 const ActivityHistoryModel = getModelForClass(ActivityHistory);
@@ -28,7 +29,7 @@ const TicketModel = getModelForClass(Ticket);
 const UserModel = getModelForClass(User);
 const VulnerabilityModel = getModelForClass(Vulnerability);
 const ScannerModel = getModelForClass(Scanner);
-
+const ResolutionHistoryModel = getModelForClass(ResolutionHistory);
 export {
   AccountModel,
   ActivityHistoryModel,
@@ -44,4 +45,5 @@ export {
   UserModel,
   VulnerabilityModel,
   ScannerModel,
+  ResolutionHistoryModel,
 };
