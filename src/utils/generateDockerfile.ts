@@ -22,12 +22,10 @@ const vulnInterface = `interface Vulnerability {
   cwes: string[];
 }`;
 const sampleCode = `async function processImageScan(name) {
-  // TODO: Replace the command with the your scanner command
   const cmd = \`trivy image docker.io/\${name} --scanners vuln --format json --quiet\`;
   const command = spawnSync(cmd, { shell: true });
   const data = command.stdout.toString();
   const validJson = replaceUnicodeEscapeSequences(data);
-  // TODO: Write code to populate the response array with a list of vulnerability object
   try {
     const json = JSON.parse(validJson);
     let response = [];
@@ -44,7 +42,6 @@ const sampleCode = `async function processImageScan(name) {
       response.push(processed);
     });
     response = response.flat();
-    // End of processing result
     await axios.post(\`https://client-dashboard.up.railway.app/webhook/image\`, {
       eventCode: \`IMAGE_SCAN_COMPLETE\`,
       imageName: name,
