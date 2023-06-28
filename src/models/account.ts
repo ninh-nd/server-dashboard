@@ -54,7 +54,7 @@ export interface Account extends Base {}
 @post<Account>("findOneAndDelete", async function (this, doc) {
   if (!doc) return;
   const deleteUser = UserModel.findOneAndDelete({
-    username: `Github_${doc.username}`,
+    account: doc._id,
   });
   const deleteProject = ProjectModel.findOneAndDelete({
     createdBy: `Github_${doc.username}`,

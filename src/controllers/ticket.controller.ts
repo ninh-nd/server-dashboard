@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { TicketModel, UserModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
+import mongoose from "mongoose";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
@@ -37,21 +38,24 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
-  const { assigner } = data;
-  if (!assigner) {
-    return res.json(errorResponse("Assigner is required"));
-  }
+  // data.assignee is AccountId
   try {
-    const user = await UserModel.findOne({ account: assigner });
-    if (user) {
-      const o = { ...data, assigner: user._id };
-      const ticket = await TicketModel.create(o);
-      // Add ticket to ticketAssigned of User
-      user.ticketAssigned.push(ticket._id);
-      return res.json(successResponse(null, "Ticket created successfully"));
-    } else {
-      return res.json(errorResponse("Assigner does not exist"));
-    }
+    const assigner = await UserModel.findOne({ account: req.user?._id });
+    const assignee = await UserModel.findOne({ account: data.assignee });
+    const ticket = await TicketModel.create({
+      ...data,
+      assignee: assignee?._id,
+      assigner: assigner?._id,
+    });
+    await UserModel.findOneAndUpdate(
+      { account: data.assignee },
+      {
+        $push: {
+          ticketAssigned: ticket._id,
+        },
+      }
+    );
+    return res.json(successResponse(null, "Ticket created successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

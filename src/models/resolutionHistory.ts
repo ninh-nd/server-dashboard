@@ -10,6 +10,6 @@ export interface ResolutionHistory extends Base {}
 export class ResolutionHistory {
   @prop({ required: true })
   public cveId!: string;
-  @prop({ required: true })
+  @prop({ required: true, type: () => Resolution })
   public resolution!: ArraySubDocumentType<Resolution>[];
 }
