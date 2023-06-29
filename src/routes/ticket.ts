@@ -3,8 +3,8 @@ import express from "express";
 import { checkPermission } from "../middlewares/permission";
 const ticketRoute = express.Router();
 
-ticketRoute.get("/", getAll);
-ticketRoute.get("/:id", get);
+ticketRoute.get("/", checkPermission("ticket:read"), getAll);
+ticketRoute.get("/:id", checkPermission("ticket:read"), get);
 ticketRoute.post("/", checkPermission("ticket:create"), create);
-ticketRoute.patch("/:id", update);
+ticketRoute.patch("/:id", checkPermission("ticket:update"), update);
 export default ticketRoute;

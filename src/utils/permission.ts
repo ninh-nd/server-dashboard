@@ -23,8 +23,5 @@ const permissions = [
   "user:read",
   "user:update",
   "user:delete",
-  "account:read",
-  "account:update",
-  "account:delete",
 ];
 export default permissions;
