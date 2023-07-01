@@ -9,13 +9,17 @@ import {
   addArtifactToPhase,
   removeArtifactFromPhase,
   getTemplates,
+  getOneTemplate,
+  updateTemplate,
 } from "../controllers/phase.controller";
 
 const phaseRoute = express.Router();
 
-phaseRoute.get("/templates", getTemplates);
+phaseRoute.get("/template", getTemplates);
+phaseRoute.get("/template/:id", getOneTemplate);
+phaseRoute.patch("/template/:id", updateTemplate);
 phaseRoute.get("/:id", get);
-phaseRoute.post("/templates", createFromTemplate);
+phaseRoute.post("/template", createFromTemplate);
 phaseRoute.put("/:id", update);
 phaseRoute.delete("/:id", remove);
 phaseRoute.patch("/:id/task/add/:taskId", addTaskToPhase);

@@ -212,3 +212,24 @@ export async function removeArtifactFromPhase(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
+
+export async function getOneTemplate(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const template = await PhaseTemplateModel.findById(id);
+    return res.json(successResponse(template, "Phase template found"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function updateTemplate(req: Request, res: Response) {
+  const { id } = req.params;
+  const { data } = req.body;
+  try {
+    await PhaseTemplateModel.findByIdAndUpdate(id, data);
+    return res.json(successResponse(null, "Phase template updated"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
