@@ -40,7 +40,7 @@ export async function create(req: Request, res: Response) {
   // data.assignee is AccountId
   try {
     const assigner = await UserModel.findOne({ account: req.user?._id });
-    const assignee = await UserModel.findOne({ account: data.assignee });
+    const assignee = await UserModel.findById(data.assignee);
     const ticket = await TicketModel.create({
       ...data,
       assignee: assignee?._id,
