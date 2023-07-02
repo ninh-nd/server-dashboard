@@ -157,3 +157,29 @@ export async function createPhaseModel(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
+
+export async function addMemberToProject(req: Request, res: Response) {
+  const { projectName } = req.params;
+  const {
+    data: { accountId },
+  } = req.body;
+  try {
+    const project = await ProjectModel.findOne({ name: projectName });
+    if (!project) {
+      return res.json(errorResponse("Project not found"));
+    }
+    await UserModel.findOneAndUpdate(
+      {
+        account: accountId,
+      },
+      {
+        $addToSet: {
+          projectIn: project._id,
+        },
+      }
+    );
+    return res.json(successResponse(project, "Member added to project"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}

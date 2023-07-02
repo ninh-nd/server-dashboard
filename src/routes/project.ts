@@ -7,6 +7,7 @@ import {
   remove,
   getProjectMembers,
   createPhaseModel,
+  addMemberToProject,
 } from "../controllers/project.controller";
 
 const projectRoute = express.Router();
@@ -18,4 +19,5 @@ projectRoute.patch("/:projectName", updateStatus);
 projectRoute.patch("/:projectName/phase", addPhaseToProject);
 projectRoute.delete("/:projectName", remove);
 projectRoute.get("/:projectName/member", getProjectMembers);
+projectRoute.patch("/:projectName/member", addMemberToProject);
 export default projectRoute;
