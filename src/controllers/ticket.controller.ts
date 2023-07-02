@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { TicketModel, UserModel } from "../models/models";
+import { ChangeHistoryModel, TicketModel, UserModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-import mongoose from "mongoose";
 
 export async function getAll(req: Request, res: Response) {
   const { projectName } = req.query;
@@ -55,6 +54,13 @@ export async function create(req: Request, res: Response) {
         },
       }
     );
+    await ChangeHistoryModel.create({
+      objectId: ticket._id,
+      action: "create",
+      timestamp: ticket.createdAt,
+      account: req.user?._id,
+      description: `${req.user?.username} created this ticket`,
+    });
     return res.json(successResponse(null, "Ticket created successfully"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -67,10 +73,22 @@ export async function update(req: Request, res: Response) {
   try {
     const ticket = await TicketModel.findByIdAndUpdate(id, data, { new: true });
     if (ticket) {
+      // Temporarily, this function is only used for ticket status update
+      await ChangeHistoryModel.create({
+        objectId: ticket._id,
+        action: "update",
+        timestamp: ticket.updatedAt,
+        account: req.user?._id,
+        description:
+          data.status === "closed"
+            ? `${req.user?.username} closed this ticket`
+            : `${req.user?.username} reopened this ticket`,
+      });
       return res.json(successResponse(null, "Ticket updated successfully"));
     }
     return res.json(errorResponse("Ticket does not exist"));
   } catch (error) {
+    console.log(error);
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
