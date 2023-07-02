@@ -15,7 +15,7 @@ const userRoute = express.Router();
 userRoute.get("/project", checkAuth, getProjectIn);
 userRoute.get("/getAll", getAllUsers);
 userRoute.patch("/:id/project", addProjectIn);
-userRoute.get("/");
+userRoute.get("/", get);
 userRoute.post("/", create);
 userRoute.patch("/", update);
 userRoute.delete("/:id", remove);
