@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ScannerModel } from "../models/models";
+import { ChangeHistoryModel, ScannerModel } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 import {
   generateDockerfile,
@@ -28,12 +28,19 @@ export async function create(req: Request, res: Response) {
     if (scanner) {
       return res.json(errorResponse("Scanner already exists"));
     }
-    await ScannerModel.create({
+    const newScanner = await ScannerModel.create({
       name: data.name,
       createdBy: req.user?.username,
       config: data.config,
     });
     const dockerfile = await generateDockerfile(data.config);
+    await ChangeHistoryModel.create({
+      objectId: newScanner._id,
+      action: "create",
+      timestamp: Date.now(),
+      description: `Account ${req.user?.username} create a new scanner`,
+      account: req.user?._id,
+    });
     return res.json(successResponse(dockerfile, "Scanner created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

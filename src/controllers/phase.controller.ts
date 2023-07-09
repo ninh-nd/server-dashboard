@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   ArtifactModel,
+  ChangeHistoryModel,
   PhaseModel,
   PhaseTemplateModel,
   ProjectModel,
@@ -40,6 +41,13 @@ export async function createFromTemplate(req: Request, res: Response) {
         ...data,
         createdBy: username,
       });
+      await ChangeHistoryModel.create({
+        objectId: newTemplate._id,
+        action: "create",
+        timestamp: Date.now(),
+        description: `Account ${req.user?.username} creates a new phase template id ${newTemplate._id}`,
+        account: req.user?._id,
+      });
     }
     // Create new phases
     const phasesWithoutIds = phases.map(
@@ -63,6 +71,7 @@ export async function createFromTemplate(req: Request, res: Response) {
       { name: projectName },
       { phaseList: phasesCreated.map((phase) => phase._id) }
     );
+
     return res.json(successResponse(null, "Phases and template created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -228,6 +237,13 @@ export async function updateTemplate(req: Request, res: Response) {
   const { data } = req.body;
   try {
     await PhaseTemplateModel.findByIdAndUpdate(id, data);
+    await ChangeHistoryModel.create({
+      objectId: id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${req.user?.username} updates phase template id ${id}`,
+      account: req.user?._id,
+    });
     return res.json(successResponse(null, "Phase template updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));

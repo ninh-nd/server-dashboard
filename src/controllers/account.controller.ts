@@ -3,6 +3,7 @@ import "dotenv/config";
 import { Request, Response } from "express";
 import {
   AccountModel,
+  ChangeHistoryModel,
   ScannerModel,
   ThirdPartyModel,
   UserModel,
@@ -77,7 +78,14 @@ export async function create(req: Request, res: Response) {
     });
     // Create user
     const name = generateRandomName();
-    UserModel.create({ account: newAccount._id, name });
+    await UserModel.create({ account: newAccount._id, name });
+    await ChangeHistoryModel.create({
+      objectId: newAccount._id,
+      action: "create",
+      timestamp: Date.now(),
+      description: `Account ${newAccount.username} is created`,
+      account: newAccount._id,
+    });
     return res.json(successResponse(null, "Account created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -117,6 +125,13 @@ export async function updateAccountInfo(req: Request, res: Response) {
       new: true,
     });
     if (!account) return res.json(errorResponse("Account not found"));
+    await ChangeHistoryModel.create({
+      objectId: account._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${account.username} is updated`,
+      account: req.user?._id,
+    });
     return res.json(successResponse(null, "Account info updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -145,6 +160,13 @@ export async function updateAccountPermission(req: Request, res: Response) {
       permission: data,
     });
     if (!account) return res.json(errorResponse("Account not found"));
+    await ChangeHistoryModel.create({
+      objectId: account._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${account.username} permission is updated`,
+      account: req.user?._id,
+    });
     return res.json(successResponse(null, "Account permission updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -169,6 +191,13 @@ export async function updateGithubAccessToken(req: Request, res: Response) {
     const accountUpdated = await AccountModel.findOneAndUpdate(filter, update, {
       new: true,
     });
+    await ChangeHistoryModel.create({
+      objectId: account._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${account.username} Github token is updated`,
+      account: req.user?._id,
+    });
     return res.json(successResponse(null, "Github access token updated"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
@@ -177,12 +206,19 @@ export async function updateGithubAccessToken(req: Request, res: Response) {
 export async function disconnectFromGithub(req: Request, res: Response) {
   const account = req.user;
   try {
-    await AccountModel.findByIdAndUpdate(account?._id, {
+    const acc = await AccountModel.findByIdAndUpdate(account?._id, {
       $pull: {
         thirdParty: {
           name: "Github",
         },
       },
+    });
+    await ChangeHistoryModel.create({
+      objectId: acc?._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${acc?.username} disconnects from Github`,
+      account: req.user?._id,
     });
     return res.json(successResponse(null, "Github disconnected"));
   } catch (error) {
@@ -192,12 +228,19 @@ export async function disconnectFromGithub(req: Request, res: Response) {
 export async function disconnectFromGitlab(req: Request, res: Response) {
   const account = req.user;
   try {
-    await AccountModel.findByIdAndUpdate(account?._id, {
+    const acc = await AccountModel.findByIdAndUpdate(account?._id, {
       $pull: {
         thirdParty: {
           name: "Gitlab",
         },
       },
+    });
+    await ChangeHistoryModel.create({
+      objectId: acc?._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${acc?.username} disconnects from Gitlab`,
+      account: req.user?._id,
     });
     return res.json(successResponse(null, "Gitlab disconnected"));
   } catch (error) {
@@ -210,11 +253,18 @@ export async function updateScannerPreference(req: Request, res: Response) {
   const { scanner: scannerName, endpoint } = data;
   try {
     const scanner = await ScannerModel.findOne({ name: scannerName });
-    await AccountModel.findByIdAndUpdate(id, {
+    const acc = await AccountModel.findByIdAndUpdate(id, {
       scanner: {
         endpoint,
         details: scanner,
       },
+    });
+    await ChangeHistoryModel.create({
+      objectId: acc?._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${acc?.username} scanner preference is updated`,
+      account: req.user?._id,
     });
     return res.json(successResponse(null, "Scanner preference updated"));
   } catch (error) {

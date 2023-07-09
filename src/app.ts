@@ -25,7 +25,7 @@ import cweRoute from "./routes/cwe";
 import webhookRoute from "./routes/webhook";
 import workflowRoute from "./routes/workflow";
 import scannerRoute from "./routes/scanner";
-import changeHistoryRoute from "./routes/resolutionHistory";
+import changeHistoryRoute from "./routes/changeHistory";
 envVariables.parse(process.env);
 const app = express();
 app.use(express.json());
