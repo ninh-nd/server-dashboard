@@ -13,9 +13,6 @@ export class User {
   @prop({ ref: () => Account, required: true })
   public account!: Ref<Account>;
 
-  @prop({ type: String })
-  public company?: string;
-
   @prop({ ref: () => Task, default: [] })
   public taskAssigned!: Ref<Task>[];
 

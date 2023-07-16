@@ -18,10 +18,4 @@ export class Phase {
 
   @prop({ ref: () => Artifact, default: [] })
   public artifacts?: Ref<Artifact>[];
-
-  @prop({ type: String })
-  public createdBy?: string;
-
-  @prop({ type: String })
-  public updatedBy?: string;
 }

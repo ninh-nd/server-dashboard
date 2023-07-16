@@ -16,5 +16,8 @@ export class Scanner {
   public createdBy!: string;
 
   @prop()
+  public updatedBy?: string;
+
+  @prop()
   public config?: Configuration;
 }
