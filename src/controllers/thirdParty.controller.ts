@@ -108,7 +108,7 @@ export async function getReposFromGitlab(req: Request, res: Response) {
       return res.json(errorResponse("No Gitlab access token"));
     }
     const api = new Gitlab({
-      token: accessToken,
+      oauthToken: accessToken,
     });
     const repos = await api.Projects.all({
       owned: true,

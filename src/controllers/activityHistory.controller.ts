@@ -254,7 +254,7 @@ async function fetchLatestFromGitlab(
   const cache = await redis.get(`gitlab-${projectName}`);
   if (cache) return;
   const api = new Gitlab({
-    token: accessToken,
+    oauthToken: accessToken,
   });
   redis.set(`gitlab-${projectName}`, Date.now().toString(), "EX", 60);
   const processedCommitData = await getCommitsGitlab(

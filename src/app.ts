@@ -68,7 +68,7 @@ app.use("/thirdParty", thirdPartyRoute);
 app.use("/user", userRoute);
 app.use("/phase", phaseRoute);
 app.use("/project", projectRoute);
-app.use("/activity/github", activityHistoryRoute);
+app.use("/activity", activityHistoryRoute);
 app.use("/vuln", vulnRoute);
 app.use("/threat", threatRoute);
 app.use("/artifact", artifactRoute);

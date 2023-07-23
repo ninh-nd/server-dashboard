@@ -5,13 +5,13 @@ import { Gitlab } from "@gitbeaker/rest";
 import { ProjectModel } from "../models/models";
 import { GitlabType, OctokitType } from "..";
 export async function getWorkflows(req: Request, res: Response) {
-  const { projectName } = req.query;
+  const { projectName } = req.query as { projectName: string };
   const project = await ProjectModel.findOne({ name: projectName });
   if (!project) {
     return res.json(errorResponse("Project not found"));
   }
   const { url } = project;
-  const [owner, repo] = (projectName as string).split("/");
+  const [owner, repo] = projectName.split("/");
   if (url.includes("github")) {
     const accessToken = req.user?.thirdParty.find(
       (x) => x.name === "Github"
@@ -32,14 +32,15 @@ export async function getWorkflows(req: Request, res: Response) {
       (x) => x.name === "Gitlab"
     )?.accessToken;
     const api = new Gitlab({
-      token: accessToken,
+      oauthToken: accessToken,
     });
     try {
-      let workflows = await getGitlabWorkflows(api, owner, repo);
+      let workflows = await getGitlabWorkflows(api, projectName);
       return res.json(
         successResponse(workflows, "Successfully fetched workflows")
       );
     } catch (error) {
+      console.log(error);
       return res.json(errorResponse("Failed to fetch workflows"));
     }
   }
@@ -75,17 +76,12 @@ async function getGithubWorkflows(
 }
 
 // Only support gitlab-ci.yml for now
-async function getGitlabWorkflows(
-  api: GitlabType,
-  owner: string,
-  repo: string
-) {
+async function getGitlabWorkflows(api: GitlabType, projectName: string) {
   // Create an URL encoded path for the project to use for requests
-  const encodedPath = encodeURIComponent(`${owner}/${repo}`);
-  const projectData = await api.Projects.show(encodedPath);
+  const projectData = await api.Projects.show(projectName);
   const defaultBranch = projectData.defaultBranch;
   const data = await api.RepositoryFiles.showRaw(
-    encodedPath,
+    projectName,
     ".gitlab-ci.yml",
     defaultBranch as string
   );
@@ -120,7 +116,7 @@ export async function pushNewWorkflow(req: Request, res: Response) {
       });
       const defaultBranch = repoData.default_branch;
       const targetBranch = branch || defaultBranch;
-      const branchExists = await checkBranchExists(
+      const branchExists = await checkBranchExistsGithub(
         octokit,
         owner,
         repo,
@@ -128,7 +124,13 @@ export async function pushNewWorkflow(req: Request, res: Response) {
       );
       if (!branchExists) {
         // Create the branch if it doesn't exist
-        await createBranch(octokit, owner, repo, targetBranch, defaultBranch);
+        await createBranchGithub(
+          octokit,
+          owner,
+          repo,
+          targetBranch,
+          defaultBranch
+        );
       }
       const getFileSha = (await octokit.rest.repos.getContent({
         owner,
@@ -150,14 +152,47 @@ export async function pushNewWorkflow(req: Request, res: Response) {
       console.log(error);
       return res.json(errorResponse("Failed to push workflow"));
     }
+  } else if (url.includes("gitlab")) {
+    const accessToken = req.user?.thirdParty.find(
+      (x) => x.name === "Gitlab"
+    )?.accessToken;
+    const api = new Gitlab({
+      oauthToken: accessToken,
+    });
+    try {
+      const projectData = await api.Projects.show(projectName);
+      const defaultBranch = projectData.default_branch;
+      const targetBranch = branch || defaultBranch;
+      const branchExists = await checkBranchExistsGitlab(
+        api,
+        projectName,
+        targetBranch
+      );
+      if (!branchExists) {
+        // Create the branch if it doesn't exist
+        await createBranchGitlab(api, projectName, targetBranch, defaultBranch);
+      }
+      await api.RepositoryFiles.edit(
+        projectName,
+        data.path,
+        targetBranch,
+        data.content,
+        message
+      );
+      return res.json(successResponse(null, "Successfully pushed workflow"));
+    } catch (error) {
+      console.log(error);
+      return res.json(errorResponse("Failed to push workflow"));
+    }
   }
 }
-const checkBranchExists = async (
+
+async function checkBranchExistsGithub(
   octo: OctokitType,
   org: string,
   repo: string,
   branch: string
-) => {
+) {
   try {
     await octo.rest.repos.getBranch({
       owner: org,
@@ -171,15 +206,34 @@ const checkBranchExists = async (
     }
     throw error; // Other error occurred
   }
-};
-
-const createBranch = async (
+}
+async function checkBranchExistsGitlab(
+  api: GitlabType,
+  projectId: string,
+  branch: string
+) {
+  try {
+    await api.Branches.show(projectId, branch);
+    return true; // Branch exists
+  } catch (error: any) {
+    return false;
+  }
+}
+async function createBranchGitlab(
+  api: GitlabType,
+  projectId: string,
+  branch: string,
+  baseBranch: string
+) {
+  await api.Branches.create(projectId, branch, baseBranch);
+}
+async function createBranchGithub(
   octo: OctokitType,
   org: string,
   repo: string,
   branch: string,
   baseBranch: string
-) => {
+) {
   const { data: baseRefData } = await octo.rest.git.getRef({
     owner: org,
     repo,
@@ -193,4 +247,4 @@ const createBranch = async (
     ref: `refs/heads/${branch}`,
     sha: baseCommitSha,
   });
-};
+}

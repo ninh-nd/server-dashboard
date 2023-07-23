@@ -16,12 +16,7 @@ authRoute.get(
   passport.authenticate("github"),
   redirectToHomePage
 );
-authRoute.get(
-  "/gitlab",
-  passport.authenticate("gitlab", {
-    scope: ["api"],
-  })
-);
+authRoute.get("/gitlab", passport.authenticate("gitlab"));
 authRoute.get(
   "/gitlab/callback",
   passport.authenticate("gitlab"),
