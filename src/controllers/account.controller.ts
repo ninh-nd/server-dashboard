@@ -203,6 +203,37 @@ export async function updateGithubAccessToken(req: Request, res: Response) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
 }
+export async function updateGitlabAccessToken(req: Request, res: Response) {
+  const id = req.user?._id;
+  const { data } = req.body;
+  try {
+    const account = await AccountModel.findById(id);
+    if (!account) return res.json(errorResponse("Account not found"));
+    // Find the third party in the account that has the name of "Github" and then update the access token
+    const filter = {
+      _id: id,
+      "thirdParty.name": "Gitlab",
+    };
+    const update = {
+      $set: {
+        "thirdParty.$.accessToken": data,
+      },
+    };
+    const accountUpdated = await AccountModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+    await ChangeHistoryModel.create({
+      objectId: account._id,
+      action: "update",
+      timestamp: Date.now(),
+      description: `Account ${account.username} Gitlab token is updated`,
+      account: req.user?._id,
+    });
+    return res.json(successResponse(null, "Gitlab access token updated"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
 export async function disconnectFromGithub(req: Request, res: Response) {
   const account = req.user;
   try {

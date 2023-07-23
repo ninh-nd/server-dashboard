@@ -78,25 +78,6 @@ export async function updateStatus(req: Request, res: Response) {
   }
 }
 
-export async function addPhaseToProject(req: Request, res: Response) {
-  try {
-    const { projectName } = req.params;
-    const { phaseId } = req.body;
-    const project = await ProjectModel.findOneAndUpdate(
-      { name: projectName },
-      {
-        $addToSet: {
-          phaseList: phaseId,
-        },
-      },
-      { new: true }
-    );
-    return res.json(successResponse(null, "Phase added to project"));
-  } catch (error) {
-    return res.json(errorResponse(`Internal server error: ${error}`));
-  }
-}
-
 export async function remove(req: Request, res: Response) {
   const { projectName } = req.params;
   const { id } = req.params;
@@ -132,27 +113,6 @@ export async function getProjectMembers(req: Request, res: Response) {
         path: "account",
       });
     return res.json(successResponse(users, "Users found"));
-  } catch (error) {
-    return res.json(errorResponse(`Internal server error: ${error}`));
-  }
-}
-
-export async function createPhaseModel(req: Request, res: Response) {
-  const { projectName } = req.params;
-  const { data } = req.body; // Phase model, contains an array of phase with name and description
-  try {
-    const project = await ProjectModel.findOne({ name: projectName });
-    if (!project) {
-      return res.json(errorResponse("Project not found"));
-    }
-    data.forEach(async (phase: Phase) => {
-      const newPhase = await PhaseModel.create(phase);
-      await ProjectModel.findOneAndUpdate(
-        { name: projectName },
-        { $addToSet: { phaseList: newPhase._id } }
-      );
-    });
-    return res.json(successResponse(null, "Phase added to project"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }

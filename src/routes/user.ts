@@ -19,5 +19,5 @@ userRoute.get("/", get);
 userRoute.post("/", create);
 userRoute.patch("/", update);
 userRoute.delete("/:id", remove);
-userRoute.patch("/:id/assignTask/:taskId", assignTask);
+userRoute.patch("/:id/assign/:taskId", assignTask);
 export default userRoute;
