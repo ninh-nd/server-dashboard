@@ -12,6 +12,8 @@ import redis from "../redis";
 import { errorResponse, successResponse } from "../utils/responseFormat";
 import { GitlabType, OctokitType } from "..";
 import { Gitlab } from "@gitbeaker/rest";
+import { safeGithubClient, safeGitlabClient } from "../utils/token";
+import { Types } from "mongoose";
 async function getPullRequestsGitlab(
   api: GitlabType,
   projectName: string,
@@ -146,17 +148,15 @@ async function getCommitsGitlab(
 async function fetchLatestFromGithub(
   owner: string | undefined,
   repo: string | undefined,
-  accessToken: string | undefined,
+  accountId: Types.ObjectId | undefined,
   projectId: Ref<Project>
 ) {
-  if (!owner || !repo || !accessToken) {
-    return new Error("Missing owner, repo or access token");
+  if (!owner || !repo) {
+    return new Error("Missing owner, repo");
   }
   const cache = await redis.get(`github-${repo}`);
   if (cache) return;
-  const octokit = new MyOctokit({
-    auth: accessToken,
-  });
+  const octokit = await safeGithubClient(accountId);
   redis.set(`github-${repo}`, Date.now().toString(), "EX", 60);
   const processedPrData = await getPullRequestsGithub(
     octokit,
@@ -245,17 +245,15 @@ async function insertDataToDatabase(
 }
 async function fetchLatestFromGitlab(
   projectName: string,
-  accessToken: string | undefined,
+  accountId: Types.ObjectId | undefined,
   projectId: Ref<Project>
 ) {
-  if (!projectName || !accessToken) {
-    return new Error("Missing encodedUrl or access token");
+  if (!projectName) {
+    return new Error("Missing encodedUrl");
   }
   const cache = await redis.get(`gitlab-${projectName}`);
   if (cache) return;
-  const api = new Gitlab({
-    oauthToken: accessToken,
-  });
+  const api = await safeGitlabClient(accountId);
   redis.set(`gitlab-${projectName}`, Date.now().toString(), "EX", 60);
   const processedCommitData = await getCommitsGitlab(
     api,
@@ -293,11 +291,13 @@ export async function getActivityHistory(req: Request, res: Response) {
     }
     const { url, _id } = project;
     if (url.includes("github")) {
-      const accessToken = req.user?.thirdParty.find(
-        (x) => x.name === "Github"
-      )?.accessToken;
       const [owner, repo] = projectName.split("/");
-      const result = await fetchLatestFromGithub(owner, repo, accessToken, _id);
+      const result = await fetchLatestFromGithub(
+        owner,
+        repo,
+        req.user?._id,
+        _id
+      );
       if (result instanceof Error) {
         return res.json(
           errorResponse(
@@ -323,10 +323,11 @@ export async function getActivityHistory(req: Request, res: Response) {
         successResponse(actHist, "Successfully retrieved activity history")
       );
     } else if (url.includes("gitlab")) {
-      const accessToken = req.user?.thirdParty.find(
-        (x) => x.name === "Gitlab"
-      )?.accessToken;
-      const result = await fetchLatestFromGitlab(projectName, accessToken, _id);
+      const result = await fetchLatestFromGitlab(
+        projectName,
+        req.user?._id,
+        _id
+      );
       if (result instanceof Error) {
         return res.json(
           errorResponse(

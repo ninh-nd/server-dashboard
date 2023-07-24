@@ -1,7 +1,10 @@
 import axios from "axios";
-import { ArtifactModel } from "../models/models";
+import { ArtifactModel, ProjectModel } from "../models/models";
 import MyOctokit from "../octokit";
 import { Result } from "./vulnType";
+import { Gitlab } from "@gitbeaker/rest";
+import { Types } from "mongoose";
+import { safeGithubClient, safeGitlabClient } from "./token";
 function resolveData(data: Result) {
   if (data.totalResults === 0) return [];
   return data.vulnerabilities.map((v) => {
@@ -38,13 +41,11 @@ interface OverrideType {
   security_severity_level?: string | undefined;
 }
 export async function importGithubScanResult(
-  accessToken: string | undefined,
+  accountId: Types.ObjectId | undefined,
   url: string
 ) {
   const [owner, repo] = url.split("/").slice(-2);
-  const octokit = new MyOctokit({
-    auth: accessToken,
-  });
+  const octokit = await safeGithubClient(accountId);
   try {
     const { data } = await octokit.rest.codeScanning.listAlertsForRepo({
       owner,
@@ -86,6 +87,39 @@ export async function importGithubScanResult(
     );
     return true;
   } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+export async function importGitlabScanResult(
+  accountId: Types.ObjectId | undefined,
+  url: string
+) {
+  const api = await safeGitlabClient(accountId);
+  try {
+    const project = await ProjectModel.findOne({ url });
+    if (!project) return false;
+    const projectId = encodeURIComponent(project.name);
+    const data = await api.ProjectVulnerabilities.all(projectId);
+    const vulns = data.map((v) => ({
+      cveId: v.id,
+      description: v.description,
+      severity: v.severity,
+      cwes: [],
+    }));
+    await ArtifactModel.updateOne(
+      {
+        url,
+      },
+      {
+        $set: {
+          vulnerabilityList: vulns,
+        },
+      }
+    );
+    return true;
+  } catch (error) {
+    console.log(error);
     return false;
   }
 }

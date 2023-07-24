@@ -3,6 +3,7 @@ import { ThirdPartyModel } from "../models/models";
 import MyOctokit from "../octokit";
 import { Gitlab } from "@gitbeaker/rest";
 import { errorResponse, successResponse } from "../utils/responseFormat";
+import { safeGithubClient, safeGitlabClient } from "../utils/token";
 export async function getAll(req: Request, res: Response) {
   try {
     const thirdParties = await ThirdPartyModel.find();
@@ -69,13 +70,8 @@ export async function getReposFromGithub(req: Request, res: Response) {
     if (!thirdParty) {
       return res.json(errorResponse("No Github account linked"));
     }
-    const { username, accessToken } = thirdParty;
-    if (!accessToken) {
-      return res.json(errorResponse("No Github access token"));
-    }
-    const octokit = new MyOctokit({
-      auth: accessToken,
-    });
+    const { username } = thirdParty;
+    const octokit = await safeGithubClient(account._id);
     const repos = await octokit.rest.repos.listForAuthenticatedUser({
       username,
       type: "owner",
@@ -107,9 +103,7 @@ export async function getReposFromGitlab(req: Request, res: Response) {
     if (!accessToken) {
       return res.json(errorResponse("No Gitlab access token"));
     }
-    const api = new Gitlab({
-      oauthToken: accessToken,
-    });
+    const api = await safeGitlabClient(account._id);
     const repos = await api.Projects.all({
       owned: true,
       orderBy: "name",

@@ -11,13 +11,17 @@ import {
   getTemplates,
   getOneTemplate,
   updateTemplate,
+  deleteTemplate,
+  createPhaseTemplate,
 } from "../controllers/phase.controller";
 
 const phaseRoute = express.Router();
 
 phaseRoute.get("/template", getTemplates);
+phaseRoute.post("/template", createPhaseTemplate);
 phaseRoute.get("/template/:id", getOneTemplate);
 phaseRoute.patch("/template/:id", updateTemplate);
+phaseRoute.delete("/template/:id", deleteTemplate);
 phaseRoute.get("/:id", get);
 phaseRoute.post("/template", createFromTemplate);
 phaseRoute.put("/:id", update);

@@ -43,6 +43,7 @@ async function authenticateUserGithub(
             name: "Github",
             username: profile.username,
             accessToken,
+            refreshToken,
           },
         },
       }),
@@ -57,7 +58,7 @@ async function authenticateUserGithub(
         "thirdParty.name": "Github",
       });
       if (linkedAccount) {
-        await updateAccessToken(linkedAccount, accessToken, "Github");
+        await updateToken(linkedAccount, accessToken, refreshToken, "Github");
         return done(null, linkedAccount);
       }
       const account = await AccountModel.findOne({
@@ -67,7 +68,8 @@ async function authenticateUserGithub(
       if (!account) {
         const newAccount = await registeringGithubFirstTime(
           profile,
-          accessToken
+          accessToken,
+          refreshToken
         );
         return done(null, newAccount);
       }
@@ -77,9 +79,10 @@ async function authenticateUserGithub(
     }
   }
 }
-async function updateAccessToken(
+async function updateToken(
   linkedAccount: any,
   accessToken: string,
+  refreshToken: string,
   vendor: "Github" | "Gitlab"
 ) {
   const filter = {
@@ -89,6 +92,7 @@ async function updateAccessToken(
   const update = {
     $set: {
       "thirdParty.$.accessToken": accessToken,
+      "thirdParty.$.refreshToken": refreshToken,
     },
   };
   await AccountModel.findOneAndUpdate(filter, update, {
@@ -98,7 +102,8 @@ async function updateAccessToken(
 
 async function registeringGithubFirstTime(
   profile: Github.Profile,
-  accessToken: string
+  accessToken: string,
+  refreshToken: string
 ) {
   const password = await bcrypt.hash(`Github_${profile.username}`, 10);
   const newAccount = await AccountModel.create({
@@ -110,6 +115,7 @@ async function registeringGithubFirstTime(
         name: "Github",
         username: profile.username,
         accessToken,
+        refreshToken,
       },
     ],
   });
@@ -135,6 +141,7 @@ async function authenticateUserGitlab(
             name: "Gitlab",
             username: profile.username,
             accessToken,
+            refreshToken,
           },
         },
       }),
@@ -150,7 +157,7 @@ async function authenticateUserGitlab(
         "thirdParty.name": "Gitlab",
       });
       if (linkedAccount) {
-        await updateAccessToken(linkedAccount, accessToken, "Gitlab");
+        await updateToken(linkedAccount, accessToken, refreshToken, "Gitlab");
         return done(null, linkedAccount);
       }
       const account = await AccountModel.findOne({
@@ -160,7 +167,8 @@ async function authenticateUserGitlab(
       if (!account) {
         const newAccount = await registeringGitlabFirstTime(
           profile,
-          accessToken
+          accessToken,
+          refreshToken
         );
         return done(null, newAccount);
       }
@@ -172,7 +180,8 @@ async function authenticateUserGitlab(
 }
 async function registeringGitlabFirstTime(
   profile: GitlabProfile,
-  accessToken: string
+  accessToken: string,
+  refreshToken: string
 ) {
   const password = await bcrypt.hash(`Gitlab${profile.username}`, 10);
   const newAccount = await AccountModel.create({
@@ -184,6 +193,7 @@ async function registeringGitlabFirstTime(
         name: "Gitlab",
         username: profile.username,
         accessToken,
+        refreshToken,
       },
     ],
   });

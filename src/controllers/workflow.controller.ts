@@ -4,6 +4,7 @@ import { errorResponse, successResponse } from "../utils/responseFormat";
 import { Gitlab } from "@gitbeaker/rest";
 import { ProjectModel } from "../models/models";
 import { GitlabType, OctokitType } from "..";
+import { safeGithubClient, safeGitlabClient } from "../utils/token";
 export async function getWorkflows(req: Request, res: Response) {
   const { projectName } = req.query as { projectName: string };
   const project = await ProjectModel.findOne({ name: projectName });
@@ -28,12 +29,7 @@ export async function getWorkflows(req: Request, res: Response) {
       return res.json(errorResponse("Failed to fetch workflows"));
     }
   } else if (url.includes("gitlab")) {
-    const accessToken = req.user?.thirdParty.find(
-      (x) => x.name === "Gitlab"
-    )?.accessToken;
-    const api = new Gitlab({
-      oauthToken: accessToken,
-    });
+    const api = await safeGitlabClient(req.user?._id);
     try {
       let workflows = await getGitlabWorkflows(api, projectName);
       return res.json(
@@ -103,12 +99,7 @@ export async function pushNewWorkflow(req: Request, res: Response) {
   const { url } = project;
   const [owner, repo] = projectName.split("/");
   if (url.includes("github")) {
-    const accessToken = req.user?.thirdParty.find(
-      (x) => x.name === "Github"
-    )?.accessToken;
-    const octokit = new MyOctokit({
-      auth: accessToken,
-    });
+    const octokit = await safeGithubClient(req.user?._id);
     try {
       const { data: repoData } = await octokit.rest.repos.get({
         owner,
@@ -156,9 +147,7 @@ export async function pushNewWorkflow(req: Request, res: Response) {
     const accessToken = req.user?.thirdParty.find(
       (x) => x.name === "Gitlab"
     )?.accessToken;
-    const api = new Gitlab({
-      oauthToken: accessToken,
-    });
+    const api = await safeGitlabClient(req.user?._id);
     try {
       const projectData = await api.Projects.show(projectName);
       const defaultBranch = projectData.default_branch;

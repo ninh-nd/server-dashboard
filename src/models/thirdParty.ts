@@ -10,4 +10,7 @@ export class ThirdParty {
 
   @prop()
   public accessToken?: string;
+
+  @prop()
+  public refreshToken?: string;
 }

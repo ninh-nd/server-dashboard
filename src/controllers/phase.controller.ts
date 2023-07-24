@@ -8,7 +8,11 @@ import {
   ThreatModel,
 } from "../models/models";
 import { errorResponse, successResponse } from "../utils/responseFormat";
-import { fetchVulnsFromNVD, importGithubScanResult } from "../utils/vuln";
+import {
+  fetchVulnsFromNVD,
+  importGithubScanResult,
+  importGitlabScanResult,
+} from "../utils/vuln";
 import axios from "axios";
 export async function get(req: Request, res: Response) {
   const { id } = req.params;
@@ -196,10 +200,12 @@ export async function addArtifactToPhase(req: Request, res: Response) {
         }
         break;
       case "source code":
-        const accessToken = req.user?.thirdParty.find(
-          (x) => x.name === "Github"
-        )?.accessToken;
-        importGithubScanResult(accessToken, artifactUrl);
+        if (artifactUrl.includes("github")) {
+          await importGithubScanResult(req.user?._id, artifactUrl);
+        } else {
+          await importGitlabScanResult(req.user?._id, artifactUrl);
+        }
+        break;
       default:
         break;
     }
@@ -245,6 +251,43 @@ export async function updateTemplate(req: Request, res: Response) {
       account: req.user?._id,
     });
     return res.json(successResponse(null, "Phase template updated"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function deleteTemplate(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    await PhaseTemplateModel.findByIdAndDelete(id);
+    await ChangeHistoryModel.create({
+      objectId: id,
+      action: "delete",
+      timestamp: Date.now(),
+      description: `Account ${req.user?.username} deletes phase template id ${id}`,
+      account: req.user?._id,
+    });
+    return res.json(successResponse(null, "Phase template deleted"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
+  }
+}
+
+export async function createPhaseTemplate(req: Request, res: Response) {
+  const { data } = req.body;
+  try {
+    const newTemplate = await PhaseTemplateModel.create({
+      ...data,
+      createdBy: req.user?.username,
+    });
+    await ChangeHistoryModel.create({
+      objectId: newTemplate._id,
+      action: "create",
+      timestamp: Date.now(),
+      description: `Account ${req.user?.username} creates a new phase template id ${newTemplate._id}`,
+      account: req.user?._id,
+    });
+    return res.json(successResponse(null, "Phase template created"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
   }
