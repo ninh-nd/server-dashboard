@@ -24,8 +24,8 @@ accountRoute.post("/reg", create);
 accountRoute.patch("/thirdParty/github", checkAuth, updateGithubAccessToken);
 accountRoute.patch("/thirdParty/gitlab", checkAuth, updateGitlabAccessToken);
 accountRoute.patch("/scanner", checkAuth, updateScannerPreference);
+accountRoute.patch("/password", changePassword);
 accountRoute.patch("/:id", checkAuth, updateAccountInfo);
-accountRoute.patch("/:id/password", changePassword);
 accountRoute.delete("/:id", checkAuth, checkAdmin, remove);
 accountRoute.patch(
   "/:id/permission",

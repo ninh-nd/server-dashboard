@@ -93,26 +93,31 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function changePassword(req: Request, res: Response) {
-  const { id } = req.params;
-  const { oldPassword, newPassword } = req.body;
+  const id = req.user?._id;
+  const { data } = req.body;
+  const { oldPassword, newPassword } = data;
   if (!oldPassword || !newPassword) {
     return res.json(errorResponse("Missing old or new password"));
   }
-  // Check if account exists
-  const account = await AccountModel.findById(id);
-  if (!account) {
-    return res.json(errorResponse("Account not found"));
+  try {
+    // Check if account exists
+    const account = await AccountModel.findById(id);
+    if (!account) {
+      return res.json(errorResponse("Account not found"));
+    }
+    // Check if old password is correct
+    const isMatch = await bcrypt.compare(oldPassword, account.password);
+    if (!isMatch) {
+      return res.json(errorResponse("Incorrect old password"));
+    }
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Change password
+    await AccountModel.findByIdAndUpdate(id, { password: hashedPassword });
+    return res.json(successResponse(null, "Password changed"));
+  } catch (error) {
+    return res.json(errorResponse(`Internal server error: ${error}`));
   }
-  // Check if old password is correct
-  const isMatch = await bcrypt.compare(oldPassword, account.password);
-  if (!isMatch) {
-    return res.json(errorResponse("Incorrect old password"));
-  }
-  // Hash new password
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  // Change password
-  await AccountModel.findByIdAndUpdate(id, { password: hashedPassword });
-  return res.json(successResponse(null, "Password changed"));
 }
 
 export async function updateAccountInfo(req: Request, res: Response) {
