@@ -1,8 +1,19 @@
-import { ArraySubDocumentType, prop, Ref } from "@typegoose/typegoose";
+import { ArraySubDocumentType, post, prop, Ref } from "@typegoose/typegoose";
 import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { User } from "./user";
 import { Vulnerability } from "./vulnerability";
+import { UserModel } from "./models";
 export interface Ticket extends Base {}
+@post<Ticket>("deleteMany", async function (res, next) {
+  // Remove tickets from UserModel's ticketAssigned field
+  await UserModel.updateMany({
+    $pull: {
+      ticketAssigned: {
+        $in: res._id,
+      },
+    },
+  });
+})
 export class Ticket extends TimeStamps {
   @prop({ required: true, type: String })
   public title!: string;

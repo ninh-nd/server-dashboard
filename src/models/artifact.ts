@@ -1,8 +1,16 @@
-import { ArraySubDocumentType, prop } from "@typegoose/typegoose";
+import { ArraySubDocumentType, post, prop } from "@typegoose/typegoose";
 import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { Threat } from "./threat";
 import { Vulnerability } from "./vulnerability";
+import { TicketModel } from "./models";
 export interface Artifact extends Base {}
+@post<Artifact>("findOneAndDelete", async function (this, doc) {
+  doc.vulnerabilityList?.forEach(async (vuln) => {
+    await TicketModel.deleteMany({
+      targetedVulnerability: vuln,
+    });
+  });
+})
 export class Artifact extends TimeStamps {
   @prop({ required: true, type: String })
   public name!: string;

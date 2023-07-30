@@ -219,18 +219,10 @@ export async function addArtifactToPhase(req: Request, res: Response) {
 export async function removeArtifactFromPhase(req: Request, res: Response) {
   const { id, artifactId } = req.params;
   try {
-    await ArtifactModel.deleteOne({ _id: artifactId });
-    const updatePhasePromise = PhaseModel.findByIdAndUpdate(id, {
+    await PhaseModel.findByIdAndUpdate(id, {
       $pull: { artifacts: artifactId },
     });
-    const artifact = await ArtifactModel.findById(artifactId);
-    // Delete any ticket associated with the artifact's vulnerability
-    const updateTicketPromise = TicketModel.deleteMany({
-      targetedVulnerability: {
-        $in: artifact?.vulnerabilityList,
-      },
-    });
-    await Promise.all([updatePhasePromise, updateTicketPromise]);
+    await ArtifactModel.findByIdAndDelete(artifactId);
     return res.json(successResponse(null, "Artifact removed from phase"));
   } catch (error) {
     return res.json(errorResponse(`Internal server error: ${error}`));
