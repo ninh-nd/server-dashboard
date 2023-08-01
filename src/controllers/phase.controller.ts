@@ -196,6 +196,7 @@ export async function addArtifactToPhase(req: Request, res: Response) {
               name: `${name}:${version}`,
             },
           });
+          console.log(`Image scanning triggered for artifact: ${name}`);
         } catch (error) {
           break;
         }
