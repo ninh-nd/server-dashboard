@@ -2,7 +2,7 @@ import { ArraySubDocumentType, post, prop, Ref } from "@typegoose/typegoose";
 import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import { User } from "./user";
 import { Vulnerability } from "./vulnerability";
-import { UserModel } from "./models";
+import { ChangeHistoryModel, UserModel } from "./models";
 export interface Ticket extends Base {}
 @post<Ticket>("deleteMany", async function (res, next) {
   // Remove tickets from UserModel's ticketAssigned field
@@ -13,6 +13,7 @@ export interface Ticket extends Base {}
       },
     },
   });
+  await ChangeHistoryModel.deleteMany({ objectId: res._id });
 })
 export class Ticket extends TimeStamps {
   @prop({ required: true, type: String })

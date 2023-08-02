@@ -17,10 +17,9 @@ export async function getAdminChangeHistory(req: Request, res: Response) {
   const { total } = req.query as { total: string };
   try {
     // Find the latest {total} change history except for any ChangeHistory that has ObjectId belongs to the "Ticket" collection
-    const ticketIds = await TicketModel.find().distinct("_id");
     const list = await ChangeHistoryModel.find(
       {
-        objectId: { $nin: ticketIds },
+        description: { $not: /ticket/i },
       },
       null,
       { sort: { timestamp: -1 }, limit: parseInt(total) }
