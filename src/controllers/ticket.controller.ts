@@ -37,7 +37,7 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   const { data } = req.body;
-  // data.assignee is AccountId
+  // data.assignee is UserModel _id
   try {
     const assigner = await UserModel.findOne({ account: req.user?._id });
     const assignee = await UserModel.findById(data.assignee);
@@ -46,14 +46,11 @@ export async function create(req: Request, res: Response) {
       assignee: assignee?._id,
       assigner: assigner?._id,
     });
-    await UserModel.findOneAndUpdate(
-      { account: data.assignee },
-      {
-        $push: {
-          ticketAssigned: ticket._id,
-        },
-      }
-    );
+    await UserModel.findByIdAndUpdate(data.assignee, {
+      $push: {
+        ticketAssigned: ticket._id,
+      },
+    });
     await ChangeHistoryModel.create({
       objectId: ticket._id,
       action: "create",
