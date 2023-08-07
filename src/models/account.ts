@@ -21,14 +21,19 @@ export interface Account extends Base {}
     });
   } else if (this.role === "manager") {
     const perm = permissions.filter((p) => {
-      if (p.includes("user")) return true;
+      if (!p.includes("user")) return true;
     });
     await AccountModel.findByIdAndUpdate(account?._id, {
       permission: perm,
     });
   } else {
     const perm = permissions.filter((p) => {
-      if (p.includes("user") || p.includes("phase") || p.includes("project"))
+      if (
+        !p.includes("user") &&
+        p.includes("phase") &&
+        !p.includes("project") &&
+        !p.includes("artifact")
+      )
         return true;
     });
     await AccountModel.findByIdAndUpdate(account?._id, {
