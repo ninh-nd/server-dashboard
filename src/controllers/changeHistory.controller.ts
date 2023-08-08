@@ -4,8 +4,10 @@ import { errorResponse, successResponse } from "../utils/responseFormat";
 
 export async function getChangeHistoryByObjectId(req: Request, res: Response) {
   const { objectId } = req.params;
+  console.log(objectId);
   try {
     const list = await ChangeHistoryModel.find({ objectId });
+    console.log(list);
     return res.json(
       successResponse(list, "Change history fetched successfully")
     );
