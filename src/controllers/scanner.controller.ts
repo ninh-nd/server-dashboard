@@ -77,7 +77,10 @@ export async function update(req: Request, res: Response) {
         name: data.name,
       },
       {
-        data,
+        config: {
+          installCommand: data.config.installCommand,
+          code: data.config.code,
+        },
       }
     );
     const dockerfile = await generateDockerfile(data.config);

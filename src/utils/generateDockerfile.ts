@@ -31,7 +31,7 @@ const sampleCode = `async function processImageScan(name) {
     let response = [];
     json.Results.forEach((res) => {
       const vulnList = res.Vulnerabilities;
-      const processed = vulnList.map((x) => {
+      const processed = vulnList?.map((x) => {
         const cveId = x?.VulnerabilityID;
         const severity = x?.Severity;
         const description = x?.Description;
